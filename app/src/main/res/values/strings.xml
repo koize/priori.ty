@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">priori.ty</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="bot_bar_reminders">Reminders</string>
+    <string name="bot_bar_goals">Goals</string>
+    <string name="bot_bar_home">Home</string>
+    <string name="bot_bar_schedule">Schedule</string>
+    <string name="bot_bar_journal">Journal</string>
 </resources>
