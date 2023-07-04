@@ -1,4 +1,4 @@
-package com.koize.priority.ui.notifications;
+package com.koize.priority.ui.goals;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.koize.priority.databinding.FragmentNotificationsBinding;
+import com.koize.priority.databinding.FragmentGoalsBinding;
 
-public class NotificationsFragment extends Fragment {
+public class GoalsFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+    private FragmentGoalsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NotificationsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+        GoalsViewModel goalsViewModel =
+                new ViewModelProvider(this).get(GoalsViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentGoalsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNotifications;
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textView = binding.textGoals;
+        goalsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
