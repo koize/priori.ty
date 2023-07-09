@@ -52,7 +52,7 @@
                     android:layout_width="334dp"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    app:cardCornerRadius="30dp"
+                    app:cardCornerRadius="15dp"
                     app:cardElevation="3dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -79,7 +79,8 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:itemCount="4" />
+                            tools:itemCount="2"
+                            tools:listitem="@layout/row_reminders" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
@@ -89,7 +90,7 @@
                     android:layout_width="334dp"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    app:cardCornerRadius="30dp"
+                    app:cardCornerRadius="15dp"
                     app:cardElevation="3dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +119,8 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintVertical_bias="0.0"
-                            tools:itemCount="4" />
+                            tools:itemCount="1"
+                            tools:listitem="@layout/row_reminders" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
@@ -139,7 +141,7 @@
                     android:layout_width="334dp"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    app:cardCornerRadius="30dp"
+                    app:cardCornerRadius="15dp"
                     app:cardElevation="3dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.512"
@@ -169,7 +171,8 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintVertical_bias="0.0"
-                            tools:itemCount="5" />
+                            tools:itemCount="6"
+                            tools:listitem="@layout/row_reminders" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
@@ -202,7 +205,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
                     android:padding="5dp"
-                    app:cardCornerRadius="30dp"
+                    app:cardCornerRadius="15dp"
                     app:cardElevation="3dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -232,7 +235,8 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintVertical_bias="0.0"
-                            tools:itemCount="3" />
+                            tools:itemCount="1"
+                            tools:listitem="@layout/row_reminders_empty" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
