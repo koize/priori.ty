@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+             android:layout_height="match_parent">
+    <DigitalClock
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <CalendarView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <DatePicker
+        android:layout_width="328dp"
+        android:layout_height="614dp"
+        tools:layout_editor_absoluteX="83dp"
+        tools:layout_editor_absoluteY="277dp" />
+
+    <TimePicker
+        android:layout_width="294dp"
+        android:layout_height="350dp"
+        tools:layout_editor_absoluteX="78dp"
+        tools:layout_editor_absoluteY="481dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
