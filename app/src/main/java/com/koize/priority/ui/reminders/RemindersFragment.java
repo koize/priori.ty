@@ -24,8 +24,7 @@ public class RemindersFragment extends Fragment {
         binding = FragmentRemindersBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textReminders;
-        remindersViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
         return root;
     }
 
