@@ -7,16 +7,13 @@
             android:id="@+id/settings_button_create_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:dependency="attachment"
-            app:key="attachment_size"
+
             app:title="Create account"
             app:useSimpleSummaryProvider="true" />
         <Preference
             android:id="@+id/settings_button_account_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:dependency="attachment"
-            app:key="attachment_size"
             app:title="View details"
             app:useSimpleSummaryProvider="true" />
 
@@ -33,8 +30,7 @@
 
         <Preference
             android:id="@+id/settings_button_delete_cloud_data"
-            app:dependency="attachment"
-            app:key="attachment_size"
+
             app:summary="Required before deleting account"
             app:title="Delete cloud data and use local storage"
             app:useSimpleSummaryProvider="true" />
@@ -46,8 +42,7 @@
             android:id="@+id/settings_button_delete_all_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:dependency="attachment"
-            app:key="attachment_size"
+
             app:summary="WARNING: NOT REVERSIBLE!! YOU HAVE BEEN WARNED"
             app:title="Delete ALL data"
             app:useSimpleSummaryProvider="true" />

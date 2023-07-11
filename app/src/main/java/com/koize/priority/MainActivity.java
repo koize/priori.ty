@@ -17,8 +17,7 @@ import com.koize.priority.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private Chip settingsChip;
-    private Chip aboutChip;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +35,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-        settingsChip = findViewById(R.id.button_home_settings);
-        settingsChip.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-        });
-        aboutChip = findViewById(R.id.button_home_about);
-        aboutChip.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MonthlyPlannerPage.class); //TODO change to ABOUT page
-            startActivity(intent);
-        });
+
 
     }
 
