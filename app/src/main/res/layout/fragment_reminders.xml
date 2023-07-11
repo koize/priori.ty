@@ -18,12 +18,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/montly_planner_card_calendar"
         android:layout_width="373dp"
         android:layout_height="0dp"
         android:layout_marginBottom="20dp"
         app:cardCornerRadius="30dp"
+        app:cardElevation="2dp"
         app:layout_constraintBottom_toTopOf="@+id/monthly_planner_card_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,13 +48,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_morning"
                     android:layout_width="334dp"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
                     app:cardCornerRadius="15dp"
-                    app:cardElevation="3dp"
+                    app:cardElevation="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/morning">
@@ -85,9 +86,9 @@
                             tools:listitem="@layout/row_reminders" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_afternoon"
                     android:layout_width="334dp"
                     android:layout_height="wrap_content"
@@ -127,7 +128,7 @@
                             tools:listitem="@layout/row_reminders" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <TextView
                     android:id="@+id/evening"
@@ -140,7 +141,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/card_afternoon" />
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_evening"
                     android:layout_width="334dp"
                     android:layout_height="wrap_content"
@@ -181,7 +182,7 @@
                             tools:listitem="@layout/row_reminders" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <TextView
                     android:id="@+id/afternoon"
@@ -205,7 +206,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/card_evening" />
 
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_night"
                     android:layout_width="334dp"
                     android:layout_height="wrap_content"
@@ -247,14 +248,14 @@
                             tools:listitem="@layout/row_reminders" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/monthly_planner_card_menu"
         android:layout_width="375dp"
         android:layout_height="58dp"
@@ -283,6 +284,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
