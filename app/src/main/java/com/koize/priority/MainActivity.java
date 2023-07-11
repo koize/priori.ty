@@ -1,5 +1,6 @@
 package com.koize.priority;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -10,11 +11,14 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.chip.Chip;
 import com.koize.priority.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
+    private Chip settingsChip;
+    private Chip aboutChip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +36,16 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
-        //awhahe
+        settingsChip = findViewById(R.id.button_home_settings);
+        settingsChip.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        });
+        aboutChip = findViewById(R.id.button_home_about);
+        aboutChip.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MonthlyPlannerPage.class); //TODO change to ABOUT page
+            startActivity(intent);
+        });
 
     }
 
