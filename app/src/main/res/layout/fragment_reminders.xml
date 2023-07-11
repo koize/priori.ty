@@ -7,7 +7,7 @@
     tools:context=".ui.reminders.RemindersFragment">
 
     <TextView
-        android:id="@+id/title_reminders"
+        android:id="@+id/title_monthly_planner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -19,15 +19,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/reminders_card_main"
+        android:id="@+id/montly_planner_card_calendar"
         android:layout_width="373dp"
         android:layout_height="0dp"
         android:layout_marginBottom="20dp"
         app:cardCornerRadius="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/reminders_card_menu"
+        app:layout_constraintBottom_toTopOf="@+id/monthly_planner_card_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_reminders">
+        app:layout_constraintTop_toBottomOf="@+id/title_monthly_planner">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -62,14 +62,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <TextView
-                            android:id="@+id/recycler_reminder_morning_empty"
+                        <include
+                            android:id="@+id/reminders_morning_empty"
+                            layout="@layout/row_reminders_empty"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="@+id/recycler_reminder_morning"
-                            app:layout_constraintStart_toStartOf="@+id/recycler_reminder_morning"
-                            app:layout_constraintTop_toTopOf="@+id/recycler_reminder_morning" />
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:visibility="visible" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recycler_reminder_morning"
@@ -100,14 +102,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <TextView
-                            android:id="@+id/recycler_reminder_afternoon_empty"
+                        <include
+                            android:id="@+id/reminders_afternoon_empty"
+                            layout="@layout/row_reminders_empty"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toBottomOf="@+id/recycler_reminder_afternoon"
-                            app:layout_constraintEnd_toEndOf="@+id/recycler_reminder_afternoon"
-                            app:layout_constraintStart_toStartOf="@+id/recycler_reminder_afternoon"
-                            app:layout_constraintTop_toTopOf="@+id/recycler_reminder_afternoon" />
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:visibility="visible" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recycler_reminder_afternoon"
@@ -152,14 +156,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <TextView
-                            android:id="@+id/recycler_reminder_evening_empty"
+                        <include
+                            android:id="@+id/reminders_evening_empty"
+                            layout="@layout/row_reminders_empty"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toBottomOf="@+id/recycler_reminder_evening"
-                            app:layout_constraintEnd_toEndOf="@+id/recycler_reminder_evening"
-                            app:layout_constraintStart_toStartOf="@+id/recycler_reminder_evening"
-                            app:layout_constraintTop_toTopOf="@+id/recycler_reminder_evening" />
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:visibility="visible" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recycler_reminder_evening"
@@ -216,14 +222,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <TextView
-                            android:id="@+id/recycler_reminder_night_empty"
+                        <include
+                            android:id="@+id/reminders_night_empty"
+                            layout="@layout/row_reminders_empty"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:layout_constraintBottom_toBottomOf="@+id/recycler_reminder_night"
-                            app:layout_constraintEnd_toEndOf="@+id/recycler_reminder_night"
-                            app:layout_constraintStart_toStartOf="@+id/recycler_reminder_night"
-                            app:layout_constraintTop_toTopOf="@+id/recycler_reminder_night" />
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:visibility="visible" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recycler_reminder_night"
@@ -236,7 +244,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintVertical_bias="0.0"
                             tools:itemCount="1"
-                            tools:listitem="@layout/row_reminders_empty" />
+                            tools:listitem="@layout/row_reminders" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
@@ -247,7 +255,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/reminders_card_menu"
+        android:id="@+id/monthly_planner_card_menu"
         android:layout_width="375dp"
         android:layout_height="58dp"
         android:layout_marginBottom="60dp"

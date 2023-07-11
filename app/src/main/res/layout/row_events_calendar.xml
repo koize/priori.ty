@@ -6,39 +6,33 @@
     android:layout_height="60dp"
     android:scrollbars="horizontal">
 
-    <CheckBox
-        android:id="@+id/check_row_reminders"
+    <TextView
+        android:id="@+id/row_events_calendar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="6dp"
+        android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/row_reminders_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="TextView"
-        app:layout_constraintStart_toEndOf="@+id/check_row_reminders"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <include
-        android:id="@+id/row_reminders_category"
+        android:id="@+id/row_events_calendar_category"
         layout="@layout/row_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/check_row_reminders"
-        app:layout_constraintTop_toBottomOf="@+id/row_reminders_title" />
+        android:layout_marginStart="6dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/row_events_calendar_title" />
 
     <include
-        android:id="@+id/row_reminders_location"
+        android:id="@+id/row_events_calendar_location"
         layout="@layout/row_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        app:layout_constraintStart_toEndOf="@+id/row_reminders_category"
-        app:layout_constraintTop_toBottomOf="@+id/row_reminders_title" />
+        app:layout_constraintStart_toEndOf="@+id/row_events_calendar_category"
+        app:layout_constraintTop_toBottomOf="@+id/row_events_calendar_title" />
 
     <View
         android:id="@+id/divider2"
@@ -66,37 +60,15 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/row_reminders_date"
+                android:id="@+id/row_events_calendar_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Today, 10.30am" />
-
-            <TextView
-                android:id="@+id/row_reminder_timeleft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:layout_marginBottom="3dp"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageView2"
-                tools:text="3hrs" />
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginBottom="3dp"
-                android:src="@drawable/baseline_access_time_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/row_reminders_date"
-                app:layout_constraintVertical_bias="0.32" />
+                tools:text="Event" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
