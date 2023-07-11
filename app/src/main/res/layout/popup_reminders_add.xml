@@ -270,16 +270,12 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/baseline_category_24" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_new_reminder_category"
+                    <include
+                        layout="@layout/row_category"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:scrollbars="horizontal"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:itemCount="3" />
+                        tools:layout_editor_absoluteX="40dp"
+                        tools:layout_editor_absoluteY="42dp" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
