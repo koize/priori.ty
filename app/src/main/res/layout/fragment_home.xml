@@ -1,24 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_marginTop="-500dp"
+    >
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
     <TextView
-        android:id="@+id/text_home"
-        android:layout_width="match_parent"
+        android:id="@+id/title_home_greeting"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:fontFamily="@font/sf_pro_display_regular"
-        android:text="this is an Apple ad"
-        android:textAlignment="center"
-        android:textSize="20sp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/sf_pro_rounded_bold"
+        android:text="im going MAD fr"
+        android:textSize="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title_home_agenda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:fontFamily="@font/sf_pro_rounded_regular"
+        android:text="Today's agenda"
+        android:textSize="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_home_greeting" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/home_agenda_card"
+        android:layout_width="373dp"
+        android:layout_height="300dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_home_agenda">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/title_home_agenda2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:fontFamily="@font/sf_pro_rounded_regular"
+        android:text="Upcoming plans"
+        android:textSize="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/home_agenda_card" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/home_upcoming_plans_card"
+        android:layout_width="373dp"
+        android:layout_height="300dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_home_agenda2">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/title_home_goals"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:fontFamily="@font/sf_pro_rounded_regular"
+        android:text="My Goals - at a glance"
+        android:textSize="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/home_upcoming_plans_card" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/home_goals_card"
+        android:layout_width="373dp"
+        android:layout_height="300dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_home_goals">
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/title_home_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:fontFamily="@font/sf_pro_rounded_regular"
+        android:text="More"
+        android:textSize="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/home_goals_card" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/button_home_habits"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="35dp"
+        android:elevation="5dp"
+        android:text="Habits"
+        android:textSize="16sp"
+        app:chipCornerRadius="30dp"
+        app:chipIcon="@drawable/baseline_person_pin_24"
+        app:chipIconSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_home_more" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/button_home_focus"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="35dp"
+        android:elevation="5dp"
+        android:text="Focus Mode"
+        android:textSize="16sp"
+        app:chipCornerRadius="30dp"
+        app:chipIcon="@drawable/baseline_phonelink_lock_24"
+        app:chipIconSize="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_home_more" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/button_home_settings"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="35dp"
+        android:elevation="5dp"
+        android:text="Settings"
+        android:textSize="16sp"
+        app:chipCornerRadius="30dp"
+        app:chipIcon="@drawable/baseline_settings_24"
+        app:chipIconSize="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_home_focus" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/button_home_about"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="35dp"
+        android:elevation="5dp"
+        android:text="About"
+        android:textSize="16sp"
+        app:chipCornerRadius="30dp"
+        app:chipIcon="@drawable/baseline_info_24"
+        app:chipIconSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_home_habits" />
+
+    <TextView
+        android:id="@+id/home_version_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/button_home_settings"
+        tools:text="priori.ty v.-0.9" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

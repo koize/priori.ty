@@ -1,5 +1,6 @@
 package com.koize.priority.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.chip.Chip;
+import com.koize.priority.MonthlyPlannerPage;
+import com.koize.priority.R;
+import com.koize.priority.SettingsActivity;
 import com.koize.priority.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private Chip settingsChip;
+    private Chip aboutChip;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -24,8 +31,12 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        settingsChip = root.findViewById(R.id.button_home_settings);
+        settingsChip.setOnClickListener(settingsChipListener);
+        aboutChip = root.findViewById(R.id.button_home_about);
+        aboutChip.setOnClickListener(aboutChipListener);
+
+
         return root;
     }
 
@@ -34,4 +45,20 @@ public class HomeFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+    View.OnClickListener settingsChipListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getContext(), SettingsActivity.class);
+            startActivity(intent);
+        }
+    };
+
+    View.OnClickListener aboutChipListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getContext(), MonthlyPlannerPage.class); //TODO change to ABOUT page
+            startActivity(intent);
+        }
+    };
 }
