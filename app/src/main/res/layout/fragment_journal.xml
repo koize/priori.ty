@@ -6,33 +6,36 @@
     android:layout_height="match_parent"
     tools:context=".ui.journal.JournalFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/title_journal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:fontFamily="@font/sf_pro_rounded_semibold"
-            android:text="Journal"
-            android:textSize="30dp" />
+    <TextView
+        android:id="@+id/title_journal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/sf_pro_rounded_semibold"
+        android:text="Journal"
+        android:textSize="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_journal"
-            android:layout_width="match_parent"
-            android:layout_height="585dp"
-            tools:itemCount="6"
-            tools:listitem="@layout/row_journal_main" />
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_journal"
+        android:layout_width="373dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/journal_card_menu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_journal"
+        tools:itemCount="6"
+        tools:listitem="@layout/row_journal_main" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/journal_card_menu"
         android:layout_width="375dp"
         android:layout_height="58dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="60dp"
         app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
