@@ -10,11 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.koize.priority.R;
+import com.koize.priority.ReminderPopUp;
 import com.koize.priority.databinding.FragmentRemindersBinding;
 
 public class RemindersFragment extends Fragment {
 
     private FragmentRemindersBinding binding;
+    private FloatingActionButton addReminderButton;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -23,7 +27,8 @@ public class RemindersFragment extends Fragment {
 
         binding = FragmentRemindersBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
+        addReminderButton = root.findViewById(R.id.button_reminder_add);
+        addReminderButton.setOnClickListener(addReminderListener);
 
         return root;
     }
@@ -33,4 +38,12 @@ public class RemindersFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+    View.OnClickListener addReminderListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ReminderPopUp reminderPopUp = new ReminderPopUp();
+            reminderPopUp.showPopupWindow(v);        }
+    };
+
 }
