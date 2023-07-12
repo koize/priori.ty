@@ -3,6 +3,7 @@ package com.koize.priority;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -34,6 +35,12 @@ public class ReminderPopUp {
 
         //Create a window with our parameters
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+        // Closes the popup window when touch outside
+
+        popupWindow.setAnimationStyle(com.google.android.material.R.style.Animation_AppCompat_Dialog);
+        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        popupWindow.setOutsideTouchable(true);
+
 
         //Set the location of the window on the screen
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
