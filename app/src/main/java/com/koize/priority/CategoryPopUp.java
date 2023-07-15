@@ -1,39 +1,27 @@
 package com.koize.priority;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.chip.Chip;
 
-public class ReminderPopUp {
+public class CategoryPopUp {
     public static final int INPUT_METHOD_NEEDED = 1;
     public void showPopupWindow(final View view) {
 
         ConstraintLayout reminderView;
         //Create a View object yourself through inflater
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_reminders_add, null);
-        reminderView = popupView.findViewById(R.id.reminderPopUpLayout);
+        View popupView = inflater.inflate(R.layout.popup_category_add, null);
 
         //Specify the length and width through constants
 
@@ -44,7 +32,7 @@ public class ReminderPopUp {
         boolean focusable = true;
 
         //Create a window with our parameters
-        final PopupWindow popupWindow = new PopupWindow(reminderView, width, height, focusable);
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
         // Closes the popup window when touch outside
         //Handler for clicking on the inactive zone of the window
 
@@ -98,44 +86,7 @@ public class ReminderPopUp {
         }
         //Initialize the elements of our window, install the handler
 
-        EditText reminderTitle = popupView.findViewById(R.id.new_reminder_title);
-        Chip firstReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_1);
-        Chip secondReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_2);
-        EditText reminderLocationText = popupView.findViewById(R.id.new_reminder_location_text);
-        Chip reminderLocationChip = popupView.findViewById(R.id.button_new_reminder_getLocation);
-        Chip reminderCategoryChip = popupView.findViewById(R.id.button_new_reminder_choose_category);
-        Chip reminderSaveChip = popupView.findViewById(R.id.button_new_reminder_save);
-        firstReminderChip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-            }
-        });
-        secondReminderChip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        reminderLocationChip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        reminderCategoryChip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CategoryPopUp categoryPopUp = new CategoryPopUp();
-                categoryPopUp.showPopupWindow(v);
-            }
-        });
-        reminderSaveChip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
 
 
     }

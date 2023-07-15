@@ -39,11 +39,12 @@
         <TableLayout
             android:id="@+id/tableLayout"
             android:layout_width="375dp"
-            android:layout_height="700dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:divider="?attr/dividerHorizontal"
             android:paddingHorizontal="30dp"
             android:showDividers="middle|beginning|end"
+            app:layout_constraintBottom_toTopOf="@+id/button_new_event_save"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -172,7 +173,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <CheckBox
-                        android:id="@+id/checkBox"
+                        android:id="@+id/checkbox_events_allday"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="All day?"
@@ -330,6 +331,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="45dp"
                         android:layout_marginBottom="5dp"
+                        android:visibility="invisible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/new_event_category_header" />
@@ -340,14 +342,12 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:minWidth="375dp"
-                android:minHeight="55dp">
+                android:layout_height="wrap_content"
+                android:minWidth="375dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:minHeight="210dp">
+                    android:layout_height="match_parent">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/button_new_event_get_image"

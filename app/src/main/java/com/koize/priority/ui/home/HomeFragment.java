@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.koize.priority.MonthlyPlannerPage;
 import com.koize.priority.R;
@@ -20,6 +21,7 @@ import com.koize.priority.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private MaterialCardView monthlyPlannerButton;
     private Chip settingsChip;
     private Chip aboutChip;
 
@@ -31,6 +33,8 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        monthlyPlannerButton = root.findViewById(R.id.button_home_open_montly_planner);
+        monthlyPlannerButton.setOnClickListener(monthlyPlannerButtonListener);
         settingsChip = root.findViewById(R.id.button_home_settings);
         settingsChip.setOnClickListener(settingsChipListener);
         aboutChip = root.findViewById(R.id.button_home_about);
@@ -46,6 +50,13 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
+    View.OnClickListener monthlyPlannerButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getContext(), MonthlyPlannerPage.class);
+            startActivity(intent);
+        }
+    };
     View.OnClickListener settingsChipListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
