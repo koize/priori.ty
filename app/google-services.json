@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "675406891226",
+    "project_id": "priority-135fc",
+    "storage_bucket": "priority-135fc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675406891226:android:b8416b4e00245439fa3de3",
+        "android_client_info": {
+          "package_name": "com.koize.priority"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "675406891226-ppn9al951ve4s2nnreicsprqk2frv1rv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARKKgO90jMPdEezsz6RdXLo6227ZJAZiI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "675406891226-ppn9al951ve4s2nnreicsprqk2frv1rv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
