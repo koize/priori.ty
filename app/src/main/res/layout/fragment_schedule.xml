@@ -11,12 +11,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="40dp"
         android:fontFamily="@font/sf_pro_rounded_semibold"
         android:text="Schedule"
         android:textSize="30dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView2"
@@ -105,7 +104,7 @@
         android:id="@+id/schedule_card_menu"
         android:layout_width="375dp"
         android:layout_height="58dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="20dp"
         app:cardCornerRadius="30dp"
         app:cardElevation="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
