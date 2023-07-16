@@ -4,11 +4,28 @@
     <PreferenceCategory app:title="Account">
 
         <Preference
-            android:id="@+id/settings_button_create_account"
+            android:id="@+id/settings_button_sign_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            app:title="Create account"
+            app:key="sign_in"
+            app:title="test - sign in"
+            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:id="@+id/settings_button_sign_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:key="sign_out"
+            app:title="test - sign out"
+            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:id="@+id/settings_button_delete_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:key="delete_account"
+            app:title="test - delete account"
             app:useSimpleSummaryProvider="true" />
         <Preference
             android:id="@+id/settings_button_account_details"
