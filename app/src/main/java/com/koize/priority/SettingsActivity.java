@@ -57,6 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
             Preference signInPreference = findPreference("sign_in");
             Preference signOutPreference = findPreference("sign_out");
             Preference deleteAccountPreference = findPreference("delete_account");
+            Preference accountSettingsPreference = findPreference("account_settings");
 
             signInPreference.setOnPreferenceClickListener(preference -> {
                 showFirebaseUI();
@@ -107,6 +108,12 @@ public class SettingsActivity extends AppCompatActivity {
 
                     }
                 });
+                return true;
+            });
+
+            accountSettingsPreference.setOnPreferenceClickListener(preference -> {
+                Intent accountSettings = new Intent(requireContext(), AccountSettings.class);
+                startActivity(accountSettings);
                 return true;
             });
 
