@@ -1,24 +1,14 @@
-package com.koize.priority.ui.reminders;
+package com.koize.priority;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
-import static com.google.android.material.internal.ContextUtils.getActivity;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ReportFragment;
 
-import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,32 +17,15 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.material.chip.Chip;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
-import com.koize.priority.CategoryPopUp;
-import com.koize.priority.R;
 
-public class ReminderPopUp extends AppCompatActivity {
-    public int firstReminderTimeHr;
-    public int firstReminderTimeMin;
-    public int secondReminderTimeHr;
-    public int secondReminderTimeMin;
-    public int firstReminderDateDay;
-    public int firstReminderDateMonth;
-    public int secondReminderDateDay;
-    public int secondReminderDateMonth;
-
+public class ReminderPopUp {
     public static final int INPUT_METHOD_NEEDED = 1;
     public void showPopupWindow(final View view) {
 
@@ -136,97 +109,12 @@ public class ReminderPopUp extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // now register the text view and the button with
-                // their appropriate IDs
-
-                // now create instance of the material date picker
-                // builder make sure to add the "datePicker" which
-                // is normal material date picker which is the first
-                // type of the date picker in material design date
-                // picker
-                MaterialDatePicker.Builder materialDateBuilder = MaterialDatePicker.Builder.datePicker();
-
-                // now define the properties of the
-                // materialDateBuilder that is title text as SELECT A DATE
-                materialDateBuilder.setTitleText("SELECT A DATE");
-
-                // now create the instance of the material date
-                // picker
-                 MaterialDatePicker materialDatePicker = materialDateBuilder.build();
-
-                materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
-
-
-
-                materialDatePicker.addOnPositiveButtonClickListener(
-                        new MaterialPickerOnPositiveButtonClickListener() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void onPositiveButtonClick(Object selection) {
-
-                                // if the user clicks on the positive
-                                // button that is ok button update the
-                                // selected date
-                                firstReminderChip.setText("Date is : " + materialDatePicker.getHeaderText());
-                                // in the above statement, getHeaderText
-                                // is the selected date preview from the
-                                // dialog
-                            }
-                        });
-            }});
-
-
+            }
+        });
         secondReminderChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final java.util.Calendar c = java.util.Calendar.getInstance();
 
-                // on below line we are getting
-                // our day, month and year.
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH);
-                int day = c.get(Calendar.DAY_OF_MONTH);
-                int hour = c.get(Calendar.HOUR_OF_DAY);
-                int minute = c.get(Calendar.MINUTE);
-
-
-                // on below line we are creating a variable for date picker dialog.
-                DatePickerDialog datePickerDialog = new DatePickerDialog(
-                        // on below line we are passing context.
-                        view.getContext(),
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int monthOfYear, int dayOfMonth) {
-                                // on below line we are setting date to our text view.
-                                secondReminderDateDay = dayOfMonth;
-                                secondReminderDateMonth = monthOfYear + 1;
-                            }
-                        },
-                        // on below line we are passing year,
-                        // month and day for selected date in our date picker.
-                        year, month, day);
-
-                TimePickerDialog timePickerDialog = new TimePickerDialog(view.getContext(),
-
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
-                                // on below line we are setting selected time
-                                // in our text view.
-                                secondReminderTimeHr = hourOfDay;
-                                secondReminderTimeMin = minute;
-                            }
-                        }, hour, minute, false);
-                // at last we are calling show to
-                // display our time picker dialog.
-                // at last we are calling show to
-                // display our date picker dialog.
-                datePickerDialog.show();
-
-                timePickerDialog.show();
-                secondReminderChip.setText(secondReminderDateDay + "/" + (secondReminderDateMonth) + ", " + secondReminderTimeHr + ":" + secondReminderTimeMin);
             }
         });
         reminderLocationChip.setOnClickListener(new View.OnClickListener() {
