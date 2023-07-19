@@ -50,10 +50,14 @@ public class ReminderPopUp extends AppCompatActivity {
     public int secondReminderTimeMin;
     public int firstReminderDateDay;
     public int firstReminderDateMonth;
+    public int firstReminderDateYear;
     public int secondReminderDateDay;
     public int secondReminderDateMonth;
+    public int secondReminderDateYear;
+
 
     public static final int INPUT_METHOD_NEEDED = 1;
+
     public void showPopupWindow(final View view) {
 
         ConstraintLayout reminderView;
@@ -74,10 +78,17 @@ public class ReminderPopUp extends AppCompatActivity {
         final PopupWindow popupWindow = new PopupWindow(reminderView, width, height, focusable);
         // Closes the popup window when touch outside
         //Handler for clicking on the inactive zone of the window
+        EditText reminderTitle = popupView.findViewById(R.id.new_reminder_title);
+        Chip firstReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_1);
+        Chip secondReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_2);
+        EditText reminderLocationText = popupView.findViewById(R.id.new_reminder_location_text);
+        Chip reminderLocationChip = popupView.findViewById(R.id.button_new_reminder_getLocation);
+        Chip reminderCategoryChip = popupView.findViewById(R.id.button_new_reminder_choose_category);
+        Chip reminderSaveChip = popupView.findViewById(R.id.button_new_reminder_save);
 
         popupWindow.setTouchInterceptor(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+                if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
                     popupWindow.dismiss();
                     return true;
                 }
@@ -114,66 +125,24 @@ public class ReminderPopUp extends AppCompatActivity {
         //Set the location of the window on the screen
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         View container = popupWindow.getContentView().getRootView();
-        if(container != null) {
-            WindowManager wm = (WindowManager)container.getContext().getSystemService(Context.WINDOW_SERVICE);
-            WindowManager.LayoutParams p = (WindowManager.LayoutParams)container.getLayoutParams();
+        if (container != null) {
+            WindowManager wm = (WindowManager) container.getContext().getSystemService(Context.WINDOW_SERVICE);
+            WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
             p.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;
             p.dimAmount = 0.3f;
-            if(wm != null) {
+            if (wm != null) {
                 wm.updateViewLayout(container, p);
             }
         }
         //Initialize the elements of our window, install the handler
 
-        EditText reminderTitle = popupView.findViewById(R.id.new_reminder_title);
-        Chip firstReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_1);
-        Chip secondReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_2);
-        EditText reminderLocationText = popupView.findViewById(R.id.new_reminder_location_text);
-        Chip reminderLocationChip = popupView.findViewById(R.id.button_new_reminder_getLocation);
-        Chip reminderCategoryChip = popupView.findViewById(R.id.button_new_reminder_choose_category);
-        Chip reminderSaveChip = popupView.findViewById(R.id.button_new_reminder_save);
+
         firstReminderChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // now register the text view and the button with
-                // their appropriate IDs
-
-                // now create instance of the material date picker
-                // builder make sure to add the "datePicker" which
-                // is normal material date picker which is the first
-                // type of the date picker in material design date
-                // picker
-                MaterialDatePicker.Builder materialDateBuilder = MaterialDatePicker.Builder.datePicker();
-
-                // now define the properties of the
-                // materialDateBuilder that is title text as SELECT A DATE
-                materialDateBuilder.setTitleText("SELECT A DATE");
-
-                // now create the instance of the material date
-                // picker
-                 MaterialDatePicker materialDatePicker = materialDateBuilder.build();
-
-                materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
-
-
-
-                materialDatePicker.addOnPositiveButtonClickListener(
-                        new MaterialPickerOnPositiveButtonClickListener() {
-                            @SuppressLint("SetTextI18n")
-                            @Override
-                            public void onPositiveButtonClick(Object selection) {
-
-                                // if the user clicks on the positive
-                                // button that is ok button update the
-                                // selected date
-                                firstReminderChip.setText("Date is : " + materialDatePicker.getHeaderText());
-                                // in the above statement, getHeaderText
-                                // is the selected date preview from the
-                                // dialog
-                            }
-                        });
-            }});
+                datePicker1();
+            }
+        });
 
 
         secondReminderChip.setOnClickListener(new View.OnClickListener() {
@@ -250,5 +219,89 @@ public class ReminderPopUp extends AppCompatActivity {
         });
 
 
+
+
+
+    }
+    public void materialDatePicker1() {
+        // now register the text view and the button with
+        // their appropriate IDs
+
+        // now create instance of the material date picker
+        // builder make sure to add the "datePicker" which
+        // is normal material date picker which is the first
+        // type of the date picker in material design date
+        // picker
+        MaterialDatePicker.Builder materialDateBuilder = MaterialDatePicker.Builder.datePicker();
+
+        // now define the properties of the
+        // materialDateBuilder that is title text as SELECT A DATE
+        materialDateBuilder.setTitleText("SELECT A DATE");
+
+        // now create the instance of the material date
+        // picker
+        MaterialDatePicker materialDatePicker = materialDateBuilder.build();
+
+        materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
+
+
+        materialDatePicker.addOnPositiveButtonClickListener(
+                new MaterialPickerOnPositiveButtonClickListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onPositiveButtonClick(Object selection) {
+
+                        // if the user clicks on the positive
+                        // button that is ok button update the
+                        // selected date
+                        ((Chip)findViewById(R.id.button_new_reminder_choose_date_1)).setText("Date is : " + materialDatePicker.getHeaderText());
+                        // in the above statement, getHeaderText
+                        // is the selected date preview from the
+                        // dialog
+                    }
+                });
+    }
+
+    protected void datePicker1 () {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                //String date = getResources().getString(R.string.date_format);
+                //String formatDate = String.format(date, year, month + 1, dayOfMonth);
+                firstReminderDateDay = dayOfMonth;
+                firstReminderDateMonth = month + 1;
+                firstReminderDateYear = year;
+                timePicker1();
+            }
+        }, year, month, dayOfMonth);
+        calendar.add(Calendar.MONTH, 1);
+        long now = System.currentTimeMillis() - 1000;
+        long maxDate = calendar.getTimeInMillis();
+        datePickerDialog.getDatePicker().setMinDate(now);
+        datePickerDialog.getDatePicker().setMaxDate(maxDate); //After one month from now
+        datePickerDialog.show();
+    }
+
+    protected void timePicker1 ( /*final String date*/){
+        final Calendar calendar = Calendar.getInstance();
+        final int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        final int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                //String time = getResources().getString(R.string.time_format);
+                //String formatTime = String.format(time, hourOfDay, minute);
+                //String dateTime = date + "   " + formatTime;
+                firstReminderTimeHr = hourOfDay;
+                firstReminderTimeMin = minute;
+                //firstReminderChip.setText(firstReminderDateDay + "/" + (firstReminderDateMonth) + "/" + firstReminderDateYear + ", " + firstReminderTimeHr + ":" + firstReminderTimeMin);
+            }
+        }, hour + 1, minute, false);
+        timePickerDialog.show();
     }
 }
