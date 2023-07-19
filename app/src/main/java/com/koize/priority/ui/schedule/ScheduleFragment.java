@@ -17,12 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.koize.priority.R;
 import com.koize.priority.ReminderPopUp;
+import com.koize.priority.SchedulePopUp;
 import com.koize.priority.databinding.FragmentScheduleBinding;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItemListener {
@@ -32,6 +34,8 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
     private FragmentScheduleBinding binding;
     private Button buttonnext;
     private Button buttonprev;
+
+    private FloatingActionButton addScheduleButton;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -50,11 +54,21 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         buttonprev.setOnClickListener(buttonprevListener);
         buttonnext.setOnClickListener(buttonnextListener);
 
+        addScheduleButton = root.findViewById(R.id.button_schedule_add);
+        addScheduleButton.setOnClickListener(addScheduleListener);
+
         CalendarAdapter.selectedDate = LocalDate.now();
         setWeekView();
 
         return root;
     }
+
+    View.OnClickListener addScheduleListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            SchedulePopUp schedulePopUp = new SchedulePopUp();
+            schedulePopUp.showPopupWindow(v);        }
+    };
 
 
 
