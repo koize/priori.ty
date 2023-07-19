@@ -104,7 +104,6 @@ public class AccountSettings extends AppCompatActivity {
             } else {
                 List<AuthUI.IdpConfig> providers = Arrays.asList(
                         new AuthUI.IdpConfig.EmailBuilder().build(),
-                        new AuthUI.IdpConfig.GoogleBuilder().build(),
                         new AuthUI.IdpConfig.AnonymousBuilder().build()
                 );
 
@@ -119,6 +118,28 @@ public class AccountSettings extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_OK) {
+                onResume();
+
+
+            } else {
+                Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),"Login failed",Snackbar.LENGTH_SHORT);
+                snackbar.setAction("Retry", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onLoginSignOut.onClick(view);
+                    }
+                });
+                snackbar.show();
+            }
+        }
+    }
 
     View.OnClickListener onDeleteAccount = new View.OnClickListener() {
         @Override
