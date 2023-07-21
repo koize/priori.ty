@@ -98,6 +98,15 @@ public class JournalPopUp {
         }
         //Initialize the elements of our window, install the handler
 
+        EditText journalTitle = popupView.findViewById(R.id.title_new_journal);
+        EditText journalEditor = popupView.findViewById(R.id.journal_editor);
+        Chip journalSaveChip= popupView.findViewById(R.id.button_new_journal_save);
+        journalSaveChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
 
     }
 }

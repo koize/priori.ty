@@ -32,12 +32,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
 
-            <TextView
+            <EditText
                 android:id="@+id/title_new_journal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
+                android:background="@null"
                 android:fontFamily="@font/sf_pro_rounded_bold"
+                android:minHeight="48dp"
                 android:text="New Journal"
                 android:textSize="18dp"
                 app:layout_constraintEnd_toEndOf="parent"
