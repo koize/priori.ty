@@ -28,7 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_focusMode"
         tools:itemCount="6"
-        tools:listitem="@layout/row_journal_main" />
+        tools:listitem="@layout/row_focusmode" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/focusMode_card_menu"
