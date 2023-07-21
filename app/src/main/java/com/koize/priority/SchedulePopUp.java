@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -86,7 +87,7 @@ public class SchedulePopUp {
             }
         }
         //Initialize the elements of our window, install the handler
-        EditText scheduleTitleChip = popupView.findViewById(R.id.title_new_schedule);
+        TextView scheduleTitleChip = popupView.findViewById(R.id.title_new_schedule);
         Chip scheduleActivityChip = popupView.findViewById(R.id.button_new_schedule_chooseActivity);
         Chip scheduleStartTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseStartTime);
         Chip scheduleEndTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseEndTime);
