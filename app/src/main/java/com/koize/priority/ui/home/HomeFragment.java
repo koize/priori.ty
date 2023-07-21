@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
+import com.koize.priority.FocusModeActivity;
 import com.koize.priority.MonthlyPlannerPage;
 import com.koize.priority.R;
 import com.koize.priority.SettingsActivity;
@@ -24,6 +25,7 @@ public class HomeFragment extends Fragment {
     private MaterialCardView monthlyPlannerButton;
     private Chip settingsChip;
     private Chip aboutChip;
+    private Chip focusModeChip;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -39,6 +41,9 @@ public class HomeFragment extends Fragment {
         settingsChip.setOnClickListener(settingsChipListener);
         aboutChip = root.findViewById(R.id.button_home_about);
         aboutChip.setOnClickListener(aboutChipListener);
+        focusModeChip = root.findViewById(R.id.button_home_focus);
+        focusModeChip.setOnClickListener(focusModeChipListener);
+
 
 
         return root;
@@ -69,6 +74,14 @@ public class HomeFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getContext(), MonthlyPlannerPage.class); //TODO change to ABOUT page
+            startActivity(intent);
+        }
+    };
+
+    View.OnClickListener focusModeChipListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getContext(), FocusModeActivity.class);
             startActivity(intent);
         }
     };
