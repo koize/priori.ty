@@ -86,6 +86,52 @@ public class SchedulePopUp {
             }
         }
         //Initialize the elements of our window, install the handler
+        EditText scheduleTitleChip = popupView.findViewById(R.id.title_new_schedule);
+        Chip scheduleActivityChip = popupView.findViewById(R.id.button_new_schedule_chooseActivity);
+        Chip scheduleStartTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseStartTime);
+        Chip scheduleEndTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseEndTime);
+        Chip scheduleCategoryChip = popupView.findViewById(R.id.button_new_schedule_chooseCategory);
+        Chip scheduleDescriptionChip = popupView.findViewById(R.id.button_new_schedule_addDescription);
+        Chip scheduleSaveChip = popupView.findViewById(R.id.button_new_schedule_save);
+
+        scheduleActivityChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleStartTimeChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleEndTimeChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleCategoryChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleDescriptionChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleSaveChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+
+
 
     }
 }
