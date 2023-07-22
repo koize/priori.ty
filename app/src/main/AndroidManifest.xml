@@ -22,12 +22,6 @@
             android:name=".AccountSettings"
             android:exported="false" />
         <activity
-            android:name=".FBauth"
-            android:exported="false" />
-        <activity
-            android:name=".FBauthTest2"
-            android:exported="false" />
-        <activity
             android:name=".ui.reminders.ReminderPopUp"
             android:exported="false" />
         <activity
