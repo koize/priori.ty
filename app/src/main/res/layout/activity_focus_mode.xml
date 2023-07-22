@@ -8,30 +8,31 @@
 
 
     <TextView
-        android:id="@+id/title_journal"
+        android:id="@+id/title_focusMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:fontFamily="@font/sf_pro_rounded_semibold"
-        android:text="Journal"
+        android:text="Focus Mode"
         android:textSize="30dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_journal"
+        android:id="@+id/recycler_focusMode"
         android:layout_width="373dp"
         android:layout_height="0dp"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/journal_card_menu"
+        app:layout_constraintBottom_toTopOf="@+id/focusMode_card_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_journal"
+        app:layout_constraintTop_toBottomOf="@+id/title_focusMode"
         tools:itemCount="6"
-        tools:listitem="@layout/row_journal_main" />
+        tools:listitem="@layout/row_focusmode" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/journal_card_menu"
+        android:id="@+id/focusMode_card_menu"
         android:layout_width="375dp"
         android:layout_height="58dp"
         android:layout_marginBottom="20dp"
@@ -46,7 +47,7 @@
             android:layout_height="match_parent">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/button_journal_add"
+                android:id="@+id/button_focusMode_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"

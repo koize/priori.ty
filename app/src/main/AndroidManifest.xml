@@ -16,6 +16,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".FocusModeActivity"
+            android:exported="false" />
+        <activity
             android:name=".AccountSettings"
             android:exported="false" />
         <activity
@@ -25,7 +28,7 @@
             android:name=".FBauthTest2"
             android:exported="false" />
         <activity
-            android:name=".ui.reminders.ReminderPopUp"
+            android:name=".ReminderPopUp"
             android:exported="false" />
         <activity
             android:name=".SettingsActivity"
