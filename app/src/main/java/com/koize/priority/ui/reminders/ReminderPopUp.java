@@ -1,4 +1,4 @@
-package com.koize.priority;
+package com.koize.priority.ui.reminders;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
@@ -24,6 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.chip.Chip;
+import com.koize.priority.CategoryPopUp;
+import com.koize.priority.R;
 
 public class ReminderPopUp {
     public static final int INPUT_METHOD_NEEDED = 1;
