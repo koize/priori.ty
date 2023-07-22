@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.koize.priority.R;
-import com.koize.priority.ReminderPopUp;
+import com.koize.priority.ui.reminders.ReminderPopUp;
 import com.koize.priority.SchedulePopUp;
 import com.koize.priority.databinding.FragmentScheduleBinding;
 

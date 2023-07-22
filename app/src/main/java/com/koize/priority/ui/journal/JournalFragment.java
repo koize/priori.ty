@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,7 +14,6 @@ import com.koize.priority.databinding.FragmentJournalBinding;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.koize.priority.R;
-import com.koize.priority.ReminderPopUp;
 
 
 public class JournalFragment extends Fragment {
