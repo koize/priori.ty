@@ -28,8 +28,18 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.CategoryPopUp;
 import com.koize.priority.R;
 import com.koize.priority.databinding.FragmentRemindersBinding;
@@ -50,6 +60,9 @@ public class RemindersFragment extends Fragment {
     public int secondReminderDateYear;
     public String firstReminderDate;
     public String secondReminderDate;
+    public long firstReminderDateTime;
+    public long secondReminderDateTime;
+
 
     public static final int INPUT_METHOD_NEEDED = 1;
     EditText reminderTitle;
@@ -59,6 +72,9 @@ public class RemindersFragment extends Fragment {
     Chip reminderLocationChip;
     Chip reminderCategoryChip;
     Chip reminderSaveChip;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    RemindersData remindersData;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -69,6 +85,10 @@ public class RemindersFragment extends Fragment {
         View root = binding.getRoot();
         addReminderButton = root.findViewById(R.id.button_reminder_add);
         addReminderButton.setOnClickListener(addReminderListener);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String name = user.getDisplayName();
+        firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        databaseReference = firebaseDatabase.getReference("users/" + name + "/reminders");
 
         return root;
     }
@@ -258,7 +278,33 @@ public class RemindersFragment extends Fragment {
         reminderSaveChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                remindersData = new RemindersData();
+                remindersData.setReminderTitle(reminderTitle.getText().toString());
+                remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
+                remindersData.setFirstReminderTimeMin(firstReminderTimeMin);
+                remindersData.setSecondReminderTimeHr(secondReminderTimeHr);
+                remindersData.setSecondReminderTimeMin(secondReminderTimeMin);
+                remindersData.setFirstReminderDateTime(firstReminderDateTime);
+                remindersData.setSecondReminderDateTime(secondReminderDateTime);
+                remindersData.setReminderLocationName(reminderLocationText.getText().toString());
+                remindersData.setReminderCategory(reminderCategoryChip.getText().toString());
 
+                databaseReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
+                        Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
+                                .show();
+                        popupWindow.dismiss();
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Snackbar.make(view, "An error occurred", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                });
             }
         });
 
