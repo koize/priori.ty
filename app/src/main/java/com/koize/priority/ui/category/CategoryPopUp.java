@@ -2,6 +2,8 @@ package com.koize.priority.ui.category;
 
 import static android.provider.Settings.Global.getString;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
@@ -84,8 +86,7 @@ public class CategoryPopUp {
             String name = user.getDisplayName();
             firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
             databaseReference = firebaseDatabase.getReference("users/" + name + "/categories");
-        }
-        else{
+        } else {
             Snackbar.make(view, "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
         }
@@ -104,7 +105,7 @@ public class CategoryPopUp {
         String name = firebaseAuth.getCurrentUser().getDisplayName();
         categoryDataArrayList = new ArrayList<>();
         databaseReference = firebaseDatabase.getReference("users/" + name + "/categories");
-        categoryPopUpAdapter = new CategoryPopUpAdapter(categoryDataArrayList, popupView.getContext(), this::onCategoryClick);
+        categoryPopUpAdapter = new CategoryPopUpAdapter(categoryDataArrayList, popupView.getContext(), this::onCategoryClick, this::onCategoryLongClick);
         categoryRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(popupView.getContext()));
         categoryRV.setAdapter(categoryPopUpAdapter);
         getCategories();
@@ -148,8 +149,6 @@ public class CategoryPopUp {
         }
 
 
-
-
         //Initialize the elements of our window, install the handler
 
 
@@ -164,7 +163,7 @@ public class CategoryPopUp {
                                     @Override
                                     public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
                                         color = envelope.getColor();
-                                       // colorChip.setChipBackgroundColor(ColorStateList.valueOf(Color.rgb(envelope.getArgb()[1], envelope.getArgb()[2], envelope.getArgb()[3])));
+                                        // colorChip.setChipBackgroundColor(ColorStateList.valueOf(Color.rgb(envelope.getArgb()[1], envelope.getArgb()[2], envelope.getArgb()[3])));
                                         colorChip.setChipBackgroundColor(ColorStateList.valueOf(color));
                                         addCategoryChip.setVisibility(View.VISIBLE);
                                     }
@@ -192,7 +191,7 @@ public class CategoryPopUp {
                     catTitle.setError("Set title!");
                     catTitle.requestFocus();
                 }
-                if(user != null){
+                if (user != null) {
                     categoryData = new CategoryData();
                     categoryData.setCategoryTitle(categoryName);
                     categoryData.setCategoryColor(color);
@@ -207,8 +206,7 @@ public class CategoryPopUp {
 
                         }
                     });
-                }
-                else{
+                } else {
                     Snackbar.make(view, "Not signed in!", Snackbar.LENGTH_SHORT)
                             .show();
                 }
@@ -219,6 +217,7 @@ public class CategoryPopUp {
         });
 
     }
+
     private void getCategories() {
         categoryDataArrayList.clear();
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -242,5 +241,40 @@ public class CategoryPopUp {
 
     public void onCategoryClick(int position) {
 
-};
     }
+    public boolean onCategoryLongClick(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(categoryRV.getContext());
+
+        // Set the message show for the Alert time
+        builder.setMessage("Delete the following category: " + categoryDataArrayList.get(position).getCategoryTitle() + "? ");
+
+        // Set Alert Title
+        builder.setTitle("Warning!");
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(true);
+
+        // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // When the user click yes button then app will close
+            databaseReference.child(categoryDataArrayList.get(position).getCategoryTitle()).removeValue();
+            Snackbar.make(categoryRV, "Category deleted!", Snackbar.LENGTH_SHORT)
+                    .show();
+            dialog.dismiss();
+        });
+
+        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // If user click no then dialog box is canceled.
+            dialog.cancel();
+        });
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+        // Show the Alert Dialog box
+        alertDialog.show();
+        return false;
+    }
+
+
+}
