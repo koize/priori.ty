@@ -75,6 +75,7 @@ public class RemindersFragment extends Fragment {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     RemindersData remindersData;
+    FirebaseUser user;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -85,11 +86,16 @@ public class RemindersFragment extends Fragment {
         View root = binding.getRoot();
         addReminderButton = root.findViewById(R.id.button_reminder_add);
         addReminderButton.setOnClickListener(addReminderListener);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String name = user.getDisplayName();
-        firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-        databaseReference = firebaseDatabase.getReference("users/" + name + "/reminders");
-
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String name = user.getDisplayName();
+            firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+            databaseReference = firebaseDatabase.getReference("users/" + name + "/reminders");
+        }
+        else{
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
+                    .show();
+        }
         return root;
     }
 
@@ -278,33 +284,40 @@ public class RemindersFragment extends Fragment {
         reminderSaveChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                remindersData = new RemindersData();
-                remindersData.setReminderTitle(reminderTitle.getText().toString());
-                remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
-                remindersData.setFirstReminderTimeMin(firstReminderTimeMin);
-                remindersData.setSecondReminderTimeHr(secondReminderTimeHr);
-                remindersData.setSecondReminderTimeMin(secondReminderTimeMin);
-                remindersData.setFirstReminderDateTime(firstReminderDateTime);
-                remindersData.setSecondReminderDateTime(secondReminderDateTime);
-                remindersData.setReminderLocationName(reminderLocationText.getText().toString());
-                remindersData.setReminderCategory(reminderCategoryChip.getText().toString());
+                if (user != null){
+                    remindersData = new RemindersData();
+                    remindersData.setReminderTitle(reminderTitle.getText().toString());
+                    remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
+                    remindersData.setFirstReminderTimeMin(firstReminderTimeMin);
+                    remindersData.setSecondReminderTimeHr(secondReminderTimeHr);
+                    remindersData.setSecondReminderTimeMin(secondReminderTimeMin);
+                    remindersData.setFirstReminderDateTime(firstReminderDateTime);
+                    remindersData.setSecondReminderDateTime(secondReminderDateTime);
+                    remindersData.setReminderLocationName(reminderLocationText.getText().toString());
+                    remindersData.setReminderCategory(reminderCategoryChip.getText().toString());
 
-                databaseReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
-                        Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
-                                .show();
-                        popupWindow.dismiss();
+                    databaseReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
+                            Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
+                                    .show();
+                            popupWindow.dismiss();
 
-                    }
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Snackbar.make(view, "An error occurred", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Snackbar.make(view, "An error occurred", Snackbar.LENGTH_SHORT)
+                                    .show();
+                        }
+                    });
+                }
+                else{
+                    Snackbar.make(view, "Please sign in to save reminders", Snackbar.LENGTH_SHORT)
+                            .show();
+                }
+
             }
         });
 
