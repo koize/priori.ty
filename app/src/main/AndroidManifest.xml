@@ -19,13 +19,13 @@
             android:name=".FocusModeActivity"
             android:exported="false" />
         <activity
-            android:name=".AccountSettings"
+            android:name=".settings.AccountSettings"
             android:exported="false" />
         <activity
             android:name=".ui.reminders.ReminderPopUp"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
@@ -35,7 +35,7 @@
             android:name=".ShowMap"
             android:exported="false" />
         <activity
-            android:name=".MonthlyPlannerPage"
+            android:name=".ui.monthlyplanner.MonthlyPlannerPage"
             android:exported="false" />
         <activity
             android:name=".AboutPage"
