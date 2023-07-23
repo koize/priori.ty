@@ -33,7 +33,7 @@ public class AccountSettings extends AppCompatActivity {
 
 
     private static final int RC_SIGN_IN = 123;
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseUser user;
     String name;
     String email;
 
@@ -41,22 +41,21 @@ public class AccountSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_settings);
+        refreshAccount();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshAccount();
+    }
+
+    public void refreshAccount() {
+        user = FirebaseAuth.getInstance().getCurrentUser();
         userName = findViewById(R.id.account_settings_username);
         userEmail = findViewById(R.id.account_settings_email);
         if(user != null) {
             name = user.getDisplayName();
-            for (UserInfo profile : user.getProviderData()) {
-                // Id of the provider (ex: google.com)
-                String providerId = profile.getProviderId();
-
-                // UID specific to the provider
-                String uid = profile.getUid();
-
-                // Name, email address, and profile photo Url
-                name = profile.getDisplayName();
-                email = profile.getEmail();
-            }
             userName.setText("Current user: " + name);
             email = user.getEmail();
             userEmail.setText("Email: " + email);
@@ -74,6 +73,7 @@ public class AccountSettings extends AppCompatActivity {
 
         if (user != null) {
             loginSignOutChip.setText("Sign out");
+            deleteAccountChip.setVisibility(View.VISIBLE);
         } else {
             loginSignOutChip.setText("Login");
             deleteAccountChip.setVisibility(View.GONE);
@@ -85,11 +85,31 @@ public class AccountSettings extends AppCompatActivity {
         public void onClick(View v) {
             if (user != null) {
                 FirebaseAuth.getInstance().signOut();
-                finish();
-            } else {
+                Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Signed out", Snackbar.LENGTH_SHORT);
+                snackbar.setAction("Login again", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                                new AuthUI.IdpConfig.EmailBuilder().build(),
+                                new AuthUI.IdpConfig.AnonymousBuilder().build()
+                        );
+
+                        startActivityForResult(
+                                AuthUI.getInstance()
+                                        .createSignInIntentBuilder()
+                                        .setAvailableProviders(providers)
+                                        .setTheme(R.style.AppTheme)
+                                        .build(),
+                                RC_SIGN_IN);
+                    }
+                });
+                snackbar.show();
+                refreshAccount();
+            }
+
+             else {
                 List<AuthUI.IdpConfig> providers = Arrays.asList(
                         new AuthUI.IdpConfig.EmailBuilder().build(),
-                        new AuthUI.IdpConfig.GoogleBuilder().build(),
                         new AuthUI.IdpConfig.AnonymousBuilder().build()
                 );
 
@@ -100,6 +120,7 @@ public class AccountSettings extends AppCompatActivity {
                                 .setTheme(R.style.AppTheme)
                                 .build(),
                         RC_SIGN_IN);
+                refreshAccount();
             }
         }
     };
@@ -125,17 +146,14 @@ public class AccountSettings extends AppCompatActivity {
                 AuthUI.getInstance().delete(getApplicationContext()).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-
-                        Intent main_firebaseUI = new Intent(getApplicationContext(), SettingsActivity.class);
-                        main_firebaseUI.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(main_firebaseUI);
-
+                        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),"Account deleted",Snackbar.LENGTH_SHORT);
+                        refreshAccount();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
 
-                        Snackbar snackbar = Snackbar.make(coordinatorLayout,"Failed to delete account",Snackbar.LENGTH_SHORT);
+                        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),"Failed to delete account",Snackbar.LENGTH_SHORT);
                         snackbar.setAction("Retry", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
