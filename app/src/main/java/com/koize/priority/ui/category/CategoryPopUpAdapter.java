@@ -20,12 +20,14 @@ public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdap
     private ArrayList<CategoryData> categoryDataArrayList;
     private Context context;
     private CategoryClickInterface categoryClickInterface;
+    private CategoryClickInterface1 categoryClickInterface1;
     int lastPos = -1;
 
-    public CategoryPopUpAdapter(ArrayList<CategoryData> categoryDataArrayList, Context context, CategoryClickInterface categoryClickInterface) {
+    public CategoryPopUpAdapter(ArrayList<CategoryData> categoryDataArrayList, Context context, CategoryClickInterface categoryClickInterface, CategoryClickInterface1 categoryClickInterface1) {
         this.categoryDataArrayList = categoryDataArrayList;
         this.context = context;
         this.categoryClickInterface = categoryClickInterface;
+        this.categoryClickInterface1 = categoryClickInterface1;
     }
 
     @NonNull
@@ -45,6 +47,15 @@ public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdap
             public void onClick(View v) {
                 categoryClickInterface.onCategoryClick(position);
             }
+
+        });
+        holder.rowCard.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                categoryClickInterface1.onCategoryLongClick(position);
+                return true;
+            }
+
         });
     }
 
@@ -61,7 +72,7 @@ public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdap
         return categoryDataArrayList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         MaterialCardView rowCard;
         TextView rowCardTitle;
         public ViewHolder(@NonNull View itemView) {
@@ -70,10 +81,18 @@ public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdap
             rowCardTitle = itemView.findViewById(R.id.text_category_list);
 
         }
+        @Override
+        public boolean onLongClick(View v) {
+            return false;
+        }
     }
 
     public interface CategoryClickInterface {
         void onCategoryClick(int position);
+    }
+
+    public interface CategoryClickInterface1 {
+        boolean onCategoryLongClick(int position);
     }
 
 }
