@@ -1,4 +1,4 @@
-package com.koize.priority;
+package com.koize.priority.ui.monthlyplanner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.koize.priority.R;
 
 public class MonthlyPlannerPage extends AppCompatActivity {
     private FloatingActionButton addEventButton;

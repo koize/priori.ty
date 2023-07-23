@@ -1,4 +1,4 @@
-package com.koize.priority;
+package com.koize.priority.ui.monthlyplanner;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -7,21 +7,24 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.chip.Chip;
+import com.koize.priority.R;
+import com.koize.priority.ui.category.CategoryPopUp;
 
-public class CategoryPopUp {
+public class MonthlyPlannerPopUp {
     public static final int INPUT_METHOD_NEEDED = 1;
     public void showPopupWindow(final View view) {
 
         ConstraintLayout reminderView;
         //Create a View object yourself through inflater
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_category_add, null);
+        View popupView = inflater.inflate(R.layout.popup_events_add, null);
 
         //Specify the length and width through constants
 
@@ -86,7 +89,59 @@ public class CategoryPopUp {
         }
         //Initialize the elements of our window, install the handler
 
+        EditText eventTitle = popupView.findViewById(R.id.new_event_title);
+        Chip dateChip = popupView.findViewById(R.id.button_new_event_choose_date_);
+        CheckBox allDay = popupView.findViewById(R.id.checkbox_events_allday);
+        Chip reminderDate = popupView.findViewById(R.id.button_new_event_choose_date);
+        EditText eventLocationText = popupView.findViewById(R.id.new_event_location_header);
+        Chip eventLocationChip = popupView.findViewById(R.id.button_new_event_get_location);
+        Chip eventCategoryChip = popupView.findViewById(R.id.button_new_event_get_category);
+        Chip eventDescImageChip = popupView.findViewById(R.id.button_new_event_get_image);
+        EditText eventDescText = popupView.findViewById(R.id.new_event_desc);
+        Chip eventSaveChip = popupView.findViewById(R.id.button_new_event_save);
+        dateChip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
+        allDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        reminderDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        eventLocationChip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        eventCategoryChip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CategoryPopUp categoryPopUp = new CategoryPopUp();
+                categoryPopUp.showPopupWindow(v);
+            }
+        });
+        eventDescImageChip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        eventSaveChip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
 
     }

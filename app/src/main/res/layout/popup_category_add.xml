@@ -3,7 +3,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="375dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:cardCornerRadius="30dp"
     app:cardElevation="1dp">
@@ -18,7 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             android:elevation="5dp"
-            android:text="New category"
+            android:text="Add new category"
+            android:visibility="invisible"
             app:chipIcon="@drawable/baseline_add_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,22 +40,71 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_row_category_list"
             android:layout_width="315dp"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toTopOf="@+id/button_new_reminder_save"
+            android:layout_height="300dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            app:layout_constraintBottom_toTopOf="@+id/filledTextField"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title_new_reminders"
             tools:itemCount="6"
-            tools:listitem="@layout/row_category_list" />
+            tools:listitem="@layout/row_category_list">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="315dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toTopOf="@+id/filledTextField"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recycler_row_category_list" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/filledTextField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:hint="New category"
+            app:layout_constraintBottom_toTopOf="@+id/divider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider4">
+
+
+            <!--this is the actual edit text which takes the input-->
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/new_category_title"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <View
             android:id="@+id/divider"
             android:layout_width="315dp"
             android:layout_height="1dp"
+            android:layout_marginTop="5dp"
             android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toTopOf="@+id/button_new_reminder_save"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/button_new_reminder_save" />
+            app:layout_constraintTop_toBottomOf="@+id/filledTextField" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/category_chose_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:text="Choose color"
+            app:chipIcon="@drawable/baseline_color_lens_24"
+            app:layout_constraintBottom_toTopOf="@+id/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider4" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
