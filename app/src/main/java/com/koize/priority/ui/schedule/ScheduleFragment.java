@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.koize.priority.R;
-import com.koize.priority.ui.reminders.ReminderPopUp;
-import com.koize.priority.SchedulePopUp;
 import com.koize.priority.databinding.FragmentScheduleBinding;
 
 import java.time.LocalDate;
@@ -105,14 +103,6 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
             nextWeekAction();
         }
     };
-
-    View.OnClickListener addReminderListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            ReminderPopUp reminderPopUp = new ReminderPopUp();
-            reminderPopUp.showPopupWindow(v);        }
-    };
-
 
     @Override
     public void onItemClick(int position, LocalDate date)

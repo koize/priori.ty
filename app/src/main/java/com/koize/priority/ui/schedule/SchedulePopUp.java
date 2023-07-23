@@ -1,39 +1,30 @@
-package com.koize.priority;
-
-import static androidx.core.content.ContextCompat.getSystemService;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
+package com.koize.priority.ui.schedule;
 
 import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.chip.Chip;
+import com.koize.priority.R;
 
-public class JournalPopUp {
+public class SchedulePopUp {
     public static final int INPUT_METHOD_NEEDED = 1;
     public void showPopupWindow(final View view) {
 
         ConstraintLayout reminderView;
         //Create a View object yourself through inflater
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_journal_add, null);
-        reminderView = popupView.findViewById(R.id.journalPopUpLayout);
+        View popupView = inflater.inflate(R.layout.popup_schedule_add, null);
+        reminderView = popupView.findViewById(R.id.schedulePopUpLayout);
 
         //Specify the length and width through constants
 
@@ -97,16 +88,52 @@ public class JournalPopUp {
             }
         }
         //Initialize the elements of our window, install the handler
+        TextView scheduleTitleChip = popupView.findViewById(R.id.title_new_schedule);
+        Chip scheduleActivityChip = popupView.findViewById(R.id.button_new_schedule_chooseActivity);
+        Chip scheduleStartTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseStartTime);
+        Chip scheduleEndTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseEndTime);
+        Chip scheduleCategoryChip = popupView.findViewById(R.id.button_new_schedule_chooseCategory);
+        Chip scheduleDescriptionChip = popupView.findViewById(R.id.button_new_schedule_addDescription);
+        Chip scheduleSaveChip = popupView.findViewById(R.id.button_new_schedule_save);
 
-        EditText journalTitle = popupView.findViewById(R.id.title_new_journal);
-        EditText journalEditor = popupView.findViewById(R.id.journal_editor);
-        Chip journalSaveChip= popupView.findViewById(R.id.button_new_journal_save);
-        journalSaveChip.setOnClickListener(new View.OnClickListener(){
+        scheduleActivityChip.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
 
             }
         });
+        scheduleStartTimeChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleEndTimeChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleCategoryChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleDescriptionChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+        scheduleSaveChip.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+            }
+        });
+
+
 
     }
 }
