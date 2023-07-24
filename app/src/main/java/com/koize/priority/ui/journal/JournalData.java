@@ -3,15 +3,16 @@ package com.koize.priority.ui.journal;
 public class JournalData {
     private String journalTitle;
     private String journalEditor;
+    private String journalMood;
 
     public JournalData() {
         // Default constructor required for calls to DataSnapshot.getValue(RemindersData.class)
     }
 
-    public JournalData(String reminderTitle, int firstReminderTimeHr, int firstReminderTimeMin, int secondReminderTimeHr, int secondReminderTimeMin, int firstReminderDateTime, int secondReminderDateTime, double reminderLatitude, double reminderLongitude, String reminderLocationName, String reminderCategory) {
-        this.journalTitle = journalEditor;
+    public JournalData(String journalTitle,String journalEditor,String journalMood) {
+        this.journalTitle = journalTitle;
         this.journalEditor = journalEditor;
-
+        this.journalMood = journalMood;
     }
 
     public String setJournalTitle(String journalTitle) {
@@ -24,6 +25,11 @@ public class JournalData {
         return journalEditor;
     }
 
+    public String setJournalMood(String journalMood) {
+        this.journalMood = journalMood;
+        return journalMood;
+    }
+
     public String getJournalTitle() {
         return journalTitle;
     }
@@ -32,6 +38,8 @@ public class JournalData {
         return journalEditor;
     }
 
-
+    public String getJournalMood() {
+        return journalMood;
+    }
 
 }
