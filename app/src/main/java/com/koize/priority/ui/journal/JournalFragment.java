@@ -1,6 +1,5 @@
 package com.koize.priority.ui.journal;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,10 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,8 +33,8 @@ import com.koize.priority.databinding.FragmentJournalBinding;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.koize.priority.R;
-import com.koize.priority.ui.category.CategoryPopUp;
-import com.koize.priority.ui.reminders.RemindersData;
+
+import java.util.ArrayList;
 
 
 public class JournalFragment extends Fragment {
@@ -43,6 +42,7 @@ public class JournalFragment extends Fragment {
     private FragmentJournalBinding binding;
     private FloatingActionButton addJournalButton;
     public static final int INPUT_METHOD_NEEDED = 1;
+
     EditText journalTitle;
     EditText journalEditor;
     Chip journalSaveChip;
@@ -51,6 +51,11 @@ public class JournalFragment extends Fragment {
     JournalData journalData;
     FirebaseUser user;
     RadioGroup journalMood;
+    private RecyclerView journalRV;
+    private JournalAdapter JournalAdapter;
+    private FirebaseAuth firebaseAuth;
+    private ArrayList<JournalData> journalDataArrayList;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -74,7 +79,44 @@ public class JournalFragment extends Fragment {
                     .show();
         }
 
+        journalRV = root.findViewById(R.id.recycler_journal);
+        journalDataArrayList = new ArrayList<>();
+
+        firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+        firebaseAuth = FirebaseAuth.getInstance();
+        String name = firebaseAuth.getCurrentUser().getDisplayName();
+        databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
+
+        JournalAdapter = new JournalAdapter(journalDataArrayList, getContext(), this::onJournalClick);
+        journalRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
+        journalRV.setAdapter(JournalAdapter);
+        getJournal();
+
         return root;
+    }
+
+    private void getJournal() {
+        journalDataArrayList.clear();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                journalDataArrayList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    JournalData journalData = dataSnapshot.getValue(JournalData.class);
+                    journalDataArrayList.add(journalData);
+                }
+                JournalAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void onJournalClick(int i) {
+
     }
 
     @Override
@@ -214,6 +256,5 @@ public class JournalFragment extends Fragment {
 
         }
     };
-
 
 }
