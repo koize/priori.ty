@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,9 +13,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.koize.priority.FocusModeActivity;
-import com.koize.priority.MonthlyPlannerPage;
+import com.koize.priority.ui.monthlyplanner.MonthlyPlannerPage;
 import com.koize.priority.R;
-import com.koize.priority.SettingsActivity;
+import com.koize.priority.settings.SettingsActivity;
 import com.koize.priority.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
