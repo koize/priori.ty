@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
@@ -39,6 +40,8 @@ import com.koize.priority.ui.category.CategoryPopUp;
 import com.koize.priority.R;
 import com.koize.priority.databinding.FragmentRemindersBinding;
 
+import java.util.ArrayList;
+
 public class RemindersFragment extends Fragment implements CategoryPopUp.CategoryCallBack {
 
     private FragmentRemindersBinding binding;
@@ -58,6 +61,13 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     public long firstReminderDateTime;
     public long secondReminderDateTime;
     public CategoryData categoryData;
+    private RecyclerView reminderMorningRV;
+    private RecyclerView reminderAfternoonRV;
+    private RecyclerView reminderEveningRV;
+    private RecyclerView reminderNightRV;
+    private RemindersAdapter remindersAdapter;
+    private ArrayList<RemindersData> remindersDataArrayList;
+
 
 
     public static final int INPUT_METHOD_NEEDED = 1;
@@ -102,6 +112,16 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
         }
+
+        reminderMorningRV = root.findViewById(R.id.recycler_reminder_morning);
+        reminderAfternoonRV = root.findViewById(R.id.recycler_reminder_afternoon);
+        reminderEveningRV = root.findViewById(R.id.recycler_reminder_evening);
+        reminderNightRV = root.findViewById(R.id.recycler_reminder_night);
+        remindersDataArrayList = new ArrayList<>();
+        remindersAdapter = new RemindersAdapter(remindersDataArrayList, getContext(), this::onRemindersClick, this::onRemindersCheckBoxDelete);
+        reminderMorningRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
+        reminderMorningRV.setAdapter(remindersAdapter);
+
         return root;
     }
 

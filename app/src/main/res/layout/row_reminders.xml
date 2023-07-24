@@ -24,20 +24,20 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/row_reminders_category"
-        layout="@layout/row_category"
+        android:id="@+id/row_reminders_category_chip"
+        layout="@layout/row_category_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/check_row_reminders"
         app:layout_constraintTop_toBottomOf="@+id/row_reminders_title" />
 
     <include
-        android:id="@+id/row_reminders_location"
-        layout="@layout/row_location"
+        android:id="@+id/row_reminders_location_chip"
+        layout="@layout/row_location_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        app:layout_constraintStart_toEndOf="@+id/row_reminders_category"
+        app:layout_constraintStart_toEndOf="@+id/row_reminders_category_chip"
         app:layout_constraintTop_toBottomOf="@+id/row_reminders_title" />
 
     <View
@@ -51,7 +51,6 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/row_category_list_card"
         android:layout_width="80dp"
         android:layout_height="40dp"
         android:layout_marginEnd="8dp"
