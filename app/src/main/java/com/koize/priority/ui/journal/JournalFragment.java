@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -49,6 +50,7 @@ public class JournalFragment extends Fragment {
     DatabaseReference databaseReference;
     JournalData journalData;
     FirebaseUser user;
+    RadioGroup journalMood;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -112,6 +114,7 @@ public class JournalFragment extends Fragment {
             journalTitle = popupView.findViewById(R.id.title_new_journal);
             journalEditor = popupView.findViewById(R.id.journal_editor);
             journalSaveChip = popupView.findViewById(R.id.button_new_journal_save);
+            journalMood = popupView.findViewById(R.id.journalMood);
 
             popupWindow.setTouchInterceptor(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
@@ -170,6 +173,20 @@ public class JournalFragment extends Fragment {
                         journalData = new JournalData();
                         journalData.setJournalTitle(journalTitle.getText().toString());
                         journalData.setJournalEditor(journalEditor.getText().toString());
+
+                        String mood = "";
+                        if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood1){
+                            mood = "mood1";
+                        }else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood2){
+                            mood = "mood2";
+                        }else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood3){
+                            mood = "mood3";
+                        } else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood4){
+                            mood = "mood4";
+                        } else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood5){
+                            mood = "mood5";
+                        }
+                        journalData.setJournalMood(mood);
                         databaseReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {

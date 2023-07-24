@@ -87,11 +87,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/journal_editor" />
 
             <RadioGroup
+                android:id="@+id/journalMood"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="15dp"
+                android:checkedButton="@id/radio_mood3"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toTopOf="@+id/button_new_journal_save"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -99,34 +101,34 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView2">
 
                 <RadioButton
-                    android:id="@+id/radioButton2"
+                    android:id="@+id/radio_mood1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:button="@drawable/radio_journal_face1" />
 
                 <RadioButton
-                    android:id="@+id/radioButton4"
+                    android:id="@+id/radio_mood2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:button="@drawable/radio_journal_face2" />
 
                 <RadioButton
-                    android:id="@+id/radioButton3"
+                    android:id="@+id/radio_mood3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:button="@drawable/radio_journal_face3" />
 
                 <RadioButton
-                    android:id="@+id/radioButton5"
+                    android:id="@+id/radio_mood4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:button="@drawable/radio_journal_face4" />
 
                 <RadioButton
-                    android:id="@+id/radioButton1"
+                    android:id="@+id/radio_mood5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
