@@ -14,4 +14,24 @@ public class JournalData {
 
     }
 
+    public String setJournalTitle(String journalTitle) {
+        this.journalTitle = journalTitle;
+        return journalTitle;
+    }
+
+    public String setJournalEditor(String journalEditor) {
+        this.journalEditor = journalEditor;
+        return journalEditor;
+    }
+
+    public String getJournalTitle() {
+        return journalTitle;
+    }
+
+    public String getJournalEditor() {
+        return journalEditor;
+    }
+
+
+
 }

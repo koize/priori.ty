@@ -22,6 +22,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -60,10 +61,11 @@ public class JournalFragment extends Fragment {
         addJournalButton = root.findViewById(R.id.button_journal_add);
         addJournalButton.setOnClickListener(addJournalListener);
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String name = user.getDisplayName();
             firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            databaseReference = firebaseDatabase.getReference("users/" + name + "/reminders");
+            databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
         }
         else{
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
@@ -161,6 +163,37 @@ public class JournalFragment extends Fragment {
             }
             //Initialize the elements of our window, install the handler
 
+            journalSaveChip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (user != null){
+                        journalData = new JournalData();
+                        journalData.setJournalTitle(journalTitle.getText().toString());
+                        journalData.setJournalEditor(journalEditor.getText().toString());
+                        databaseReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                databaseReference.child(journalData.getJournalTitle()).setValue(journalData);
+                                Snackbar.make(view, "Journal Saved", Snackbar.LENGTH_SHORT)
+                                        .show();
+                                popupWindow.dismiss();
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Snackbar.make(view, "An error occurred", Snackbar.LENGTH_SHORT)
+                                        .show();
+                            }
+                        });
+                    }
+                    else{
+                        Snackbar.make(view, "Please sign in to save journal", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+
+                }
+            });
 
         }
     };
