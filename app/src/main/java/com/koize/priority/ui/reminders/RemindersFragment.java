@@ -2,6 +2,7 @@ package com.koize.priority.ui.reminders;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -18,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -32,11 +34,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 import com.koize.priority.R;
 import com.koize.priority.databinding.FragmentRemindersBinding;
 
-public class RemindersFragment extends Fragment {
+public class RemindersFragment extends Fragment implements CategoryPopUp.CategoryCallBack {
 
     private FragmentRemindersBinding binding;
     private FloatingActionButton addReminderButton;
@@ -54,6 +57,7 @@ public class RemindersFragment extends Fragment {
     public String secondReminderDate;
     public long firstReminderDateTime;
     public long secondReminderDateTime;
+    public CategoryData categoryData;
 
 
     public static final int INPUT_METHOD_NEEDED = 1;
@@ -64,6 +68,7 @@ public class RemindersFragment extends Fragment {
     Chip reminderLocationChip;
     Chip reminderCategoryChip;
     Chip reminderSaveChip;
+    Chip categoryCard;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     RemindersData remindersData;
@@ -83,8 +88,7 @@ public class RemindersFragment extends Fragment {
             String name = user.getDisplayName();
             firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
             databaseReference = firebaseDatabase.getReference("users/" + name + "/reminders");
-        }
-        else{
+        } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
         }
@@ -97,12 +101,14 @@ public class RemindersFragment extends Fragment {
         binding = null;
     }
 
+
     View.OnClickListener addReminderListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             //ReminderPopUp reminderPopUp = new ReminderPopUp();
             //reminderPopUp.showPopupWindow(v);
-            showPopupWindow(v);}
+            showPopupWindow(v);
+        }
     };
 
     public void showPopupWindow(final View view) {
@@ -131,6 +137,7 @@ public class RemindersFragment extends Fragment {
         reminderLocationText = popupView.findViewById(R.id.new_reminder_location_text);
         reminderLocationChip = popupView.findViewById(R.id.button_new_reminder_getLocation);
         reminderCategoryChip = popupView.findViewById(R.id.button_new_reminder_choose_category);
+        categoryCard = popupView.findViewById(R.id.new_reminder_category_card);
         reminderSaveChip = popupView.findViewById(R.id.button_new_reminder_save);
 
         popupWindow.setTouchInterceptor(new View.OnTouchListener() {
@@ -258,7 +265,7 @@ public class RemindersFragment extends Fragment {
 
                             }
                         });
-                }
+            }
         });
         reminderLocationChip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -269,14 +276,14 @@ public class RemindersFragment extends Fragment {
         reminderCategoryChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CategoryPopUp categoryPopUp = new CategoryPopUp();
+                CategoryPopUp categoryPopUp = new CategoryPopUp(RemindersFragment.this);
                 categoryPopUp.showPopupWindow(v);
             }
         });
         reminderSaveChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (user != null){
+                if (user != null) {
                     remindersData = new RemindersData();
                     remindersData.setReminderTitle(reminderTitle.getText().toString());
                     remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
@@ -286,7 +293,7 @@ public class RemindersFragment extends Fragment {
                     remindersData.setFirstReminderDateTime(firstReminderDateTime);
                     remindersData.setSecondReminderDateTime(secondReminderDateTime);
                     remindersData.setReminderLocationName(reminderLocationText.getText().toString());
-                    remindersData.setReminderCategory(reminderCategoryChip.getText().toString());
+                    remindersData.setReminderCategory(categoryData);
 
                     databaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -304,8 +311,7 @@ public class RemindersFragment extends Fragment {
                                     .show();
                         }
                     });
-                }
-                else{
+                } else {
                     Snackbar.make(view, "Please sign in to save reminders", Snackbar.LENGTH_SHORT)
                             .show();
                 }
@@ -314,10 +320,8 @@ public class RemindersFragment extends Fragment {
         });
 
 
-
-
-
     }
+
     public void mTimePicker1() {
         MaterialTimePicker.Builder materialTimeBuilder = new MaterialTimePicker.Builder();
         materialTimeBuilder.setTitleText("1st Reminder Time").setTimeFormat(TimeFormat.CLOCK_24H);
@@ -335,6 +339,7 @@ public class RemindersFragment extends Fragment {
         );
         materialTimePicker.show(getParentFragmentManager(), "MATERIAL_TIME_PICKER");
     }
+
     public void mTimePicker2() {
         MaterialTimePicker.Builder materialTimeBuilder = new MaterialTimePicker.Builder();
         materialTimeBuilder.setTitleText("2nd Reminder Time").setTimeFormat(TimeFormat.CLOCK_24H);
@@ -353,7 +358,15 @@ public class RemindersFragment extends Fragment {
         materialTimePicker.show(getParentFragmentManager(), "MATERIAL_TIME_PICKER");
     }
 
+    @Override
+    public void sendCategory(CategoryData categoryData) {
+        categoryCard.setText(categoryData.getCategoryTitle());
+        categoryCard.setChipBackgroundColor(ColorStateList.valueOf(categoryData.getCategoryColor()));
+        categoryCard.setVisibility(View.VISIBLE);
+        this.categoryData = categoryData;
+
     }
+}
 
 
 

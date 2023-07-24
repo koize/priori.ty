@@ -126,8 +126,8 @@ public class MonthlyPlannerPopUp {
         eventCategoryChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CategoryPopUp categoryPopUp = new CategoryPopUp();
-                categoryPopUp.showPopupWindow(v);
+                //CategoryPopUp categoryPopUp = new CategoryPopUp();
+                //categoryPopUp.showPopupWindow(v);
             }
         });
         eventDescImageChip.setOnClickListener(new View.OnClickListener() {

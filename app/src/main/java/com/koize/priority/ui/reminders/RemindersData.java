@@ -1,5 +1,7 @@
 package com.koize.priority.ui.reminders;
 
+import com.koize.priority.ui.category.CategoryData;
+
 public class RemindersData {
     private String reminderTitle;
     private int firstReminderTimeHr;
@@ -11,13 +13,13 @@ public class RemindersData {
     private double reminderLatitude;
     private double reminderLongitude;
     private String reminderLocationName;
-    private String reminderCategory;
+    private CategoryData reminderCategory;
 
     public RemindersData() {
         // Default constructor required for calls to DataSnapshot.getValue(RemindersData.class)
     }
 
-    public RemindersData(String reminderTitle, int firstReminderTimeHr, int firstReminderTimeMin, int secondReminderTimeHr, int secondReminderTimeMin, int firstReminderDateTime, int secondReminderDateTime, double reminderLatitude, double reminderLongitude, String reminderLocationName, String reminderCategory) {
+    public RemindersData(String reminderTitle, int firstReminderTimeHr, int firstReminderTimeMin, int secondReminderTimeHr, int secondReminderTimeMin, int firstReminderDateTime, int secondReminderDateTime, double reminderLatitude, double reminderLongitude, String reminderLocationName, CategoryData reminderCategory) {
         this.reminderTitle = reminderTitle;
         this.firstReminderTimeHr = firstReminderTimeHr;
         this.firstReminderTimeMin = firstReminderTimeMin;
@@ -81,7 +83,7 @@ public class RemindersData {
         return reminderLocationName;
     }
 
-    public String setReminderCategory(String reminderCategory) {
+    public CategoryData setReminderCategory(CategoryData reminderCategory) {
         this.reminderCategory = reminderCategory;
         return reminderCategory;
     }
@@ -126,7 +128,7 @@ public class RemindersData {
         return reminderLocationName;
     }
 
-    public String getReminderCategory() {
+    public CategoryData getReminderCategory() {
         return reminderCategory;
     }
 
