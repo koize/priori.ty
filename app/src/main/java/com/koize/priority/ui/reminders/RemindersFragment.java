@@ -86,8 +86,18 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String name = user.getDisplayName();
-            firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            databaseReference = firebaseDatabase.getReference("users/" + name + "/reminders");
+            if ((name != null) && name!="") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "/reminders");
+            }
+            else if (name=="") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/reminders");
+            }
+            else {
+                throw new IllegalStateException("Unexpected value: " + name);
+            }
+
         } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();

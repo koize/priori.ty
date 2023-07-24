@@ -53,11 +53,19 @@ public class AccountSettings extends AppCompatActivity {
         userEmail = findViewById(R.id.account_settings_email);
         if(user != null) {
             name = user.getDisplayName();
+            if (name == null) {
+                name = "Guest";
+            }
             userName.setText("Current user: " + name);
             email = user.getEmail();
-            userEmail.setText("Email: " + email);
+            if (email == null) {
+                userEmail.setText("");
+            } else {
+                userEmail.setText("Email: " + email);
+            }
 
-        } else {
+        }
+        else {
             userName.setText("Current user: Not logged in");
             userEmail.setText("");
         }

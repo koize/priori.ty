@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -12,11 +13,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.koize.priority.FocusModeActivity;
 import com.koize.priority.ui.monthlyplanner.MonthlyPlannerPage;
 import com.koize.priority.R;
 import com.koize.priority.settings.SettingsActivity;
 import com.koize.priority.databinding.FragmentHomeBinding;
+
+import java.util.Calendar;
 
 public class HomeFragment extends Fragment {
 
@@ -25,6 +30,10 @@ public class HomeFragment extends Fragment {
     private Chip settingsChip;
     private Chip aboutChip;
     private Chip focusModeChip;
+    private TextView greetingText;
+    FirebaseUser user;
+    String name;
+    String partOfDay;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -34,6 +43,12 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            name = user.getDisplayName();
+        }
+
+        greetingText = root.findViewById(R.id.title_home_greeting);
         monthlyPlannerButton = root.findViewById(R.id.button_home_open_montly_planner);
         monthlyPlannerButton.setOnClickListener(monthlyPlannerButtonListener);
         settingsChip = root.findViewById(R.id.button_home_settings);
@@ -43,7 +58,26 @@ public class HomeFragment extends Fragment {
         focusModeChip = root.findViewById(R.id.button_home_focus);
         focusModeChip.setOnClickListener(focusModeChipListener);
 
+        Calendar c = Calendar.getInstance();
+        int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
+        if(timeOfDay >= 0 && timeOfDay < 12){
+            partOfDay = "morning";
+        }else if(timeOfDay >= 12 && timeOfDay < 16){
+            partOfDay = "afternoon";
+        }else if(timeOfDay >= 16 && timeOfDay < 21){
+            partOfDay = "evening";
+        }else if(timeOfDay >= 21 && timeOfDay < 24){
+            partOfDay = "night";
+        }else{
+            partOfDay = "day";
+        }
 
+        if ((name != null) && (name!="")) {
+            greetingText.setText("Good " + partOfDay + ", "+name+"!");
+        }
+        else {
+            greetingText.setText("Good " + partOfDay + ", " + "Peasant" + "!");
+        }
 
         return root;
     }
