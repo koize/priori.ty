@@ -71,9 +71,18 @@ public class JournalFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String name = user.getDisplayName();
-            firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
-        }
+            if ((name != null) && name != "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
+            } else if (name == "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/journal");
+            } else {
+                throw new IllegalStateException("Unexpected value: " + name);
+            }
+
+
+    }
         else{
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
@@ -82,10 +91,8 @@ public class JournalFragment extends Fragment {
         journalRV = root.findViewById(R.id.recycler_journal);
         journalDataArrayList = new ArrayList<>();
 
-        firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
         firebaseAuth = FirebaseAuth.getInstance();
-        String name = firebaseAuth.getCurrentUser().getDisplayName();
-        databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
+
 
         JournalAdapter = new JournalAdapter(journalDataArrayList, getContext(), this::onJournalClick);
         journalRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));

@@ -51,7 +51,7 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return 0;
+        return journalDataArrayList.size();
     }
 
     public interface JournalListener {
