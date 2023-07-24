@@ -1,4 +1,4 @@
-package com.koize.priority;
+package com.koize.priority.ui.schedule;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.material.chip.Chip;
+import com.koize.priority.R;
 
 public class SchedulePopUp {
     public static final int INPUT_METHOD_NEEDED = 1;

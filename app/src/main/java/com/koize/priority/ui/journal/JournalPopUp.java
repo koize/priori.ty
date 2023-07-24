@@ -1,4 +1,4 @@
-package com.koize.priority;
+package com.koize.priority.ui.journal;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.chip.Chip;
+import com.koize.priority.R;
 
 public class JournalPopUp {
     public static final int INPUT_METHOD_NEEDED = 1;
@@ -100,7 +101,7 @@ public class JournalPopUp {
 
         EditText journalTitle = popupView.findViewById(R.id.title_new_journal);
         EditText journalEditor = popupView.findViewById(R.id.journal_editor);
-        Chip journalSaveChip= popupView.findViewById(R.id.button_new_journal_save);
+        Chip journalSaveChip = popupView.findViewById(R.id.button_new_journal_save);
         journalSaveChip.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
