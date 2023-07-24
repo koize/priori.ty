@@ -1,6 +1,5 @@
 package com.koize.priority.ui.journal;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -12,15 +11,16 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,8 +33,8 @@ import com.koize.priority.databinding.FragmentJournalBinding;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.koize.priority.R;
-import com.koize.priority.ui.category.CategoryPopUp;
-import com.koize.priority.ui.reminders.RemindersData;
+
+import java.util.ArrayList;
 
 
 public class JournalFragment extends Fragment {
@@ -42,6 +42,7 @@ public class JournalFragment extends Fragment {
     private FragmentJournalBinding binding;
     private FloatingActionButton addJournalButton;
     public static final int INPUT_METHOD_NEEDED = 1;
+
     EditText journalTitle;
     EditText journalEditor;
     Chip journalSaveChip;
@@ -49,6 +50,12 @@ public class JournalFragment extends Fragment {
     DatabaseReference databaseReference;
     JournalData journalData;
     FirebaseUser user;
+    RadioGroup journalMood;
+    private RecyclerView journalRV;
+    private JournalAdapter JournalAdapter;
+    private FirebaseAuth firebaseAuth;
+    private ArrayList<JournalData> journalDataArrayList;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -64,15 +71,59 @@ public class JournalFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String name = user.getDisplayName();
-            firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
-        }
+            if ((name != null) && name != "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
+            } else if (name == "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/journal");
+            } else {
+                throw new IllegalStateException("Unexpected value: " + name);
+            }
+
+
+    }
         else{
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
         }
 
+        journalRV = root.findViewById(R.id.recycler_journal);
+        journalDataArrayList = new ArrayList<>();
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+
+        JournalAdapter = new JournalAdapter(journalDataArrayList, getContext(), this::onJournalClick);
+        journalRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
+        journalRV.setAdapter(JournalAdapter);
+        getJournal();
+
         return root;
+    }
+
+    private void getJournal() {
+        journalDataArrayList.clear();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                journalDataArrayList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    JournalData journalData = dataSnapshot.getValue(JournalData.class);
+                    journalDataArrayList.add(journalData);
+                }
+                JournalAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void onJournalClick(int i) {
+
     }
 
     @Override
@@ -112,6 +163,7 @@ public class JournalFragment extends Fragment {
             journalTitle = popupView.findViewById(R.id.title_new_journal);
             journalEditor = popupView.findViewById(R.id.journal_editor);
             journalSaveChip = popupView.findViewById(R.id.button_new_journal_save);
+            journalMood = popupView.findViewById(R.id.journalMood);
 
             popupWindow.setTouchInterceptor(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
@@ -170,6 +222,20 @@ public class JournalFragment extends Fragment {
                         journalData = new JournalData();
                         journalData.setJournalTitle(journalTitle.getText().toString());
                         journalData.setJournalEditor(journalEditor.getText().toString());
+
+                        String mood = "";
+                        if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood1){
+                            mood = "mood1";
+                        }else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood2){
+                            mood = "mood2";
+                        }else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood3){
+                            mood = "mood3";
+                        } else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood4){
+                            mood = "mood4";
+                        } else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood5){
+                            mood = "mood5";
+                        }
+                        journalData.setJournalMood(mood);
                         databaseReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -197,6 +263,5 @@ public class JournalFragment extends Fragment {
 
         }
     };
-
 
 }
