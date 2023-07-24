@@ -5,6 +5,7 @@ import static android.provider.Settings.Global.getString;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -46,6 +47,7 @@ public class CategoryPopUp {
     Chip colorChip;
     public static final int INPUT_METHOD_NEEDED = 1;
     ColorEnvelope colorEnvelope;
+    PopupWindow popupWindow;
     int color;
     Chip addCategoryChip;
     FirebaseDatabase firebaseDatabase;
@@ -56,6 +58,14 @@ public class CategoryPopUp {
     private FirebaseAuth firebaseAuth;
     private CategoryPopUpAdapter categoryPopUpAdapter;
     private ArrayList<CategoryData> categoryDataArrayList;
+    public interface CategoryCallBack {
+        void sendCategory(CategoryData categoryData);
+    }
+    private CategoryCallBack categoryCallBack;
+
+    public CategoryPopUp(CategoryCallBack categoryCallBack) {
+        this.categoryCallBack = categoryCallBack;
+    }
 
     public void showPopupWindow(final View view) {
 
@@ -63,6 +73,7 @@ public class CategoryPopUp {
         //Create a View object yourself through inflater
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_category_add, null);
+
 
         colorChip = popupView.findViewById(R.id.category_chose_color);
         addCategoryChip = popupView.findViewById(R.id.button_new_reminder_save);
@@ -76,7 +87,7 @@ public class CategoryPopUp {
         boolean focusable = true;
 
         //Create a window with our parameters
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+        popupWindow = new PopupWindow(popupView, width, height, focusable);
         // Closes the popup window when touch outside
         //Handler for clicking on the inactive zone of the window
 
@@ -218,6 +229,8 @@ public class CategoryPopUp {
 
     }
 
+
+
     private void getCategories() {
         categoryDataArrayList.clear();
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -239,7 +252,11 @@ public class CategoryPopUp {
     }
 
 
+
     public void onCategoryClick(int position) {
+        categoryData = categoryDataArrayList.get(position);
+        categoryCallBack.sendCategory(categoryData);
+        popupWindow.dismiss();
 
     }
     public boolean onCategoryLongClick(int position) {
