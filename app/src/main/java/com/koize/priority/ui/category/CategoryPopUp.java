@@ -95,8 +95,18 @@ public class CategoryPopUp {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String name = user.getDisplayName();
-            firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            databaseReference = firebaseDatabase.getReference("users/" + name + "/categories");
+            if ((name != null) && name!="") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "/categories");
+            }
+            else if (name=="") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/categories");
+            }
+            else {
+                throw new IllegalStateException("Unexpected value: " + name);
+            }
+
         } else {
             Snackbar.make(view, "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
@@ -111,11 +121,8 @@ public class CategoryPopUp {
             }
         });
         categoryRV = popupView.findViewById(R.id.recycler_row_category_list);
-        firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
         firebaseAuth = FirebaseAuth.getInstance();
-        String name = firebaseAuth.getCurrentUser().getDisplayName();
         categoryDataArrayList = new ArrayList<>();
-        databaseReference = firebaseDatabase.getReference("users/" + name + "/categories");
         categoryPopUpAdapter = new CategoryPopUpAdapter(categoryDataArrayList, popupView.getContext(), this::onCategoryClick, this::onCategoryLongClick);
         categoryRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(popupView.getContext()));
         categoryRV.setAdapter(categoryPopUpAdapter);
