@@ -40,49 +40,36 @@
 
             <TextView
                 android:id="@+id/journal_main_day"
-                android:layout_width="51dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="-15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="31dp"
+                android:layout_marginTop="-18dp"
                 android:fontFamily="@font/sf_pro_rounded_semibold"
                 android:foregroundGravity="top"
                 android:text="Jun"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/journal_main_date" />
 
-            <ImageView
-                android:id="@+id/journal_image"
-                android:layout_width="wrap_content"
-                android:layout_height="77dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@drawable/radio_ic_face5_checked" />
-
             <TextView
                 android:id="@+id/journal_main_title"
                 android:layout_width="225dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="-15dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
                 android:fontFamily="@font/sf_pro_display_bold"
                 android:text="TextView"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/journal_image"
+                app:layout_constraintEnd_toStartOf="@+id/materialCardView4"
                 app:layout_constraintHorizontal_bias="0.507"
-                app:layout_constraintStart_toEndOf="@+id/journal_main_day"
+                app:layout_constraintStart_toEndOf="@+id/journal_main_date"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/journal_main_text"
                 android:layout_width="225dp"
                 android:layout_height="49dp"
-                android:layout_marginStart="-15dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="-15dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
@@ -90,10 +77,45 @@
                 android:text="Once upon a time I did my MAD project"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/journal_image"
+                app:layout_constraintEnd_toStartOf="@+id/materialCardView4"
                 app:layout_constraintHorizontal_bias="0.507"
-                app:layout_constraintStart_toEndOf="@+id/journal_main_day"
+                app:layout_constraintStart_toEndOf="@+id/journal_main_date"
                 app:layout_constraintTop_toBottomOf="@+id/journal_main_title" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/materialCardView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="#8A000000"
+                app:cardBackgroundColor="#A8A39699"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/journal_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_weight="1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:srcCompat="@drawable/radio_ic_face5_checked" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
