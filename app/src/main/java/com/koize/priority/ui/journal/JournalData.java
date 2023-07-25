@@ -4,15 +4,19 @@ public class JournalData {
     private String journalTitle;
     private String journalEditor;
     private String journalMood;
+    private String journalDate;
+    private String journalDay;
 
     public JournalData() {
         // Default constructor required for calls to DataSnapshot.getValue(RemindersData.class)
     }
 
-    public JournalData(String journalTitle,String journalEditor,String journalMood) {
+    public JournalData(String journalTitle,String journalEditor,String journalMood,String journalDate,String journalDay) {
         this.journalTitle = journalTitle;
         this.journalEditor = journalEditor;
         this.journalMood = journalMood;
+        this.journalDate = journalDate;
+        this.journalDay = journalDay;
     }
 
     public String setJournalTitle(String journalTitle) {
@@ -29,6 +33,14 @@ public class JournalData {
         this.journalMood = journalMood;
         return journalMood;
     }
+    public String setJournalDate(String journalDate) {
+        this.journalDate = journalDate;
+        return journalDate;
+    }
+    public String setJournalDay(String journalDay) {
+        this.journalDay = journalDay;
+        return journalDay;
+    }
 
     public String getJournalTitle() {
         return journalTitle;
@@ -40,6 +52,14 @@ public class JournalData {
 
     public String getJournalMood() {
         return journalMood;
+    }
+
+    public String getJournalDate() {
+        return journalDate;
+    }
+
+    public String getJournalDay() {
+        return journalDay;
     }
 
 }

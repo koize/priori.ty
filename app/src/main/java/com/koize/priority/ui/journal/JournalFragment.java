@@ -1,6 +1,8 @@
 package com.koize.priority.ui.journal;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -33,7 +35,10 @@ import com.koize.priority.databinding.FragmentJournalBinding;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.koize.priority.R;
+import com.koize.priority.ui.schedule.CalendarAdapter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 
@@ -56,6 +61,7 @@ public class JournalFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private ArrayList<JournalData> journalDataArrayList;
 
+    public static LocalDate selectedDate;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -64,6 +70,8 @@ public class JournalFragment extends Fragment {
 
         binding = FragmentJournalBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        selectedDate = LocalDate.now();
 
         addJournalButton = root.findViewById(R.id.button_journal_add);
         addJournalButton.setOnClickListener(addJournalListener);
@@ -94,10 +102,12 @@ public class JournalFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
 
 
-        JournalAdapter = new JournalAdapter(journalDataArrayList, getContext(), this::onJournalClick);
+        JournalAdapter = new JournalAdapter(journalDataArrayList, getContext(), this::onJournalClick, this::onJournalLongClick);
         journalRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
         journalRV.setAdapter(JournalAdapter);
         getJournal();
+
+
 
         return root;
     }
@@ -122,8 +132,42 @@ public class JournalFragment extends Fragment {
         });
     }
 
-    private void onJournalClick(int i) {
+    private void onJournalClick(int position) {
 
+    }
+
+    private boolean onJournalLongClick(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(journalRV.getContext());
+
+        // Set the message show for the Alert time
+        builder.setMessage("Delete the following category: " + journalDataArrayList.get(position).getJournalTitle() + "? ");
+
+        // Set Alert Title
+        builder.setTitle("Warning!");
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(true);
+
+        // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // When the user click yes button then app will close
+            databaseReference.child(journalDataArrayList.get(position).getJournalTitle()).removeValue();
+            Snackbar.make(journalRV, "Category deleted!", Snackbar.LENGTH_SHORT)
+                    .show();
+            dialog.dismiss();
+        });
+
+        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // If user click no then dialog box is canceled.
+            dialog.cancel();
+        });
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+        // Show the Alert Dialog box
+        alertDialog.show();
+        return false;
     }
 
     @Override
@@ -222,7 +266,7 @@ public class JournalFragment extends Fragment {
                         journalData = new JournalData();
                         journalData.setJournalTitle(journalTitle.getText().toString());
                         journalData.setJournalEditor(journalEditor.getText().toString());
-
+                        //mood
                         String mood = "";
                         if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood1){
                             mood = "mood1";
@@ -236,6 +280,13 @@ public class JournalFragment extends Fragment {
                             mood = "mood5";
                         }
                         journalData.setJournalMood(mood);
+
+                        //day
+                        journalData.setJournalDay(monthFromDate(selectedDate).substring(0,3).toUpperCase());
+
+                        //date
+                        journalData.setJournalDate(dayFromDate(selectedDate));
+
                         databaseReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -263,5 +314,15 @@ public class JournalFragment extends Fragment {
 
         }
     };
+
+    public static String monthFromDate(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+        return date.format(formatter);
+    }
+
+    public static String dayFromDate(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd");
+        return date.format(formatter);
+    }
 
 }

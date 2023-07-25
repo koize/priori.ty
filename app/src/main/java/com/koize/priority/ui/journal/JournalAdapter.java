@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,11 +19,13 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
     private ArrayList<JournalData> journalDataArrayList;
     private Context context;
     private JournalListener JournalListener;
+    private JournalListener2 JournalListener2;
 
-    public JournalAdapter(ArrayList<JournalData> journalDataArrayList, Context context, JournalListener JournalListener) {
+    public JournalAdapter(ArrayList<JournalData> journalDataArrayList, Context context, JournalListener JournalListener, JournalListener2 JournalListener2) {
         this.journalDataArrayList = journalDataArrayList;
         this.context = context;
         this.JournalListener = JournalListener;
+        this.JournalListener2 = JournalListener2;
     }
 
 
@@ -39,10 +42,34 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         JournalData journalData = journalDataArrayList.get(position);
         holder.rowCardTitle.setText(journalData.getJournalTitle());
         holder.rowCardMainText.setText(journalData.getJournalEditor());
+        holder.rowCardJournalDate.setText(journalData.getJournalDate());
+        holder.rowCardJournalDay.setText(journalData.getJournalDay());
+        if(journalData.getJournalMood().equals("mood1")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face1_checked);
+        }else if(journalData.getJournalMood().equals("mood2")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face2_checked);
+        }else if(journalData.getJournalMood().equals("mood3")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face3_checked);
+        }else if(journalData.getJournalMood().equals("mood4")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face4_checked);
+        }else if(journalData.getJournalMood().equals("mood5")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face5_checked);
+        }
+
+
         holder.rowCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 JournalListener.onJournalClick(position);
+            }
+
+        });
+
+        holder.rowCard.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                JournalListener2.onJournalLongClick(position);
+                return true;
             }
 
         });
@@ -58,15 +85,29 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         void onJournalClick(int position);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public interface JournalListener2 {
+        void onJournalLongClick(int position);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         MaterialCardView rowCard;
         TextView rowCardMainText;
         TextView rowCardTitle;
+        ImageView rowCardImage;
+        TextView rowCardJournalDate;
+        TextView rowCardJournalDay;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             rowCard = itemView.findViewById(R.id.row_journal_card);
             rowCardMainText = itemView.findViewById(R.id.journal_main_text);
             rowCardTitle = itemView.findViewById(R.id.journal_main_title);
+            rowCardImage = itemView.findViewById(R.id.journal_image);
+            rowCardJournalDate = itemView.findViewById(R.id.journal_main_date);
+            rowCardJournalDay = itemView.findViewById(R.id.journal_main_day);
+        }
+        @Override
+        public boolean onLongClick(View v) {
+            return false;
         }
 
     }
