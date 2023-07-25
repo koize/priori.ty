@@ -80,6 +80,7 @@
                 android:id="@+id/new_category_title"
                 android:layout_width="130dp"
                 android:layout_height="wrap_content"
+                android:includeFontPadding="false"
                 android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
