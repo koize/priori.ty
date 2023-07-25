@@ -60,7 +60,7 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         holder.rowCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JournalListener.onJournalClick(position);
+                JournalListener.onJournalClick(holder.getAdapterPosition());
             }
 
         });
@@ -68,7 +68,7 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         holder.rowCard.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                JournalListener2.onJournalLongClick(position);
+                JournalListener2.onJournalLongClick(holder.getAdapterPosition());
                 return true;
             }
 
@@ -107,6 +107,7 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         }
         @Override
         public boolean onLongClick(View v) {
+
             return false;
         }
 
