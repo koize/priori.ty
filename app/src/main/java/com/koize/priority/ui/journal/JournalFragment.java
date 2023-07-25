@@ -113,7 +113,7 @@ public class JournalFragment extends Fragment {
     }
 
     private void getJournal() {
-        journalDataArrayList.clear();
+        //journalDataArrayList.clear();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -152,7 +152,7 @@ public class JournalFragment extends Fragment {
         builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
             // When the user click yes button then app will close
             databaseReference.child(journalDataArrayList.get(position).getJournalTitle()).removeValue();
-            Snackbar.make(journalRV, "Category deleted!", Snackbar.LENGTH_SHORT)
+            Snackbar.make(journalRV, "Journal Deleted", Snackbar.LENGTH_SHORT)
                     .show();
             dialog.dismiss();
         });
@@ -286,6 +286,11 @@ public class JournalFragment extends Fragment {
 
                         //date
                         journalData.setJournalDate(dayFromDate(selectedDate));
+                        databaseReference.child(journalData.getJournalTitle()).setValue(journalData);
+                        popupWindow.dismiss();
+                        Snackbar.make(view, "Journal Saved", Snackbar.LENGTH_SHORT)
+                                .show();
+                        /*
 
                         databaseReference.addValueEventListener(new ValueEventListener() {
                             @Override
@@ -302,13 +307,12 @@ public class JournalFragment extends Fragment {
                                 Snackbar.make(view, "An error occurred", Snackbar.LENGTH_SHORT)
                                         .show();
                             }
-                        });
+                        }); */
                     }
                     else{
                         Snackbar.make(view, "Please sign in to save journal", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
-
                 }
             });
 
