@@ -49,14 +49,14 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.View
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                remindersClickInterface.onRemindersClick(position);
+                remindersClickInterface.onRemindersClick(holder.getAdapterPosition());
             }
 
         });
         holder.rowCardCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                remindersCheckBoxDeleteInterface.onRemindersCheckBoxDelete(position);
+                remindersCheckBoxDeleteInterface.onRemindersCheckBoxDelete(holder.getAdapterPosition());
             }
         });
 

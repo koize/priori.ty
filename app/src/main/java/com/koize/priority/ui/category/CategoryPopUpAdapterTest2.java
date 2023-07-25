@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -16,14 +15,14 @@ import com.koize.priority.R;
 
 import java.util.ArrayList;
 
-public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdapter.ViewHolder> {
+public class CategoryPopUpAdapterTest2 extends RecyclerView.Adapter<CategoryPopUpAdapterTest2.ViewHolder> {
     private ArrayList<CategoryData> categoryDataArrayList;
     private Context context;
     private CategoryClickInterface categoryClickInterface;
     private CategoryClickInterface1 categoryClickInterface1;
     int lastPos = -1;
 
-    public CategoryPopUpAdapter(ArrayList<CategoryData> categoryDataArrayList, Context context, CategoryClickInterface categoryClickInterface, CategoryClickInterface1 categoryClickInterface1) {
+    public CategoryPopUpAdapterTest2(ArrayList<CategoryData> categoryDataArrayList, Context context, CategoryClickInterface categoryClickInterface, CategoryClickInterface1 categoryClickInterface1) {
         this.categoryDataArrayList = categoryDataArrayList;
         this.context = context;
         this.categoryClickInterface = categoryClickInterface;
@@ -32,27 +31,27 @@ public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdap
 
     @NonNull
     @Override
-    public CategoryPopUpAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public CategoryPopUpAdapterTest2.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_category_list, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CategoryPopUpAdapter.ViewHolder holder, int position) {
-        CategoryData categoryData = categoryDataArrayList.get(position);
-        holder.rowCardTitle.setText(categoryData.getCategoryTitle());
+    public void onBindViewHolder(@NonNull CategoryPopUpAdapterTest2.ViewHolder holder, int position) {
+        CategoryData categoryData = categoryDataArrayList.get(holder.getAbsoluteAdapterPosition());
+        holder.rowCardTitle.setText(categoryData.getCategoryTitle() + " " + holder.getAbsoluteAdapterPosition());
         holder.rowCard.setCardBackgroundColor(ColorStateList.valueOf(categoryData.getCategoryColor()));
         holder.rowCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                categoryClickInterface.onCategoryClick(holder.getAdapterPosition());
+                categoryClickInterface.onCategoryClick(holder.getAbsoluteAdapterPosition());
             }
 
         });
         holder.rowCard.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                categoryClickInterface1.onCategoryLongClick(holder.getAdapterPosition());
+                categoryClickInterface1.onCategoryLongClick(holder.getAbsoluteAdapterPosition());
                 return true;
             }
 
