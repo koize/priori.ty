@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,6 +40,10 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         JournalData journalData = journalDataArrayList.get(position);
         holder.rowCardTitle.setText(journalData.getJournalTitle());
         holder.rowCardMainText.setText(journalData.getJournalEditor());
+        holder.rowCardJournalDate.setText(journalData.getJournalDate());
+        holder.rowCardJournalDay.setText(journalData.getJournalDay());
+
+
         holder.rowCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,11 +67,17 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         MaterialCardView rowCard;
         TextView rowCardMainText;
         TextView rowCardTitle;
+        ImageView rowCardImage;
+        TextView rowCardJournalDate;
+        TextView rowCardJournalDay;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             rowCard = itemView.findViewById(R.id.row_journal_card);
             rowCardMainText = itemView.findViewById(R.id.journal_main_text);
             rowCardTitle = itemView.findViewById(R.id.journal_main_title);
+            rowCardImage = itemView.findViewById(R.id.journal_image);
+            rowCardJournalDate = itemView.findViewById(R.id.journal_main_date);
+            rowCardJournalDay = itemView.findViewById(R.id.journal_main_day);
         }
 
     }

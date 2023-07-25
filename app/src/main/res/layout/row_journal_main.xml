@@ -13,7 +13,7 @@
         android:layout_marginHorizontal="5dp"
         android:layout_marginVertical="5dp"
         app:cardCornerRadius="30dp"
-        app:cardElevation="1dp"
+        app:cardElevation="3dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,7 @@
             android:layout_weight="1">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/journal_main_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
@@ -39,7 +39,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/journal_main_day"
                 android:layout_width="51dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="30dp"
@@ -48,10 +48,10 @@
                 android:foregroundGravity="top"
                 android:text="Jun"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
+                app:layout_constraintTop_toBottomOf="@+id/journal_main_date" />
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/journal_image"
                 android:layout_width="wrap_content"
                 android:layout_height="77dp"
                 android:layout_marginTop="10dp"
@@ -61,32 +61,39 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@drawable/radio_ic_face3_checked" />
+                tools:srcCompat="@drawable/radio_ic_face5_checked" />
 
             <TextView
                 android:id="@+id/journal_main_title"
-                android:layout_width="200dp"
+                android:layout_width="225dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="-15dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/sf_pro_display_bold"
                 android:text="TextView"
-                app:layout_constraintEnd_toStartOf="@+id/imageView"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/journal_image"
                 app:layout_constraintHorizontal_bias="0.507"
-                app:layout_constraintStart_toEndOf="@+id/textView3"
+                app:layout_constraintStart_toEndOf="@+id/journal_main_day"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/journal_main_text"
-                android:layout_width="200dp"
-                android:layout_height="51dp"
+                android:layout_width="225dp"
+                android:layout_height="49dp"
+                android:layout_marginStart="-15dp"
+                android:layout_marginTop="-15dp"
                 android:layout_marginBottom="8dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/sf_pro_rounded_semibold"
                 android:text="Once upon a time I did my MAD project"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/imageView"
+                app:layout_constraintEnd_toStartOf="@+id/journal_image"
                 app:layout_constraintHorizontal_bias="0.507"
-                app:layout_constraintStart_toEndOf="@+id/textView3" />
+                app:layout_constraintStart_toEndOf="@+id/journal_main_day"
+                app:layout_constraintTop_toBottomOf="@+id/journal_main_title" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

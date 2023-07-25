@@ -33,7 +33,10 @@ import com.koize.priority.databinding.FragmentJournalBinding;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.koize.priority.R;
+import com.koize.priority.ui.schedule.CalendarAdapter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 
@@ -56,6 +59,7 @@ public class JournalFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private ArrayList<JournalData> journalDataArrayList;
 
+    public static LocalDate selectedDate;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -64,6 +68,8 @@ public class JournalFragment extends Fragment {
 
         binding = FragmentJournalBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        selectedDate = LocalDate.now();
 
         addJournalButton = root.findViewById(R.id.button_journal_add);
         addJournalButton.setOnClickListener(addJournalListener);
@@ -98,6 +104,8 @@ public class JournalFragment extends Fragment {
         journalRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
         journalRV.setAdapter(JournalAdapter);
         getJournal();
+
+
 
         return root;
     }
@@ -222,7 +230,7 @@ public class JournalFragment extends Fragment {
                         journalData = new JournalData();
                         journalData.setJournalTitle(journalTitle.getText().toString());
                         journalData.setJournalEditor(journalEditor.getText().toString());
-
+                        //mood
                         String mood = "";
                         if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood1){
                             mood = "mood1";
@@ -236,6 +244,13 @@ public class JournalFragment extends Fragment {
                             mood = "mood5";
                         }
                         journalData.setJournalMood(mood);
+
+                        //day
+                        journalData.setJournalDay(monthFromDate(selectedDate).substring(0,3).toUpperCase());
+
+                        //date
+                        journalData.setJournalDate(dayFromDate(selectedDate));
+
                         databaseReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -263,5 +278,15 @@ public class JournalFragment extends Fragment {
 
         }
     };
+
+    public static String monthFromDate(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
+        return date.format(formatter);
+    }
+
+    public static String dayFromDate(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd");
+        return date.format(formatter);
+    }
 
 }
