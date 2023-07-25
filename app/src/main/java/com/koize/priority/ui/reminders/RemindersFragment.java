@@ -137,8 +137,8 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         reminderRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         reminderRV.setAdapter(remindersAdapter);
         getReminders();
-        RecyclerViewRefresher recyclerViewRefresher = new RecyclerViewRefresher(reminderRV);
-        recyclerViewRefresher.startRefreshing();
+        //RecyclerViewRefresher recyclerViewRefresher = new RecyclerViewRefresher(reminderRV);
+        //recyclerViewRefresher.startRefreshing();
 
     }
 
