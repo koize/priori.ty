@@ -1,11 +1,7 @@
 package com.koize.priority.ui.category;
 
-import static android.provider.Settings.Global.getString;
-
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -15,12 +11,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,16 +29,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.koize.priority.MainActivity;
 import com.koize.priority.R;
-import com.koize.priority.ui.reminders.RemindersData;
 import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 
 public class CategoryPopUp {
@@ -131,31 +121,11 @@ public class CategoryPopUp {
         categoryRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(popupView.getContext()));
         categoryRV.setAdapter(categoryPopUpAdapter);
         getCategories();
-        popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setAnimationStyle(com.google.android.material.R.style.Animation_AppCompat_Dialog);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setInputMethodMode(INPUT_METHOD_NEEDED);
         popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-
-        /* final View root = popupView.getRootView();
-        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                root.getWindowVisibleDisplayFrame(r);
-
-                // Calculate the difference between the original height and the new height
-                int heightDiff = r.height() - root.getHeight();
-
-                // Now update the Popup's position
-                // The first value is the x-axis, which stays the same.
-                // Second value is the y-axis. We still want it centered, so move it up by 50% of the height
-                // change
-                // The third and the fourth values are default values to keep the width/height
-                popupWindow.update(0, heightDiff / 2, -1, -1);
-            }
-        });*/
-
 
         //Set the location of the window on the screen
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
@@ -217,17 +187,8 @@ public class CategoryPopUp {
                     categoryData = new CategoryData();
                     categoryData.setCategoryTitle(categoryName);
                     categoryData.setCategoryColor(color);
-                    databaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            databaseReference.child(categoryData.getCategoryTitle()).setValue(categoryData);
-                        }
+                    databaseReference.child(categoryData.getCategoryTitle()).setValue(categoryData);
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
                 } else {
                     Snackbar.make(view, "Not signed in!", Snackbar.LENGTH_SHORT)
                             .show();
@@ -243,8 +204,7 @@ public class CategoryPopUp {
 
 
     private void getCategories() {
-        categoryDataArrayList.clear();
-        /*databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 categoryDataArrayList.clear();
@@ -253,44 +213,7 @@ public class CategoryPopUp {
                     categoryDataArrayList.add(categoryData);
                 }
                 categoryPopUpAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // on below line we are hiding our progress bar.
-                // adding snapshot to our array list on below line.
-
-                categoryDataArrayList.add(snapshot.getValue(CategoryData.class));                // notifying our adapter that data has changed.
-                categoryPopUpAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // this method is called when new child is added
-                // we are notifying our adapter and making progress bar
-                // visibility as gone.
-                categoryPopUpAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                // notifying our adapter when child is removed.
-                categoryDataArrayList.remove(snapshot.getValue(CategoryData.class));
-                categoryDataArrayList.clear();
-                categoryPopUpAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // notifying our adapter when child is moved.
-                categoryPopUpAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -312,7 +235,7 @@ public class CategoryPopUp {
         AlertDialog.Builder builder = new AlertDialog.Builder(categoryRV.getContext());
 
         // Set the message show for the Alert time
-        builder.setMessage("Delete the following category: " + categoryDataArrayList.get(position).getCategoryTitle() + "? ");
+        builder.setMessage("Delete the following category: " + categoryDataArrayList.get(position).getCategoryTitle() + "? " + position);
 
         // Set Alert Title
         builder.setTitle("Warning!");

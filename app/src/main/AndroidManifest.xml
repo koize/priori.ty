@@ -21,9 +21,7 @@
         <activity
             android:name=".settings.AccountSettings"
             android:exported="false" />
-        <activity
-            android:name=".ui.reminders.ReminderPopUp"
-            android:exported="false" />
+
         <activity
             android:name=".settings.SettingsActivity"
             android:exported="false"

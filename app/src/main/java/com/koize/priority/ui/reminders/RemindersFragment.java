@@ -24,7 +24,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -35,7 +34,6 @@ import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,8 +43,6 @@ import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 import com.koize.priority.R;
 import com.koize.priority.databinding.FragmentRemindersBinding;
-import com.koize.priority.ui.category.CategoryPopUpFirebaseTest;
-import com.koize.priority.ui.category.CategoryPopUpTest2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,15 +119,18 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         }
 
         reminderEmpty = root.findViewById(R.id.reminders_morning_empty);
-
         reminderRV = root.findViewById(R.id.recycler_reminder_morning);
+        return root;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         remindersDataArrayList = new ArrayList<>();
         remindersAdapter = new RemindersAdapter(remindersDataArrayList, getContext(), this::onRemindersClick, this::onRemindersCheckBoxDelete);
         reminderRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         reminderRV.setAdapter(remindersAdapter);
         getReminders();
-
-        return root;
     }
 
     @Override
@@ -144,8 +143,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     View.OnClickListener addReminderListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //ReminderPopUp reminderPopUp = new ReminderPopUp();
-            //reminderPopUp.showPopupWindow(v);
             showPopupWindow(v);
         }
     };
@@ -196,26 +193,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         popupWindow.setOutsideTouchable(true);
         popupWindow.setInputMethodMode(INPUT_METHOD_NEEDED);
         popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-
-        /* final View root = popupView.getRootView();
-        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                root.getWindowVisibleDisplayFrame(r);
-
-                // Calculate the difference between the original height and the new height
-                int heightDiff = r.height() - root.getHeight();
-
-                // Now update the Popup's position
-                // The first value is the x-axis, which stays the same.
-                // Second value is the y-axis. We still want it centered, so move it up by 50% of the height
-                // change
-                // The third and the fourth values are default values to keep the width/height
-                popupWindow.update(0, heightDiff / 2, -1, -1);
-            }
-        });*/
-
 
         //Set the location of the window on the screen
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
@@ -319,12 +296,8 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         reminderCategoryChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //CategoryPopUp categoryPopUp = new CategoryPopUp(RemindersFragment.this);
-                //categoryPopUp.showPopupWindow(v);
-                //CategoryPopUpFirebaseTest categoryPopUpFirebaseTest = new CategoryPopUpFirebaseTest(categoryData -> RemindersFragment.this.sendCategory(categoryData));
-                //categoryPopUpFirebaseTest.showPopupWindow(v);
-                CategoryPopUpTest2 categoryPopUpTest2 = new CategoryPopUpTest2(categoryData -> RemindersFragment.this.sendCategory(categoryData));
-                categoryPopUpTest2.showPopupWindow(v);
+                CategoryPopUp categoryPopUp = new CategoryPopUp(categoryData -> RemindersFragment.this.sendCategory(categoryData));
+                categoryPopUp.showPopupWindow(v);
             }
         });
         reminderSaveChip.setOnClickListener(new View.OnClickListener() {
@@ -360,23 +333,12 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     }
                     remindersData.setReminderLocationName(reminderLocationText.getText().toString());
                     remindersData.setReminderCategory(categoryData);
+                    databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
+                    Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
+                            .show();
+                    popupWindow.dismiss();
 
-                    databaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
-                            Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
-                                    .show();
-                            popupWindow.dismiss();
 
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Snackbar.make(view, "An error occurred", Snackbar.LENGTH_SHORT)
-                                    .show();
-                        }
-                    });
                 } else {
                     Snackbar.make(view, "Please sign in to save reminders", Snackbar.LENGTH_SHORT)
                             .show();
@@ -434,9 +396,8 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     }
 
     private void getReminders() {
-        remindersDataArrayList.clear();
 
-       /* databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 remindersDataArrayList.clear();
@@ -462,47 +423,8 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });*/
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // on below line we are hiding our progress bar.
-                // adding snapshot to our array list on below line.
-                Collections.sort(remindersDataArrayList, new Comparator<RemindersData>() {
-                    @Override
-                    public int compare(RemindersData o1, RemindersData o2) {
-                        return Long.valueOf(o1.getFirstReminderDateTime()).compareTo(o2.getFirstReminderDateTime()); // To compare integer values                        }
-                    }});
-                remindersDataArrayList.add(snapshot.getValue(RemindersData.class));                // notifying our adapter that data has changed.
-                remindersAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // this method is called when new child is added
-                // we are notifying our adapter and making progress bar
-                // visibility as gone.
-                remindersAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                // notifying our adapter when child is removed.
-                remindersAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // notifying our adapter when child is moved.
-                remindersAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
         });
+
     }
 
     public void onRemindersClick(int position) {
@@ -513,7 +435,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         AlertDialog.Builder builder = new AlertDialog.Builder(reminderRV.getContext());
 
         // Set the message show for the Alert time
-        builder.setMessage("Completed reminder: " + remindersDataArrayList.get(position).getReminderTitle() + "? ");
+        builder.setMessage("Completed reminder: " + remindersDataArrayList.get(position).getReminderTitle() + "? " + position);
 
         // Set Alert Title
         builder.setTitle("very satisfying");
@@ -528,7 +450,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             Snackbar.make(reminderRV, "Reminder completed!", Snackbar.LENGTH_SHORT)
                     .show();
             remindersDataArrayList.clear();
-            remindersAdapter.notifyDataSetChanged();
             dialog.dismiss();
         });
 
