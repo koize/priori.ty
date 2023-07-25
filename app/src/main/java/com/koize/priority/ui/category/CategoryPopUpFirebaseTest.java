@@ -1,11 +1,7 @@
 package com.koize.priority.ui.category;
 
-import static android.provider.Settings.Global.getString;
-
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -15,15 +11,14 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -35,19 +30,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.koize.priority.MainActivity;
 import com.koize.priority.R;
-import com.koize.priority.ui.reminders.RemindersData;
 import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 
-public class CategoryPopUp {
+public class CategoryPopUpFirebaseTest {
     Chip colorChip;
     public static final int INPUT_METHOD_NEEDED = 1;
     ColorEnvelope colorEnvelope;
@@ -60,14 +51,14 @@ public class CategoryPopUp {
     CategoryData categoryData;
     private RecyclerView categoryRV;
     private FirebaseAuth firebaseAuth;
-    private CategoryPopUpAdapter categoryPopUpAdapter;
+    private CategoryPopUpFirebaseAdapter categoryPopUpFirebaseAdapter;
     private ArrayList<CategoryData> categoryDataArrayList;
     public interface CategoryCallBack {
         void sendCategory(CategoryData categoryData);
     }
     private CategoryCallBack categoryCallBack;
 
-    public CategoryPopUp(CategoryCallBack categoryCallBack) {
+    public CategoryPopUpFirebaseTest(CategoryCallBack categoryCallBack) {
         this.categoryCallBack = categoryCallBack;
     }
 
@@ -118,6 +109,7 @@ public class CategoryPopUp {
         popupWindow.setTouchInterceptor(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+                    categoryPopUpFirebaseAdapter.stopListening();
                     popupWindow.dismiss();
                     return true;
                 }
@@ -126,12 +118,15 @@ public class CategoryPopUp {
         });
         categoryRV = popupView.findViewById(R.id.recycler_row_category_list);
         firebaseAuth = FirebaseAuth.getInstance();
-        categoryDataArrayList = new ArrayList<>();
-        categoryPopUpAdapter = new CategoryPopUpAdapter(categoryDataArrayList, popupView.getContext(), this::onCategoryClick, this::onCategoryLongClick);
         categoryRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(popupView.getContext()));
-        categoryRV.setAdapter(categoryPopUpAdapter);
-        getCategories();
-        popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        FirebaseRecyclerOptions<CategoryData> options =
+                new FirebaseRecyclerOptions.Builder<CategoryData>()
+                        .setQuery(databaseReference, CategoryData.class)
+                        .build();
+        categoryPopUpFirebaseAdapter = new CategoryPopUpFirebaseAdapter(options, this::onCategoryClick, this::onCategoryLongClick);
+        categoryRV.setAdapter(categoryPopUpFirebaseAdapter);
+        categoryPopUpFirebaseAdapter.startListening();
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setAnimationStyle(com.google.android.material.R.style.Animation_AppCompat_Dialog);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setInputMethodMode(INPUT_METHOD_NEEDED);
@@ -242,77 +237,22 @@ public class CategoryPopUp {
 
 
 
-    private void getCategories() {
-        categoryDataArrayList.clear();
-        /*databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                categoryDataArrayList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    CategoryData categoryData = dataSnapshot.getValue(CategoryData.class);
-                    categoryDataArrayList.add(categoryData);
-                }
-                categoryPopUpAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // on below line we are hiding our progress bar.
-                // adding snapshot to our array list on below line.
-
-                categoryDataArrayList.add(snapshot.getValue(CategoryData.class));                // notifying our adapter that data has changed.
-                categoryPopUpAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // this method is called when new child is added
-                // we are notifying our adapter and making progress bar
-                // visibility as gone.
-                categoryPopUpAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                // notifying our adapter when child is removed.
-                categoryDataArrayList.remove(snapshot.getValue(CategoryData.class));
-                categoryDataArrayList.clear();
-                categoryPopUpAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // notifying our adapter when child is moved.
-                categoryPopUpAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 
 
 
     public void onCategoryClick(int position) {
-        categoryData = categoryDataArrayList.get(position);
+        categoryData = categoryPopUpFirebaseAdapter.getItem(position);
         categoryCallBack.sendCategory(categoryData);
+        categoryPopUpFirebaseAdapter.stopListening();
         popupWindow.dismiss();
 
     }
-    public boolean onCategoryLongClick(int position) {
+    public boolean onCategoryLongClick(int position, String refKey) {
         AlertDialog.Builder builder = new AlertDialog.Builder(categoryRV.getContext());
 
         // Set the message show for the Alert time
-        builder.setMessage("Delete the following category: " + categoryDataArrayList.get(position).getCategoryTitle() + "? ");
+        builder.setMessage("Delete the following category: " + categoryPopUpFirebaseAdapter.getItem(position).getCategoryTitle() + "? ");
 
         // Set Alert Title
         builder.setTitle("Warning!");
@@ -323,8 +263,9 @@ public class CategoryPopUp {
         // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
         builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
             // When the user click yes button then app will close
-            databaseReference.child(categoryDataArrayList.get(position).getCategoryTitle()).removeValue();
-            Snackbar.make(categoryRV, "Category deleted!", Snackbar.LENGTH_SHORT)
+            databaseReference.child(refKey).removeValue();
+            //categoryPopUpFirebaseAdapter.notifyDataSetChanged();
+            Snackbar.make(categoryRV, refKey + " " + position, Snackbar.LENGTH_SHORT)
                     .show();
             dialog.dismiss();
         });

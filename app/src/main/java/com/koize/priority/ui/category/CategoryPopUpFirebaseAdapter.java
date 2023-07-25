@@ -8,51 +8,47 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.koize.priority.R;
 
 import java.util.ArrayList;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 
-public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdapter.ViewHolder> {
+public class CategoryPopUpFirebaseAdapter extends FirebaseRecyclerAdapter<CategoryData, CategoryPopUpFirebaseAdapter.categoryViewHolder> {
     private ArrayList<CategoryData> categoryDataArrayList;
     private Context context;
     private CategoryClickInterface categoryClickInterface;
     private CategoryClickInterface1 categoryClickInterface1;
     int lastPos = -1;
 
-    public CategoryPopUpAdapter(ArrayList<CategoryData> categoryDataArrayList, Context context, CategoryClickInterface categoryClickInterface, CategoryClickInterface1 categoryClickInterface1) {
-        this.categoryDataArrayList = categoryDataArrayList;
-        this.context = context;
+    public CategoryPopUpFirebaseAdapter(@NonNull FirebaseRecyclerOptions<CategoryData> options, CategoryClickInterface categoryClickInterface, CategoryClickInterface1 categoryClickInterface1) {
+        super(options);
         this.categoryClickInterface = categoryClickInterface;
         this.categoryClickInterface1 = categoryClickInterface1;
+
     }
 
-    @NonNull
-    @Override
-    public CategoryPopUpAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_category_list, parent, false);
-        return new ViewHolder(view);
-    }
+
 
     @Override
-    public void onBindViewHolder(@NonNull CategoryPopUpAdapter.ViewHolder holder, int position) {
-        CategoryData categoryData = categoryDataArrayList.get(position);
+    public void onBindViewHolder(@NonNull categoryViewHolder holder, int position, @NonNull CategoryData categoryData) {
+        String refKey = getRef(holder.getAbsoluteAdapterPosition()).getKey();
         holder.rowCardTitle.setText(categoryData.getCategoryTitle());
         holder.rowCard.setCardBackgroundColor(ColorStateList.valueOf(categoryData.getCategoryColor()));
         holder.rowCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                categoryClickInterface.onCategoryClick(holder.getAdapterPosition());
+                categoryClickInterface.onCategoryClick(holder.getAbsoluteAdapterPosition());
             }
 
         });
         holder.rowCard.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                categoryClickInterface1.onCategoryLongClick(holder.getAdapterPosition());
+                categoryClickInterface1.onCategoryLongClick(holder.getAbsoluteAdapterPosition(), refKey);
                 return true;
             }
 
@@ -67,15 +63,19 @@ public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdap
         }
     }
 
+
+
+    @NonNull
     @Override
-    public int getItemCount() {
-        return categoryDataArrayList.size();
+    public categoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_category_list, parent, false);
+        return new CategoryPopUpFirebaseAdapter.categoryViewHolder(view);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+    public static class categoryViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         MaterialCardView rowCard;
         TextView rowCardTitle;
-        public ViewHolder(@NonNull View itemView) {
+        public categoryViewHolder(@NonNull View itemView) {
             super(itemView);
             rowCard = itemView.findViewById(R.id.row_category_list_card);
             rowCardTitle = itemView.findViewById(R.id.text_category_list);
@@ -92,7 +92,7 @@ public class CategoryPopUpAdapter extends RecyclerView.Adapter<CategoryPopUpAdap
     }
 
     public interface CategoryClickInterface1 {
-        boolean onCategoryLongClick(int position);
+        boolean onCategoryLongClick(int position, String refKey);
     }
 
 }

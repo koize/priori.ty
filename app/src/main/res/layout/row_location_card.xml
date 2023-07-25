@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/row_location_card_chip"
+    android:layout_width="wrap_content"
+    android:layout_height="20dp"
+    android:clickable="false"
+    android:paddingVertical="5dp"
+    android:textSize="10sp"
+    app:chipIcon="@drawable/baseline_location_on_24"
+    app:chipIconSize="10sp"
+    app:chipMinHeight="0dp"
+    app:ensureMinTouchTargetSize="false"
+    app:textEndPadding="0dp"
+    app:textStartPadding="0dp"
+    tools:text="meow">
+
+</com.google.android.material.chip.Chip>

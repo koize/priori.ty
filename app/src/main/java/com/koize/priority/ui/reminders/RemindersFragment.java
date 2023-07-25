@@ -1,7 +1,9 @@
 package com.koize.priority.ui.reminders;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,11 +15,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
@@ -25,10 +30,12 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,11 +45,18 @@ import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 import com.koize.priority.R;
 import com.koize.priority.databinding.FragmentRemindersBinding;
+import com.koize.priority.ui.category.CategoryPopUpFirebaseTest;
+import com.koize.priority.ui.category.CategoryPopUpTest2;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class RemindersFragment extends Fragment implements CategoryPopUp.CategoryCallBack {
 
     private FragmentRemindersBinding binding;
     private FloatingActionButton addReminderButton;
+    private MaterialTextView reminderEmpty;
     public int firstReminderTimeHr;
     public int firstReminderTimeMin;
     public int secondReminderTimeHr;
@@ -57,11 +71,17 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     public String secondReminderDate;
     public long firstReminderDateTime;
     public long secondReminderDateTime;
-    public CategoryData categoryData;
+    public RemindersData remindersData;
+    private RecyclerView reminderRV;
+    private RemindersAdapter remindersAdapter;
+
+    private CategoryData categoryData;
+    private ArrayList<RemindersData> remindersDataArrayList;
+
 
 
     public static final int INPUT_METHOD_NEEDED = 1;
-    EditText reminderTitle;
+    TextView reminderTitle;
     Chip firstReminderChip;
     Chip secondReminderChip;
     EditText reminderLocationText;
@@ -71,7 +91,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     Chip categoryCard;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
-    RemindersData remindersData;
     FirebaseUser user;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -102,6 +121,16 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
         }
+
+        reminderEmpty = root.findViewById(R.id.reminders_morning_empty);
+
+        reminderRV = root.findViewById(R.id.recycler_reminder_morning);
+        remindersDataArrayList = new ArrayList<>();
+        remindersAdapter = new RemindersAdapter(remindersDataArrayList, getContext(), this::onRemindersClick, this::onRemindersCheckBoxDelete);
+        reminderRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+        reminderRV.setAdapter(remindersAdapter);
+        getReminders();
+
         return root;
     }
 
@@ -159,6 +188,8 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                 return false;
             }
         });
+
+
 
         popupWindow.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         popupWindow.setAnimationStyle(com.google.android.material.R.style.Animation_AppCompat_Dialog);
@@ -231,6 +262,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                             @Override
                             public void onPositiveButtonClick(Object selection) {
                                 firstReminderDate = materialDatePicker.getHeaderText();
+                                firstReminderDateTime = (long) selection;
                                 mTimePicker1();
 
                             }
@@ -271,6 +303,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                             @Override
                             public void onPositiveButtonClick(Object selection) {
                                 secondReminderDate = materialDatePicker.getHeaderText();
+                                secondReminderDateTime = (long) selection;
                                 mTimePicker2();
 
                             }
@@ -286,8 +319,12 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         reminderCategoryChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CategoryPopUp categoryPopUp = new CategoryPopUp(RemindersFragment.this);
-                categoryPopUp.showPopupWindow(v);
+                //CategoryPopUp categoryPopUp = new CategoryPopUp(RemindersFragment.this);
+                //categoryPopUp.showPopupWindow(v);
+                //CategoryPopUpFirebaseTest categoryPopUpFirebaseTest = new CategoryPopUpFirebaseTest(categoryData -> RemindersFragment.this.sendCategory(categoryData));
+                //categoryPopUpFirebaseTest.showPopupWindow(v);
+                CategoryPopUpTest2 categoryPopUpTest2 = new CategoryPopUpTest2(categoryData -> RemindersFragment.this.sendCategory(categoryData));
+                categoryPopUpTest2.showPopupWindow(v);
             }
         });
         reminderSaveChip.setOnClickListener(new View.OnClickListener() {
@@ -302,6 +339,25 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     remindersData.setSecondReminderTimeMin(secondReminderTimeMin);
                     remindersData.setFirstReminderDateTime(firstReminderDateTime);
                     remindersData.setSecondReminderDateTime(secondReminderDateTime);
+
+                    if (firstReminderTimeHr >= 0 && firstReminderTimeHr < 12) {
+                        remindersData.setFirstReminderPartOfDay("morning");
+                    } else if (firstReminderTimeHr >= 12 && firstReminderTimeHr < 16) {
+                        remindersData.setFirstReminderPartOfDay("afternoon");
+                    } else if (firstReminderTimeHr >= 16 && firstReminderTimeHr < 20) {
+                        remindersData.setFirstReminderPartOfDay("evening");
+                    } else if (firstReminderTimeHr >= 20 && firstReminderTimeHr < 24) {
+                        remindersData.setFirstReminderPartOfDay("night");
+                    }
+                    if (secondReminderTimeHr >= 0 && secondReminderTimeHr < 12) {
+                        remindersData.setSecondReminderPartOfDay("morning");
+                    } else if (secondReminderTimeHr >= 12 && secondReminderTimeHr < 16) {
+                        remindersData.setSecondReminderPartOfDay("afternoon");
+                    } else if (secondReminderTimeHr >= 16 && secondReminderTimeHr < 20) {
+                        remindersData.setSecondReminderPartOfDay("evening");
+                    } else if (secondReminderTimeHr >= 20 && secondReminderTimeHr < 24) {
+                        remindersData.setSecondReminderPartOfDay("night");
+                    }
                     remindersData.setReminderLocationName(reminderLocationText.getText().toString());
                     remindersData.setReminderCategory(categoryData);
 
@@ -374,6 +430,118 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         categoryCard.setChipBackgroundColor(ColorStateList.valueOf(categoryData.getCategoryColor()));
         categoryCard.setVisibility(View.VISIBLE);
         this.categoryData = categoryData;
+
+    }
+
+    private void getReminders() {
+        remindersDataArrayList.clear();
+
+       /* databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                remindersDataArrayList.clear();
+
+                for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
+                    RemindersData remindersData = reminderSnapshot.getValue(RemindersData.class);
+                    Collections.sort(remindersDataArrayList, new Comparator<RemindersData>() {
+                        @Override
+                        public int compare(RemindersData o1, RemindersData o2) {
+                            return Long.valueOf(o1.getFirstReminderDateTime()).compareTo(o2.getFirstReminderDateTime()); // To compare integer values                        }
+                    }});
+                    remindersDataArrayList.add(remindersData);
+                }
+                remindersAdapter.notifyDataSetChanged();
+                if (remindersDataArrayList.isEmpty()) {
+                    reminderEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    reminderEmpty.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });*/
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // on below line we are hiding our progress bar.
+                // adding snapshot to our array list on below line.
+                Collections.sort(remindersDataArrayList, new Comparator<RemindersData>() {
+                    @Override
+                    public int compare(RemindersData o1, RemindersData o2) {
+                        return Long.valueOf(o1.getFirstReminderDateTime()).compareTo(o2.getFirstReminderDateTime()); // To compare integer values                        }
+                    }});
+                remindersDataArrayList.add(snapshot.getValue(RemindersData.class));                // notifying our adapter that data has changed.
+                remindersAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // this method is called when new child is added
+                // we are notifying our adapter and making progress bar
+                // visibility as gone.
+                remindersAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                // notifying our adapter when child is removed.
+                remindersAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                // notifying our adapter when child is moved.
+                remindersAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void onRemindersClick(int position) {
+        RemindersData remindersData = remindersDataArrayList.get(position);
+    }
+
+    public void onRemindersCheckBoxDelete(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(reminderRV.getContext());
+
+        // Set the message show for the Alert time
+        builder.setMessage("Completed reminder: " + remindersDataArrayList.get(position).getReminderTitle() + "? ");
+
+        // Set Alert Title
+        builder.setTitle("very satisfying");
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(true);
+
+        // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // When the user click yes button then app will close
+            databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).removeValue();
+            Snackbar.make(reminderRV, "Reminder completed!", Snackbar.LENGTH_SHORT)
+                    .show();
+            remindersDataArrayList.clear();
+            remindersAdapter.notifyDataSetChanged();
+            dialog.dismiss();
+        });
+
+        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // If user click no then dialog box is canceled.
+            dialog.cancel();
+        });
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+        // Show the Alert Dialog box
+        alertDialog.show();
 
     }
 }
