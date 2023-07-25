@@ -88,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:background="#8A000000"
-                app:cardBackgroundColor="#79A39699"
+                app:cardBackgroundColor="#D0A39699"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
