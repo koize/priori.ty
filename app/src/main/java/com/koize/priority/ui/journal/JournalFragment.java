@@ -1,6 +1,8 @@
 package com.koize.priority.ui.journal;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -100,7 +102,7 @@ public class JournalFragment extends Fragment {
         firebaseAuth = FirebaseAuth.getInstance();
 
 
-        JournalAdapter = new JournalAdapter(journalDataArrayList, getContext(), this::onJournalClick);
+        JournalAdapter = new JournalAdapter(journalDataArrayList, getContext(), this::onJournalClick, this::onJournalLongClick);
         journalRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
         journalRV.setAdapter(JournalAdapter);
         getJournal();
@@ -130,8 +132,42 @@ public class JournalFragment extends Fragment {
         });
     }
 
-    private void onJournalClick(int i) {
+    private void onJournalClick(int position) {
 
+    }
+
+    private boolean onJournalLongClick(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(journalRV.getContext());
+
+        // Set the message show for the Alert time
+        builder.setMessage("Delete the following category: " + journalDataArrayList.get(position).getJournalTitle() + "? ");
+
+        // Set Alert Title
+        builder.setTitle("Warning!");
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(true);
+
+        // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // When the user click yes button then app will close
+            databaseReference.child(journalDataArrayList.get(position).getJournalTitle()).removeValue();
+            Snackbar.make(journalRV, "Category deleted!", Snackbar.LENGTH_SHORT)
+                    .show();
+            dialog.dismiss();
+        });
+
+        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // If user click no then dialog box is canceled.
+            dialog.cancel();
+        });
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+        // Show the Alert Dialog box
+        alertDialog.show();
+        return false;
     }
 
     @Override

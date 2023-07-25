@@ -19,11 +19,13 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
     private ArrayList<JournalData> journalDataArrayList;
     private Context context;
     private JournalListener JournalListener;
+    private JournalListener2 JournalListener2;
 
-    public JournalAdapter(ArrayList<JournalData> journalDataArrayList, Context context, JournalListener JournalListener) {
+    public JournalAdapter(ArrayList<JournalData> journalDataArrayList, Context context, JournalListener JournalListener, JournalListener2 JournalListener2) {
         this.journalDataArrayList = journalDataArrayList;
         this.context = context;
         this.JournalListener = JournalListener;
+        this.JournalListener2 = JournalListener2;
     }
 
 
@@ -63,6 +65,15 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
 
         });
 
+        holder.rowCard.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                JournalListener2.onJournalLongClick(position);
+                return true;
+            }
+
+        });
+
     }
 
     @Override
@@ -74,7 +85,11 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         void onJournalClick(int position);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public interface JournalListener2 {
+        void onJournalLongClick(int position);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         MaterialCardView rowCard;
         TextView rowCardMainText;
         TextView rowCardTitle;
@@ -89,6 +104,10 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
             rowCardImage = itemView.findViewById(R.id.journal_image);
             rowCardJournalDate = itemView.findViewById(R.id.journal_main_date);
             rowCardJournalDay = itemView.findViewById(R.id.journal_main_day);
+        }
+        @Override
+        public boolean onLongClick(View v) {
+            return false;
         }
 
     }
