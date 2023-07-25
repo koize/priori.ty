@@ -45,6 +45,8 @@ import com.koize.priority.R;
 import com.koize.priority.databinding.FragmentRemindersBinding;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class RemindersFragment extends Fragment implements CategoryPopUp.CategoryCallBack {
 
@@ -117,14 +119,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         }
 
         reminderEmpty = root.findViewById(R.id.reminders_morning_empty);
-
         reminderRV = root.findViewById(R.id.recycler_reminder_morning);
-        /*remindersDataArrayList = new ArrayList<>();
-        remindersAdapter = new RemindersAdapter(remindersDataArrayList, getContext(), this::onRemindersClick, this::onRemindersCheckBoxDelete);
-        reminderRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
-        reminderRV.setAdapter(remindersAdapter);
-        getReminders();*/
-
         return root;
     }
 
@@ -148,8 +143,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     View.OnClickListener addReminderListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //ReminderPopUp reminderPopUp = new ReminderPopUp();
-            //reminderPopUp.showPopupWindow(v);
             showPopupWindow(v);
         }
     };
@@ -200,26 +193,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         popupWindow.setOutsideTouchable(true);
         popupWindow.setInputMethodMode(INPUT_METHOD_NEEDED);
         popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-
-        /* final View root = popupView.getRootView();
-        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                root.getWindowVisibleDisplayFrame(r);
-
-                // Calculate the difference between the original height and the new height
-                int heightDiff = r.height() - root.getHeight();
-
-                // Now update the Popup's position
-                // The first value is the x-axis, which stays the same.
-                // Second value is the y-axis. We still want it centered, so move it up by 50% of the height
-                // change
-                // The third and the fourth values are default values to keep the width/height
-                popupWindow.update(0, heightDiff / 2, -1, -1);
-            }
-        });*/
-
 
         //Set the location of the window on the screen
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
@@ -325,10 +298,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             public void onClick(View v) {
                 CategoryPopUp categoryPopUp = new CategoryPopUp(categoryData -> RemindersFragment.this.sendCategory(categoryData));
                 categoryPopUp.showPopupWindow(v);
-                //CategoryPopUpFirebaseTest categoryPopUpFirebaseTest = new CategoryPopUpFirebaseTest(categoryData -> RemindersFragment.this.sendCategory(categoryData));
-                //categoryPopUpFirebaseTest.showPopupWindow(v);
-                //CategoryPopUpTest2 categoryPopUpTest2 = new CategoryPopUpTest2(categoryData -> RemindersFragment.this.sendCategory(categoryData));
-                //categoryPopUpTest2.showPopupWindow(v);
             }
         });
         reminderSaveChip.setOnClickListener(new View.OnClickListener() {
@@ -435,11 +404,11 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
 
                 for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
                     RemindersData remindersData = reminderSnapshot.getValue(RemindersData.class);
-                    /*Collections.sort(remindersDataArrayList, new Comparator<RemindersData>() {
+                    Collections.sort(remindersDataArrayList, new Comparator<RemindersData>() {
                         @Override
                         public int compare(RemindersData o1, RemindersData o2) {
                             return Long.valueOf(o1.getFirstReminderDateTime()).compareTo(o2.getFirstReminderDateTime()); // To compare integer values                        }
-                    }});*/
+                    }});
                     remindersDataArrayList.add(remindersData);
                 }
                 remindersAdapter.notifyDataSetChanged();

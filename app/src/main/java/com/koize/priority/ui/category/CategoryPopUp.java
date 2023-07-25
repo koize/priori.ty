@@ -127,26 +127,6 @@ public class CategoryPopUp {
         popupWindow.setInputMethodMode(INPUT_METHOD_NEEDED);
         popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-
-        /* final View root = popupView.getRootView();
-        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                root.getWindowVisibleDisplayFrame(r);
-
-                // Calculate the difference between the original height and the new height
-                int heightDiff = r.height() - root.getHeight();
-
-                // Now update the Popup's position
-                // The first value is the x-axis, which stays the same.
-                // Second value is the y-axis. We still want it centered, so move it up by 50% of the height
-                // change
-                // The third and the fourth values are default values to keep the width/height
-                popupWindow.update(0, heightDiff / 2, -1, -1);
-            }
-        });*/
-
-
         //Set the location of the window on the screen
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         View container = popupWindow.getContentView().getRootView();
@@ -224,23 +204,6 @@ public class CategoryPopUp {
 
 
     private void getCategories() {
-        //categoryDataArrayList.clear();
-        /*databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                categoryDataArrayList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    CategoryData categoryData = dataSnapshot.getValue(CategoryData.class);
-                    categoryDataArrayList.add(categoryData);
-                }
-                categoryPopUpAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -258,42 +221,6 @@ public class CategoryPopUp {
 
             }
         });
-        /*databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // on below line we are hiding our progress bar.
-                // adding snapshot to our array list on below line.
-
-                categoryDataArrayList.add(snapshot.getValue(CategoryData.class));                // notifying our adapter that data has changed.
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // this method is called when new child is added
-                // we are notifying our adapter and making progress bar
-                // visibility as gone.
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                // notifying our adapter when child is removed.
-                //categoryDataArrayList.remove(snapshot.getValue(CategoryData.class));
-                //categoryDataArrayList.clear();
-                //categoryPopUpAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                // notifying our adapter when child is moved.
-                //categoryPopUpAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });*/
     }
 
 
