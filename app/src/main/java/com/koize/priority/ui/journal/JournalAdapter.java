@@ -42,6 +42,17 @@ public class JournalAdapter extends RecyclerView.Adapter<JournalAdapter.ViewHold
         holder.rowCardMainText.setText(journalData.getJournalEditor());
         holder.rowCardJournalDate.setText(journalData.getJournalDate());
         holder.rowCardJournalDay.setText(journalData.getJournalDay());
+        if(journalData.getJournalMood().equals("mood1")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face1_checked);
+        }else if(journalData.getJournalMood().equals("mood2")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face2_checked);
+        }else if(journalData.getJournalMood().equals("mood3")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face3_checked);
+        }else if(journalData.getJournalMood().equals("mood4")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face4_checked);
+        }else if(journalData.getJournalMood().equals("mood5")){
+            holder.rowCardImage.setImageResource(R.drawable.radio_ic_face5_checked);
+        }
 
 
         holder.rowCard.setOnClickListener(new View.OnClickListener() {
