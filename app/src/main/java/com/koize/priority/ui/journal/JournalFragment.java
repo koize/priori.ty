@@ -136,29 +136,22 @@ public class JournalFragment extends Fragment {
     private void onJournalClick(int position) {
         View view = getView().getRootView();
         ConstraintLayout journalView;
-        //Create a View object yourself through inflater
+
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_journal_add, null);
         journalView = popupView.findViewById(R.id.journalPopUpLayout);
 
-        //Specify the length and width through constants
-
         int width = ConstraintLayout.LayoutParams.WRAP_CONTENT;
         int height = ConstraintLayout.LayoutParams.WRAP_CONTENT;
 
-        //Make Inactive Items Outside Of PopupWindow
         boolean focusable = true;
 
-        //Create a window with our parameters
         final PopupWindow popupWindow = new PopupWindow(journalView, width, height, focusable);
-        // Closes the popup window when touch outside
-        //Handler for clicking on the inactive zone of the window
 
         journalTitle = popupView.findViewById(R.id.title_new_journal);
         journalEditor = popupView.findViewById(R.id.journal_editor);
         journalSaveChip = popupView.findViewById(R.id.button_new_journal_save);
         journalMood = popupView.findViewById(R.id.journalMood);
-
 
         popupWindow.setTouchInterceptor(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -176,27 +169,6 @@ public class JournalFragment extends Fragment {
         popupWindow.setInputMethodMode(INPUT_METHOD_NEEDED);
         popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-
-        /* final View root = popupView.getRootView();
-        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                root.getWindowVisibleDisplayFrame(r);
-
-                // Calculate the difference between the original height and the new height
-                int heightDiff = r.height() - root.getHeight();
-
-                // Now update the Popup's position
-                // The first value is the x-axis, which stays the same.
-                // Second value is the y-axis. We still want it centered, so move it up by 50% of the height
-                // change
-                // The third and the fourth values are default values to keep the width/height
-                popupWindow.update(0, heightDiff / 2, -1, -1);
-            }
-        });*/
-
-
-        //Set the location of the window on the screen
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         View container = popupWindow.getContentView().getRootView();
         if (container != null) {
@@ -208,7 +180,6 @@ public class JournalFragment extends Fragment {
                 wm.updateViewLayout(container, p);
             }
         }
-        //Initialize the elements of our window, install the handler
 
         journalSaveChip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -241,24 +212,6 @@ public class JournalFragment extends Fragment {
                     popupWindow.dismiss();
                     Snackbar.make(view, "Journal Saved", Snackbar.LENGTH_SHORT)
                             .show();
-                        /*
-
-                        databaseReference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                databaseReference.child(journalData.getJournalTitle()).setValue(journalData);
-                                Snackbar.make(view, "Journal Saved", Snackbar.LENGTH_SHORT)
-                                        .show();
-                                popupWindow.dismiss();
-
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Snackbar.make(view, "An error occurred", Snackbar.LENGTH_SHORT)
-                                        .show();
-                            }
-                        }); */
                 }
                 else{
                     Snackbar.make(view, "Please sign in to save journal", Snackbar.LENGTH_SHORT)
@@ -266,6 +219,7 @@ public class JournalFragment extends Fragment {
                 }
             }
         });
+
         JournalData journalData = journalDataArrayList.get(position);
         journalTitle.setText(journalData.getJournalTitle());
         journalEditor.setText(journalData.getJournalEditor());
