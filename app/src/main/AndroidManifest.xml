@@ -16,12 +16,14 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".ui.routineplanner.RoutinePlannerPage"
+            android:exported="false" />
+        <activity
             android:name=".FocusModeActivity"
             android:exported="false" />
         <activity
             android:name=".settings.AccountSettings"
             android:exported="false" />
-
         <activity
             android:name=".settings.SettingsActivity"
             android:exported="false"
