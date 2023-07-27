@@ -313,6 +313,7 @@
                                 app:srcCompat="@drawable/baseline_category_24" />
 
                             <include
+                                android:id="@+id/new_event_category_card"
                                 layout="@layout/row_category"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

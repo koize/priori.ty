@@ -63,12 +63,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     public int firstReminderTimeMin;
     public int secondReminderTimeHr;
     public int secondReminderTimeMin;
-    public int firstReminderDateDay;
-    public int firstReminderDateMonth;
-    public int firstReminderDateYear;
-    public int secondReminderDateDay;
-    public int secondReminderDateMonth;
-    public int secondReminderDateYear;
+
     public String firstReminderDate;
     public String secondReminderDate;
     public long firstReminderDateTime;
@@ -342,7 +337,14 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             public void onClick(View v) {
                 if (user != null) {
                     remindersData = new RemindersData();
-                    remindersData.setReminderTitle(reminderTitle.getText().toString());
+                    if (reminderTitle.getText().toString().isEmpty()) {
+                        Snackbar.make(view, "Please enter a title", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
+                    else {
+                        remindersData.setReminderTitle(reminderTitle.getText().toString());
+                    }
                     remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
                     remindersData.setFirstReminderTimeMin(firstReminderTimeMin);
                     remindersData.setSecondReminderTimeHr(secondReminderTimeHr);
@@ -405,24 +407,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         );
         materialTimePicker.show(getParentFragmentManager(), "MATERIAL_TIME_PICKER");
     }
-    public void mTimePicker1Edit() {
-        MaterialTimePicker.Builder materialTimeBuilder = new MaterialTimePicker.Builder();
-        materialTimeBuilder.setTitleText("1st Reminder Time").setTimeFormat(TimeFormat.CLOCK_24H);
-        MaterialTimePicker materialTimePicker = materialTimeBuilder.build();
-        materialTimePicker.addOnPositiveButtonClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        firstReminderTimeHr = materialTimePicker.getHour();
-                        firstReminderTimeMin = materialTimePicker.getMinute();
-                        firstReminderDateTime = firstReminderDateTime + (firstReminderTimeHr * 3600000) + (firstReminderTimeMin * 60000);
-                        firstReminderChip.setText(firstReminderDate + ", " + String.format("%02d:%02d", firstReminderTimeHr, firstReminderTimeMin));
-                    }
-                }
-        );
-        materialTimePicker.show(getParentFragmentManager(), "MATERIAL_TIME_PICKER");
-    }
 
     public void mTimePicker2() {
         MaterialTimePicker.Builder materialTimeBuilder = new MaterialTimePicker.Builder();
@@ -443,24 +427,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         materialTimePicker.show(getParentFragmentManager(), "MATERIAL_TIME_PICKER");
     }
 
-    public void mTimePicker2Edit() {
-        MaterialTimePicker.Builder materialTimeBuilder = new MaterialTimePicker.Builder();
-        materialTimeBuilder.setTitleText("2nd Reminder Time").setTimeFormat(TimeFormat.CLOCK_24H);
-        MaterialTimePicker materialTimePicker = materialTimeBuilder.build();
-        materialTimePicker.addOnPositiveButtonClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        secondReminderTimeHr = materialTimePicker.getHour();
-                        secondReminderTimeMin = materialTimePicker.getMinute();
-                        secondReminderDateTime = secondReminderDateTime + (secondReminderTimeHr * 3600000) + (secondReminderTimeMin * 60000);
-                        secondReminderChip.setText(secondReminderDate + ", " + String.format("%02d:%02d", secondReminderTimeHr, secondReminderTimeMin));
-                    }
-                }
-        );
-        materialTimePicker.show(getParentFragmentManager(), "MATERIAL_TIME_PICKER");
-    }
 
     @Override
     public void sendCategory(CategoryData categoryData) {
