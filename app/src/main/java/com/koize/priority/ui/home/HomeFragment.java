@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment {
         focusModeChip.setOnClickListener(focusModeChipListener);
 
         Calendar c = Calendar.getInstance();
-        int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
+        int timeOfDay = c.get(Calendar.HOUR_OF_DAY) + 8;
         if(timeOfDay >= 0 && timeOfDay < 12){
             partOfDay = "morning";
         }else if(timeOfDay >= 12 && timeOfDay < 16){
