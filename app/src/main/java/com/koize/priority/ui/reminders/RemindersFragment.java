@@ -1,10 +1,14 @@
 package com.koize.priority.ui.reminders;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,8 +19,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
@@ -94,6 +102,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     FirebaseUser user;
+    Switch reminderAutoSortCheckBox;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -104,6 +113,10 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         View root = binding.getRoot();
         addReminderButton = root.findViewById(R.id.button_reminder_add);
         addReminderButton.setOnClickListener(addReminderListener);
+        reminderAutoSortCheckBox = root.findViewById(R.id.reminder_autosort_checkbox);
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("reminder_auto_sort", MODE_PRIVATE);
+        reminderAutoSortCheckBox.setChecked(sharedPreferences.getBoolean("value",true));
+
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String name = user.getDisplayName();
@@ -136,6 +149,37 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         remindersAdapter = new RemindersAdapter(remindersDataArrayList, getContext(), this::onRemindersClick, this::onRemindersCheckBoxDelete);
         reminderRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         reminderRV.setAdapter(remindersAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(
+                new ItemTouchHelper.Callback() {
+
+                    @Override
+                    public int getMovementFlags(
+                            @NonNull RecyclerView recyclerView,
+                            @NonNull RecyclerView.ViewHolder viewHolder) {
+
+                        return makeMovementFlags(
+                                ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                                ItemTouchHelper.END | ItemTouchHelper.START
+                        );
+                    }
+
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                        int draggedItemIndex = viewHolder.getAdapterPosition();
+                        int targetIndex = target.getAdapterPosition();
+                        Collections.swap(remindersDataArrayList, draggedItemIndex, targetIndex);
+                        remindersAdapter.notifyItemMoved(draggedItemIndex, targetIndex);
+                        return false;
+                    }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
+    }
+);
+
+        touchHelper.attachToRecyclerView(reminderRV);
         getReminders();
         //RecyclerViewRefresher recyclerViewRefresher = new RecyclerViewRefresher(reminderRV);
         //recyclerViewRefresher.startRefreshing();
@@ -369,6 +413,11 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                         remindersData.setSecondReminderPartOfDay("night");
                     }
                     remindersData.setReminderLocationName(reminderLocationText.getText().toString());
+                    if (categoryData == null) {
+                        categoryData = new CategoryData();
+                        categoryData.setCategoryTitle("Uncategorized");
+                        categoryData.setCategoryColor(Color.parseColor("#FFB4AB"));
+                    }
                     remindersData.setReminderCategory(categoryData);
                     databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
                     Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
@@ -478,16 +527,77 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 remindersDataArrayList.clear();
 
-                for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
-                    RemindersData remindersData = reminderSnapshot.getValue(RemindersData.class);
-                    Collections.sort(remindersDataArrayList, new Comparator<RemindersData>() {
-                        @Override
-                        public int compare(RemindersData o1, RemindersData o2) {
-                            return Long.valueOf(o1.getFirstReminderDateTime()).compareTo(o2.getFirstReminderDateTime()); // To compare integer values                        }
-                    }});
-                    remindersDataArrayList.add(remindersData);
+                reminderAutoSortCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (reminderAutoSortCheckBox.isChecked()) {
+                            remindersDataArrayList.clear();
+                            for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
+                                RemindersData remindersData = reminderSnapshot.getValue(RemindersData.class);
+
+                                Collections.sort(remindersDataArrayList, new Comparator<RemindersData>() {
+                                    @Override
+                                    public int compare(RemindersData o1, RemindersData o2) {
+                                        return Long.valueOf(o1.getFirstReminderDateTime()).compareTo(o2.getFirstReminderDateTime()); // To compare integer values                        }
+                                    }});
+                                remindersDataArrayList.add(remindersData);
+
+                            }
+                            SharedPreferences.Editor editor= getContext().getSharedPreferences("reminder_auto_sort", MODE_PRIVATE).edit();
+                            editor.putBoolean("value",true);
+                            editor.apply();
+                            reminderAutoSortCheckBox.setChecked(true);
+                            remindersAdapter.notifyDataSetChanged();
+                        }
+                        else if (!reminderAutoSortCheckBox.isChecked()) {
+                            remindersDataArrayList.clear();
+                            for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
+                                RemindersData remindersData = reminderSnapshot.getValue(RemindersData.class);
+                                remindersDataArrayList.add(remindersData);
+
+                            }
+                            SharedPreferences.Editor editor= getContext().getSharedPreferences("reminder_auto_sort", MODE_PRIVATE).edit();
+                            editor.putBoolean("value",false);
+                            editor.apply();
+                            reminderAutoSortCheckBox.setChecked(false);
+                            remindersAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
+                if (reminderAutoSortCheckBox.isChecked()) {
+                    remindersDataArrayList.clear();
+                    for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
+                        RemindersData remindersData = reminderSnapshot.getValue(RemindersData.class);
+
+                        Collections.sort(remindersDataArrayList, new Comparator<RemindersData>() {
+                            @Override
+                            public int compare(RemindersData o1, RemindersData o2) {
+                                return Long.valueOf(o1.getFirstReminderDateTime()).compareTo(o2.getFirstReminderDateTime()); // To compare integer values                        }
+                            }});
+                        remindersDataArrayList.add(remindersData);
+
+                    }
+                    SharedPreferences.Editor editor= getContext().getSharedPreferences("reminder_auto_sort", MODE_PRIVATE).edit();
+                    editor.putBoolean("value",true);
+                    editor.apply();
+                    reminderAutoSortCheckBox.setChecked(true);
+                    remindersAdapter.notifyDataSetChanged();
                 }
-                remindersAdapter.notifyDataSetChanged();
+                else if (!reminderAutoSortCheckBox.isChecked()) {
+                    remindersDataArrayList.clear();
+                    for (DataSnapshot reminderSnapshot : snapshot.getChildren()) {
+                        RemindersData remindersData = reminderSnapshot.getValue(RemindersData.class);
+                        remindersDataArrayList.add(remindersData);
+
+                    }
+                    SharedPreferences.Editor editor= getContext().getSharedPreferences("reminder_auto_sort", MODE_PRIVATE).edit();
+                    editor.putBoolean("value",false);
+                    editor.apply();
+                    reminderAutoSortCheckBox.setChecked(false);
+                    remindersAdapter.notifyDataSetChanged();
+                }
+
                 if (remindersDataArrayList.isEmpty()) {
                     reminderEmpty.setVisibility(View.VISIBLE);
                 } else {
@@ -511,8 +621,14 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     public void onRemindersCheckBoxDelete(int position) {
         Snackbar.make(reminderRV, "Reminder: " + remindersDataArrayList.get(position).getReminderTitle() + "completed!", Snackbar.LENGTH_SHORT)
                 .show();
-        databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).removeValue();
-        remindersDataArrayList.clear();
+        if (remindersDataArrayList.get(position).getSecondReminderDateTime() != 0) {
+            remindersDataArrayList.get(position).setFirstReminderDateTime(remindersDataArrayList.get(position).getSecondReminderDateTime());
+            remindersDataArrayList.clear();
+        } else {
+            databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).removeValue();
+            remindersDataArrayList.clear();
+        }
+
     }
 
     public void showPopupWindowEdit(final View view, RemindersData remindersData) {
@@ -535,6 +651,8 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         final PopupWindow popupWindow = new PopupWindow(reminderView, width, height, focusable);
         // Closes the popup window when touch outside
         //Handler for clicking on the inactive zone of the window
+        TextView popUpTitle = popupView.findViewById(R.id.title_new_reminders);
+        popUpTitle.setText("Edit Reminder");
         reminderTitle = popupView.findViewById(R.id.new_reminder_title);
         reminderTitle.setText(remindersData.getReminderTitle());
 
@@ -720,6 +838,9 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                         remindersData.setSecondReminderPartOfDay("night");
                     }
                     remindersData.setReminderLocationName(reminderLocationText.getText().toString());
+                    if (categoryData == null) {
+                        categoryData = remindersData.getReminderCategory();
+                    }
                     remindersData.setReminderCategory(categoryData);
                     databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
                     Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
