@@ -4,6 +4,7 @@ import com.koize.priority.ui.category.CategoryData;
 
 public class EventData {
     private String eventTitle;
+    private String eventType;
     private String eventStartDate;
     private String eventEndDate;
     private long eventStartDateTime;
@@ -29,6 +30,7 @@ public class EventData {
 
     public EventData(String eventTitle, String eventStartDate, String eventEndDate, long eventStartDateTime, long eventEndDateTime, int eventStartHr, int eventStartMin, int eventEndHr, int eventEndMin, String eventReminderDate, long eventReminderDateTime, int eventReminderHr, int eventReminderMin, Boolean eventAllDay, String eventLocationName, double eventLatitude, double eventLongitude, CategoryData eventCategory, String eventDesc) {
         this.eventTitle = eventTitle;
+        this.eventType = eventType;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
         this.eventStartDateTime = eventStartDateTime;
@@ -52,6 +54,11 @@ public class EventData {
     public String setEventTitle(String eventTitle) {
         this.eventTitle = eventTitle;
         return eventTitle;
+    }
+
+    public String setEventType(String eventType) {
+        this.eventType = eventType;
+        return eventType;
     }
 
     public String setEventStartDate(String eventStartDate) {
@@ -147,6 +154,7 @@ public class EventData {
     public String getEventTitle() {
         return eventTitle;
     }
+    public String getEventType() { return eventType; }
 
     public String getEventStartDate() {
         return eventStartDate;

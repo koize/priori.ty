@@ -1,12 +1,15 @@
 package com.koize.priority.ui.monthlyplanner;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.util.Pair;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -14,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CalendarView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -30,16 +34,25 @@ import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.R;
 import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
+import com.koize.priority.ui.reminders.RemindersData;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPopUp.CategoryCallBack {
     public static final int INPUT_METHOD_NEEDED = 1;
     private FloatingActionButton addEventButton;
     EditText eventTitle;
+    EditText eventType;
     TableRow dateChip;
     TextView dateText;
     TableRow timeChip;
@@ -49,6 +62,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     TextView reminderText;
     EditText eventLocationText;
     Chip eventLocationChip;
+    double eventLatitude;
+    double eventLongitude;
     Chip eventCategoryChip;
     Chip eventDescImageChip;
     EditText eventDescText;
@@ -68,18 +83,27 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     private int reminderHr;
     private int reminderMin;
     private boolean isAllDay;
-    private String eventLocation;
-    private String eventDesc;
 
     private CategoryData categoryData;
     Chip eventCategoryCard;
 
     EventData eventData;
 
+    private TextView eventCalenderEmpty;
+    private TextView eventListEmpty;
+
     FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseEventReference;
+    DatabaseReference databaseEventListReference;
+    DatabaseReference databaseEventCalenderReference;
     FirebaseUser user;
 
+    private CalendarView eventCalenderView;
+    private RecyclerView eventCalenderRecyclerView;
+    private RecyclerView eventListRecyclerView;
+    private EventListAdapter eventListAdapter;
+    private EventCalenderAdapter eventCalenderAdapter;
+    private ArrayList<EventData> eventListDataArrayList;
+    private ArrayList<EventData> eventCalenderDataArrayList;
 
 
     @Override
@@ -88,16 +112,22 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         setContentView(R.layout.activity_monthly_planner_page);
         addEventButton = findViewById(R.id.button_monthly_planner_add);
         addEventButton.setOnClickListener(addEventListener);
+        eventCalenderEmpty = findViewById(R.id.events_calendar_empty);
+        eventListEmpty = findViewById(R.id.events_list_empty);
+        eventCalenderView = findViewById(R.id.calendarView);
+        eventCalenderRecyclerView = findViewById(R.id.events_calender_recycler);
+        eventListRecyclerView = findViewById(R.id.events_list_recycler);
+
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String name = user.getDisplayName();
             if ((name != null) && name!="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseEventReference = firebaseDatabase.getReference("users/" + name + "/events");
+                databaseEventListReference = firebaseDatabase.getReference("users/" + name + "/events");
             }
             else if (name=="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseEventReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/events");
+                databaseEventListReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/events");
             }
             else {
                 throw new IllegalStateException("Unexpected value: " + name);
@@ -107,7 +137,78 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             Snackbar.make(findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
         }
+
+        eventListDataArrayList = new ArrayList<>();
+        eventListAdapter = new EventListAdapter(eventListDataArrayList, this, new EventListAdapter.EventListClickInterface() {
+            @Override
+            public void onEventListClick(int position) {
+
+            }
+        }, new EventListAdapter.EventListExtraInterface() {
+            @Override
+            public void onEventListExtraClick(int position) {
+
+            }
+        });
+        eventListRecyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        eventListRecyclerView.setAdapter(eventListAdapter);
+        getEventsList();
+
+        eventCalenderDataArrayList = new ArrayList<>();
+        eventCalenderAdapter = new EventCalenderAdapter(eventCalenderDataArrayList, this, new EventCalenderAdapter.EventCalenderClickInterface() {
+            @Override
+            public void onEventCalenderClick(int position) {
+
+            }
+        }, new EventCalenderAdapter.EventCalenderExtraInterface() {
+            @Override
+            public void onEventCalenderExtraClick(int position) {
+
+            }
+        });
+
+        eventCalenderRecyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        eventCalenderRecyclerView.setAdapter(eventCalenderAdapter);
+        eventCalenderView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+
+            }
+
+        });
     }
+
+    private void getEventsList() {
+        databaseEventListReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                eventListDataArrayList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    EventData eventData = dataSnapshot.getValue(EventData.class);
+
+                    Collections.sort(eventListDataArrayList, new Comparator<EventData>() {
+                        @Override
+                        public int compare(EventData o1, EventData o2) {
+                            return Long.compare(o1.getEventStartDateTime(), o2.getEventStartDateTime());
+                        }
+                    });
+                    eventListDataArrayList.add(eventData);
+                }
+                eventListAdapter.notifyDataSetChanged();
+                if (eventListDataArrayList.isEmpty()) {
+                    eventListEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    eventListEmpty.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
 
     View.OnClickListener addEventListener = new View.OnClickListener() {
         @Override
@@ -152,28 +253,6 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         popupWindow.setInputMethodMode(INPUT_METHOD_NEEDED);
         popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-
-
-
-        /* final View root = popupView.getRootView();
-        root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                root.getWindowVisibleDisplayFrame(r);
-
-                // Calculate the difference between the original height and the new height
-                int heightDiff = r.height() - root.getHeight();
-
-                // Now update the Popup's position
-                // The first value is the x-axis, which stays the same.
-                // Second value is the y-axis. We still want it centered, so move it up by 50% of the height
-                // change
-                // The third and the fourth values are default values to keep the width/height
-                popupWindow.update(0, heightDiff / 2, -1, -1);
-            }
-        });*/
-
-
         //Set the location of the window on the screen
         popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         View container = popupWindow.getContentView().getRootView();
@@ -189,6 +268,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         //Initialize the elements of our window, install the handler
 
         eventTitle = popupView.findViewById(R.id.new_event_title);
+        eventType = popupView.findViewById(R.id.new_event_type);
         dateChip = popupView.findViewById(R.id.button_new_event_datepicker);
         dateText = popupView.findViewById(R.id.new_event_date_start_title);
         timeChip = popupView.findViewById(R.id.button_new_event_timepicker);
@@ -206,6 +286,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         dateChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 MaterialDatePicker.Builder<Pair<Long, Long>> materialDateBuilder = MaterialDatePicker.Builder.dateRangePicker();
 
                 // now define the properties of the
@@ -247,7 +328,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     eventStartMin = 0;
                     eventEndHr = 23;
                     eventEndMin = 59;
+                    isAllDay = true;
                 } else {
+                    isAllDay = false;
                     mTimePicker1();
                 }
             }
@@ -259,7 +342,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
                 // now define the properties of the
                 // materialDateBuilder that is title text as SELECT A DATE
-                materialDateBuilder.setTitleText("1st Reminder Date");
+                materialDateBuilder.setTitleText("Reminder Date");
 
                 // now create the instance of the material date
                 // picker
@@ -303,30 +386,42 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventSaveChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventData = new EventData();
-                if (eventTitle.getText().toString().isEmpty()) {
-                    Snackbar.make(findViewById(android.R.id.content), "Event title cannot be empty!", Snackbar.LENGTH_SHORT)
-                            .show();
-                } else if (eventStartDateStartTime == 0) {
-                    Snackbar.make(findViewById(android.R.id.content), "Event start date cannot be empty!", Snackbar.LENGTH_SHORT)
-                            .show();
-                } else if (eventEndDateTime == 0) {
-                    Snackbar.make(findViewById(android.R.id.content), "Event end date cannot be empty!", Snackbar.LENGTH_SHORT)
-                            .show();
-                } else if (reminderDateTime == 0) {
-                    Snackbar.make(findViewById(android.R.id.content), "Event reminder date cannot be empty!", Snackbar.LENGTH_SHORT)
-                            .show();
-                } else if (eventLocationText.getText().toString().isEmpty()) {
-                    Snackbar.make(findViewById(android.R.id.content), "Event location cannot be empty!", Snackbar.LENGTH_SHORT)
-                            .show();
-                } else if (eventDescText.getText().toString().isEmpty()) {
-                    Snackbar.make(findViewById(android.R.id.content), "Event description cannot be empty!", Snackbar.LENGTH_SHORT)
-                            .show();
-                } else if (categoryData == null) {
-                    Snackbar.make(findViewById(android.R.id.content), "Event category cannot be empty!", Snackbar.LENGTH_SHORT)
+                if (user == null) {
+                    Snackbar.make(findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                             .show();
                 } else {
-
+                    eventData = new EventData();
+                    if (eventTitle.getText().toString().isEmpty()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Please enter a title!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    } else {
+                        eventData.setEventTitle(eventTitle.getText().toString());
+                    }
+                    if (eventType.getText().toString().isEmpty()) {
+                        eventData.setEventType("Event");
+                    } else {
+                        eventData.setEventType(eventType.getText().toString());
+                    }
+                    eventData.setEventStartDate(eventStartDate);
+                    eventData.setEventEndDate(eventEndDate);
+                    eventData.setEventStartDateTime(eventStartDateStartTime);
+                    eventData.setEventEndDateTime(eventEndDateTime);
+                    eventData.setEventAllDay(isAllDay);
+                    eventData.setEventReminderDate(reminderDate);
+                    eventData.setEventReminderDateTime(reminderDateTime);
+                    eventData.setEventLocationName(eventLocationText.getText().toString());
+                    eventData.setEventLatitude(eventLatitude);
+                    eventData.setEventLongitude(eventLongitude);
+                    if (categoryData == null) {
+                        categoryData = new CategoryData();
+                        categoryData.setCategoryTitle("Others");
+                        categoryData.setCategoryColor(Color.parseColor("#FFB4AB"));
+                    }
+                    eventData.setEventCategory(categoryData);
+                    eventData.setEventDesc(eventDescText.getText().toString());
+                    databaseEventListReference.child(eventData.getEventTitle()).setValue(eventData);
+                    Snackbar.make(findViewById(android.R.id.content), "Event saved", Snackbar.LENGTH_SHORT)
+                            .show();
                     popupWindow.dismiss();
                 }
             }

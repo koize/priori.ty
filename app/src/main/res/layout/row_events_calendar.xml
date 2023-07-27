@@ -2,8 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="299dp"
+    android:layout_width="320dp"
     android:layout_height="60dp"
+    android:layout_marginHorizontal="10dp"
     android:scrollbars="horizontal">
 
     <TextView
@@ -18,7 +19,7 @@
 
     <include
         android:id="@+id/row_events_calendar_category"
-        layout="@layout/row_category"
+        layout="@layout/row_category_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
@@ -27,11 +28,20 @@
 
     <include
         android:id="@+id/row_events_calendar_location"
-        layout="@layout/row_location"
+        layout="@layout/row_location_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="3dp"
         app:layout_constraintStart_toEndOf="@+id/row_events_calendar_category"
+        app:layout_constraintTop_toBottomOf="@+id/row_events_calendar_title" />
+
+    <include
+        android:id="@+id/row_events_calendar_time"
+        layout="@layout/row_time_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        app:layout_constraintStart_toEndOf="@+id/row_events_calendar_location"
         app:layout_constraintTop_toBottomOf="@+id/row_events_calendar_title" />
 
     <View
@@ -46,9 +56,10 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/row_category_list_card"
-        android:layout_width="80dp"
+        android:layout_width="70dp"
         android:layout_height="40dp"
         android:layout_marginEnd="8dp"
+        app:cardBackgroundColor="@color/md_theme_dark_error"
         app:cardCornerRadius="8dp"
         app:cardElevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -60,10 +71,11 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/row_events_calendar_date"
+                android:id="@+id/row_events_calendar_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textColor="@color/md_theme_dark_onSecondary"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

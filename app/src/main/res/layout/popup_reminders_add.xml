@@ -93,7 +93,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:ems="10"
-                            android:hint="Add title"
+                            android:hint="Title"
                             android:inputType="text"
                             android:paddingHorizontal="12dp"
                             android:textSize="16sp"
@@ -211,7 +211,7 @@
 
                         <EditText
                             android:id="@+id/new_reminder_location_text"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
                             android:ems="10"
@@ -220,6 +220,7 @@
                             android:paddingHorizontal="12dp"
                             android:textSize="16sp"
                             app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/icon_new_reminder_location"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -239,6 +240,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="4dp"
                             android:text="Map"
+                            android:visibility="gone"
                             app:chipIcon="@drawable/baseline_add_location_24"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
