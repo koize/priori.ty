@@ -286,6 +286,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         dateChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 MaterialDatePicker.Builder<Pair<Long, Long>> materialDateBuilder = MaterialDatePicker.Builder.dateRangePicker();
 
                 // now define the properties of the
