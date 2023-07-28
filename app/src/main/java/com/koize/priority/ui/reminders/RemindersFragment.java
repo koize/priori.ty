@@ -496,7 +496,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     if (categoryData == null) {
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
-                        categoryData.setCategoryColor(Color.parseColor("#FFB4AB"));
                     }
                     remindersData.setReminderCategory(categoryData);
                     databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
@@ -572,10 +571,13 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     }
 
     public void onRemindersCheckBoxDelete(int position) {
-        Snackbar.make(reminderRV, "Reminder: " + remindersDataArrayList.get(position).getReminderTitle() + "completed!", Snackbar.LENGTH_SHORT)
+        Snackbar.make(reminderRV, "Reminder: " + remindersDataArrayList.get(position).getReminderTitle() + " completed!", Snackbar.LENGTH_SHORT)
                 .show();
         if (remindersDataArrayList.get(position).getSecondReminderDateTime() != 0) {
             remindersDataArrayList.get(position).setFirstReminderDateTime(remindersDataArrayList.get(position).getSecondReminderDateTime());
+            remindersDataArrayList.get(position).setSecondReminderDateTime(0);
+            databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).setValue(remindersDataArrayList.get(position));
+
             remindersDataArrayList.clear();
         } else {
             databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).removeValue();
