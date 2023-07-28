@@ -1,6 +1,5 @@
 package com.koize.priority.ui.routineplanner;
 
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,7 +11,6 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.PopupWindow;
-import android.widget.TimePicker;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.koize.priority.R;
 
 
-public class NewHabitPopUp {
+public class NewHabitPopUp extends RoutineEditorPage {
     EditText habitTitle;
     EditText habitDescriptionTyper;
     String habitDescription;
@@ -39,11 +37,12 @@ public class NewHabitPopUp {
     NumberPicker durationPickerHr;
     NumberPicker durationPickerMin;
     PopupWindow popupWindow;
-    PopupWindow popupWindowdescription;
+    PopupWindow popupWindowDescription;
+    PopupWindow popupWindowDuration;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     FirebaseUser user;
-    private RecyclerView habitsRV;
+
     HabitsData habitsData;
 
     public int habitDurationHr;
@@ -89,6 +88,10 @@ public class NewHabitPopUp {
             } else {
                 throw new IllegalStateException("Unexpected value: " + name);
             }
+        }else{
+            RoutineEditorPage routineEditorPage = new RoutineEditorPage();
+            Snackbar.make(this.findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
+                    .show();
         }
             popupWindow.setTouchInterceptor(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
@@ -133,8 +136,7 @@ public class NewHabitPopUp {
                         totalHabitDuration = (habitDurationHr * 60) + habitDurationMin;
                         habitsData.setHabitsDuration(totalHabitDuration);
 
-
-                        habitsData.setHabitsDescription(habitDescription);
+                        //habitsData.setHabitsDescription(habitDescription);
 
                         databaseReference.child(habitsData.getHabitsTitle()).setValue(habitsData);
                         popupWindow.dismiss();
@@ -172,32 +174,32 @@ public class NewHabitPopUp {
                     boolean focusable = true;
 
                     //Create a window with our parameters
-                    popupWindow = new PopupWindow(popupView, width, height, focusable);
+                    popupWindowDuration = new PopupWindow(popupView, width, height, focusable);
                     // Closes the popup window when touch outside
                     //Handler for clicking on the inactive zone of the window
 
 
                     user = FirebaseAuth.getInstance().getCurrentUser();
 
-                    popupWindow.setTouchInterceptor(new View.OnTouchListener() {
+                    popupWindowDuration.setTouchInterceptor(new View.OnTouchListener() {
                         public boolean onTouch(View v, MotionEvent event) {
                             if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                                popupWindow.dismiss();
+                                popupWindowDuration.dismiss();
                                 return true;
                             }
                             return false;
                         }
                     });
 
-                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    popupWindow.setAnimationStyle(com.google.android.material.R.style.Animation_AppCompat_Dialog);
-                    popupWindow.setOutsideTouchable(true);
-                    popupWindow.setInputMethodMode(INPUT_METHOD_NEEDED);
-                    popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                    popupWindowDuration.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    popupWindowDuration.setAnimationStyle(com.google.android.material.R.style.Animation_AppCompat_Dialog);
+                    popupWindowDuration.setOutsideTouchable(true);
+                    popupWindowDuration.setInputMethodMode(INPUT_METHOD_NEEDED);
+                    popupWindowDuration.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
                     //Set the location of the window on the screen
-                    popupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-                    View container = popupWindow.getContentView().getRootView();
+                    popupWindowDuration.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+                    View container = popupWindowDuration.getContentView().getRootView();
                     if (container != null) {
                         WindowManager wm = (WindowManager) container.getContext().getSystemService(Context.WINDOW_SERVICE);
                         WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
@@ -214,7 +216,7 @@ public class NewHabitPopUp {
                             habitDurationHr = durationPickerHr.getValue();
                             habitDurationMin = durationPickerMin.getValue();
                             habitSetDurationChip.setText(habitDurationHr + " Hr " + habitDurationMin + " Min");
-                            popupWindow.dismiss();
+                            popupWindowDuration.dismiss();
                         }
                     });
 
@@ -240,28 +242,11 @@ public class NewHabitPopUp {
                     boolean focusable = true;
 
                     //Create a window with our parameters
-                    popupWindowdescription = new PopupWindow(popupView, width, height, focusable);
+                    popupWindowDescription = new PopupWindow(popupView, width, height, focusable);
                     // Closes the popup window when touch outside
                     //Handler for clicking on the inactive zone of the window
 
-
-                    user = FirebaseAuth.getInstance().getCurrentUser();
-                    if (user != null) {
-                        String name = user.getDisplayName();
-                        if ((name != null) && name != "") {
-                            firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                            databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
-                        } else if (name == "") {
-                            firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                            databaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/journal");
-                        } else {
-                            throw new IllegalStateException("Unexpected value: " + name);
-                        }
-
-
-                    }
-
-                    popupWindowdescription.setTouchInterceptor(new View.OnTouchListener() {
+                    popupWindowDescription.setTouchInterceptor(new View.OnTouchListener() {
                         public boolean onTouch(View v, MotionEvent event) {
                             if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
                                 popupWindow.dismiss();
@@ -271,15 +256,15 @@ public class NewHabitPopUp {
                         }
                     });
 
-                    popupWindowdescription.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    popupWindowdescription.setAnimationStyle(com.google.android.material.R.style.Animation_AppCompat_Dialog);
-                    popupWindowdescription.setOutsideTouchable(true);
-                    popupWindowdescription.setInputMethodMode(INPUT_METHOD_NEEDED);
-                    popupWindowdescription.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                    popupWindowDescription.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    popupWindowDescription.setAnimationStyle(com.google.android.material.R.style.Animation_AppCompat_Dialog);
+                    popupWindowDescription.setOutsideTouchable(true);
+                    popupWindowDescription.setInputMethodMode(INPUT_METHOD_NEEDED);
+                    popupWindowDescription.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
                     //Set the location of the window on the screen
-                    popupWindowdescription.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-                    View container = popupWindowdescription.getContentView().getRootView();
+                    popupWindowDescription.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+                    View container = popupWindowDescription.getContentView().getRootView();
                     if (container != null) {
                         WindowManager wm = (WindowManager) container.getContext().getSystemService(Context.WINDOW_SERVICE);
                         WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
@@ -299,7 +284,7 @@ public class NewHabitPopUp {
                             } else {
                                 habitAddDescriptionChip.setText(habitDescription);
                             }
-                            popupWindowdescription.dismiss();
+                            popupWindowDescription.dismiss();
                         }
                     });
 

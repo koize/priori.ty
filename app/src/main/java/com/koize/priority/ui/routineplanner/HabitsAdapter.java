@@ -41,7 +41,11 @@ public class HabitsAdapter extends RecyclerView.Adapter<HabitsAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         HabitsData habitsData = habitsDataArrayList.get(position);
         holder.rowCardTitle.setText(habitsData.getHabitsTitle());
-        holder.rowCardDuration.setText(habitsData.getHabitsDuration());
+        //int duration_int = habitsData.getHabitsDuration();
+        //String duration_string = duration_int.toString();
+
+        holder.rowCardDuration.setText(habitsData.getHabitsDuration()+"m");
+        //or holder.rowCardDuration.setText(Integer.toString(habitsData.getHabitsDuration()));
 
         holder.rowCard.setOnClickListener(new View.OnClickListener() {
             @Override

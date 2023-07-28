@@ -47,7 +47,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/habits_picker_title" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_row_habit_list"
+                android:id="@+id/recycler_habit_list"
                 android:layout_width="280dp"
                 android:layout_height="330dp"
                 android:layout_marginStart="25dp"
