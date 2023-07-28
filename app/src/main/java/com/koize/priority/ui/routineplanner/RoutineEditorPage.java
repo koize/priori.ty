@@ -91,6 +91,13 @@ public class RoutineEditorPage extends AppCompatActivity {
                 }
             }
             //Initialize the elements of our window, install the handler
+            habitPickerNewHabitChip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NewHabitPopUp newHabitPopUp = new NewHabitPopUp();
+                    newHabitPopUp.showPopupWindow(v);
+                }
+            });
 
 
 

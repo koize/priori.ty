@@ -140,7 +140,7 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/button_new_reminder_choose_date_1"
+                            android:id="@+id/button_new_habit_setDuration"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="4dp"
@@ -182,15 +182,15 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/baseline_location_on_24" />
+                            app:srcCompat="@drawable/baseline_description_24" />
 
                         <com.google.android.material.chip.Chip
-                            android:id="@+id/button_new_schedule_addDescription"
+                            android:id="@+id/button_new_habit_addDescription"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="4dp"
                             android:text="Add Description"
-                            app:chipIcon="@drawable/baseline_add_location_24"
+                            app:chipIcon="@drawable/baseline_description_24"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
