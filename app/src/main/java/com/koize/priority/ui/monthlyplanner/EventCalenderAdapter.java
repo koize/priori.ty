@@ -54,6 +54,11 @@ private ArrayList<EventData> eventDataCalenderArrayList;
         holder.eventCategory.setText(eventData.getEventCategory().getCategoryTitle());
         holder.eventCategory.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
         holder.eventLocation.setText(eventData.getEventLocationName());
+        if (holder.eventLocation.getText().toString().equals("")) {
+            holder.eventLocation.setVisibility(View.GONE);
+        } else {
+            holder.eventLocation.setVisibility(View.VISIBLE);
+        }
         holder.eventTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
         holder.eventType.setText(eventData.getEventType());
 

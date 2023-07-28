@@ -33,10 +33,11 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/home_agenda_card"
                 android:layout_width="373dp"
-                android:layout_height="540dp"
+                android:layout_height="wrap_content"
                 android:paddingBottom="20dp"
                 app:cardCornerRadius="30dp"
                 app:cardElevation="1dp"
+                app:layout_constraintBottom_toTopOf="@+id/title_upcoming_events"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title_monthly_planner">
@@ -55,7 +56,8 @@
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="340dp"
-                        android:layout_height="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
                         android:layout_marginBottom="20dp"
                         app:cardCornerRadius="15dp"
                         app:cardElevation="3dp"
@@ -66,7 +68,8 @@
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content"
+                            android:minHeight="63dp">
 
                             <include
                                 android:id="@+id/events_calendar_empty"
@@ -85,16 +88,16 @@
                                 style="@android:style/Widget.Material.ProgressBar"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:indeterminate="true"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                android:indeterminate="true" />
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/events_calender_recycler"
                                 android:layout_width="0dp"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"

@@ -50,6 +50,7 @@ import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPopUp.CategoryCallBack {
     public static final int INPUT_METHOD_NEEDED = 1;
@@ -73,6 +74,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     Chip eventSaveChip;
     private String eventStartDate;
     private String eventEndDate;
+    private long eventStartDateEpoch;
+    private long eventEndDateEpoch;
     private long eventStartDateStartTime;
     private long eventEndDateTime;
 
@@ -183,7 +186,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventCalenderAdapter = new EventCalenderAdapter(eventCalenderDataArrayList, this, new EventCalenderAdapter.EventCalenderClickInterface() {
             @Override
             public void onEventCalenderClick(int position) {
-
+                EventData eventData = eventCalenderDataArrayList.get(position);
+                showSavedEventPopupWindow(eventCalenderRecyclerView, eventData);
             }
         }, new EventCalenderAdapter.EventCalenderExtraInterface() {
             @Override
@@ -197,9 +201,48 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventCalenderView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-
+                eventCalenderLoading.setVisibility(View.VISIBLE);
+                long dateSelected = getEpochMilliseconds(year, month, dayOfMonth);
+                getEventsCalender(dateSelected);
             }
 
+        });
+        getEventsCalender(eventCalenderView.getDate());
+    }
+
+    public static long getEpochMilliseconds(int year, int month, int dayOfMonth) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, dayOfMonth);
+        return calendar.getTimeInMillis();
+    }
+
+
+    private void getEventsCalender(long dateSelected) {
+        Query query = databaseEventListReference.orderByChild("eventStartDateTime");
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                eventCalenderDataArrayList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    EventData eventData = dataSnapshot.getValue(EventData.class);
+                    if ((eventData.getEventStartDateEpoch() - 28800000) <= dateSelected && (eventData.getEventEndDateEpoch()) >= dateSelected ) {
+                        eventCalenderDataArrayList.add(eventData);
+                    }
+                }
+                eventCalenderAdapter.notifyDataSetChanged();
+                if (eventCalenderDataArrayList.isEmpty()) {
+                    eventCalenderLoading.setVisibility(View.GONE);
+                    eventCalenderEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    eventCalenderLoading.setVisibility(View.GONE);
+                    eventCalenderEmpty.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
     }
 
@@ -329,6 +372,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
                                 eventStartDateStartTime = (long) Pair.class.cast(selection).first;
                                 eventEndDateTime = (long) Pair.class.cast(selection).second;
+                                eventStartDateEpoch = eventStartDateStartTime;
+                                eventEndDateEpoch = eventEndDateTime;
                                 eventStartDate = materialDatePicker.getHeaderText();
                                 dateText.setText(eventStartDate);
                             }
@@ -430,6 +475,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     } else {
                         eventData.setEventStartDate(eventStartDate);
                     }
+                    eventData.setEventStartDateEpoch(eventStartDateEpoch);
+                    eventData.setEventEndDateEpoch(eventEndDateEpoch);
                     eventData.setEventEndDate(eventEndDate);
                     eventData.setEventStartDateTime(eventStartDateStartTime);
                     eventData.setEventEndDateTime(eventEndDateTime);
@@ -445,7 +492,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     if (categoryData == null) {
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
-                        categoryData.setCategoryColor(Color.parseColor("#FFB4AB"));
+                        //categoryData.setCategoryColor(Color.parseColor("#FFB4AB"));
                     }
                     eventData.setEventCategory(categoryData);
                     eventData.setEventDesc(eventDescText.getText().toString());
@@ -797,6 +844,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
                                 eventStartDateStartTime = (long) Pair.class.cast(selection).first;
                                 eventEndDateTime = (long) Pair.class.cast(selection).second;
+                                eventStartDateEpoch = eventStartDateStartTime;
+                                eventEndDateEpoch = eventEndDateTime;
                                 eventStartDate = materialDatePicker.getHeaderText();
                                 dateText.setText(eventStartDate);
                             }
@@ -891,6 +940,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     } else {
                         eventData.setEventType(eventType.getText().toString());
                     }
+                    eventData.setEventStartDateEpoch(eventStartDateEpoch);
+                    eventData.setEventEndDateEpoch(eventEndDateEpoch);
                     eventData.setEventStartDate(eventStartDate);
                     eventData.setEventEndDate(eventEndDate);
                     eventData.setEventStartDateTime(eventStartDateStartTime);
