@@ -176,38 +176,8 @@ public class RoutineEditorPage extends AppCompatActivity {
         }
 
         private boolean onHabitLongClick(int position) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(habitsRV.getContext());
 
-            // Set the message show for the Alert time
-            builder.setMessage("Edit/Delete: " + habitsDataArrayList.get(position).getHabitsTitle() + "? ");
-
-            // Set Alert Title
-            builder.setTitle("Warning!");
-
-            // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
-            builder.setCancelable(true);
-
-            // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
-            builder.setPositiveButton("Delete!", (DialogInterface.OnClickListener) (dialog, which) -> {
-                // When the user click yes button then app will close
-                databaseReference.child(habitsDataArrayList.get(position).getHabitsTitle()).removeValue();
-                Snackbar.make(habitsRV, "Habit Deleted", Snackbar.LENGTH_SHORT)
-                        .show();
-                dialog.dismiss();
-            });
-
-            // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
-            builder.setNegativeButton("Edit", (DialogInterface.OnClickListener) (dialog, which) -> {
-                // If user click no then dialog box is canceled.
-                showPopupEditWindow();
-                dialog.cancel();
-            });
-
-            // Create the Alert dialog
-            AlertDialog alertDialog = builder.create();
-            // Show the Alert Dialog box
-            alertDialog.show();
-            return false; //!!!! change to popup ig and add warning
+            return false;
         }
 
 
@@ -216,7 +186,4 @@ public class RoutineEditorPage extends AppCompatActivity {
         }
     };
 
-    private void showPopupEditWindow() {
-        showPopupEditWindow();
-    }
 }
