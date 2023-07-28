@@ -62,6 +62,16 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.View
         holder.rowCardCategoryChip.setChipBackgroundColor(ColorStateList.valueOf(remindersData.getReminderCategory().getCategoryColor()));
         holder.rowCardLocationChip.setText(remindersData.getReminderLocationName());
 
+        if (holder.rowCardLocationChip.getText().toString().equals("")){
+            holder.rowCardLocationChip.setVisibility(View.GONE);
+        } else {
+            holder.rowCardLocationChip.setVisibility(View.VISIBLE);
+        }
+
+        if (remindersData.getFirstReminderDateTime() == 0) {
+           rowDateTimeCard.setVisibility(View.INVISIBLE);
+        }
+
         holder.rowCardDateTime.setText(convertTimestampTop(remindersData.getFirstReminderDateTime()));
         holder.rowCardTimeLeft.setText(convertTimestampBot(remindersData.getFirstReminderDateTime()));
 
