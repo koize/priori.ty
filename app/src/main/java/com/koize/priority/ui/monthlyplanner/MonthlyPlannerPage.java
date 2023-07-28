@@ -21,6 +21,7 @@ import android.widget.CalendarView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -91,7 +92,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     EventData eventData;
 
     private TextView eventCalenderEmpty;
+    private ProgressBar eventCalenderLoading;
     private TextView eventListEmpty;
+    private ProgressBar eventListLoading;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseEventListReference;
@@ -114,7 +117,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         addEventButton = findViewById(R.id.button_monthly_planner_add);
         addEventButton.setOnClickListener(addEventListener);
         eventCalenderEmpty = findViewById(R.id.events_calendar_empty);
+        eventCalenderLoading = findViewById(R.id.events_calendar_loading);
         eventListEmpty = findViewById(R.id.events_list_empty);
+        eventListLoading = findViewById(R.id.events_list_loading);
         eventCalenderView = findViewById(R.id.calendarView);
         eventCalenderRecyclerView = findViewById(R.id.events_calender_recycler);
         eventListRecyclerView = findViewById(R.id.events_list_recycler);
@@ -191,8 +196,10 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                 }
                 eventListAdapter.notifyDataSetChanged();
                 if (eventListDataArrayList.isEmpty()) {
+                    eventListLoading.setVisibility(View.GONE);
                     eventListEmpty.setVisibility(View.VISIBLE);
                 } else {
+                    eventListLoading.setVisibility(View.GONE);
                     eventListEmpty.setVisibility(View.GONE);
                 }
             }
