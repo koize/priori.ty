@@ -37,7 +37,6 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.View
     long minutesSinceNow;
     long secondsSinceNow;
     private int[] colors = {Color.RED, Color.parseColor("#FFB4AB")};
-    private MaterialCardView rowDateTimeCard;
 
 
     public RemindersAdapter(ArrayList<RemindersData> remindersDataArrayList, Context context, RemindersClickInterface remindersClickInterface, RemindersCheckBoxDeleteInterface remindersCheckBoxDeleteInterface) {
@@ -69,7 +68,7 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.View
         }
 
         if (remindersData.getFirstReminderDateTime() == 0) {
-           rowDateTimeCard.setVisibility(View.INVISIBLE);
+           holder.rowDateTimeCard.setVisibility(View.INVISIBLE);
         }
 
         holder.rowCardDateTime.setText(convertTimestampTop(remindersData.getFirstReminderDateTime()));
@@ -77,7 +76,7 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.View
 
         if (secondsSinceNow <= 0 && minutesSinceNow <=0 && hoursSinceNow <= 0 && daysSinceNow <= 0){
             holder.rowCardTimeLeft.setText("Overdue");
-            startChangingColors();
+            startChangingColors(holder.rowDateTimeCard);
         }
 
         //holder.rowCardDateTime.setText(remindersData.getReminderDateTime());
@@ -147,7 +146,7 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.View
             return hoursSinceNow + "hr, " + timeOfDay;
         }
     }
-    public void startChangingColors() {
+    public void startChangingColors(MaterialCardView rowDateTimeCard) {
         CountDownTimer timer = new CountDownTimer(600000, 750) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -161,7 +160,7 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.View
             @Override
             public void onFinish() {
                 // Start the timer again
-                startChangingColors();
+                startChangingColors(rowDateTimeCard);
             }
         };
 
@@ -180,6 +179,8 @@ public class RemindersAdapter extends RecyclerView.Adapter<RemindersAdapter.View
         private Chip rowCardLocationChip;
         private TextView rowCardDateTime;
         private TextView rowCardTimeLeft;
+        private MaterialCardView rowDateTimeCard;
+
 
 
         public ViewHolder(@NonNull View itemView) {

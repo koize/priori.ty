@@ -496,7 +496,6 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     if (categoryData == null) {
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
-                        categoryData.setCategoryColor(Color.parseColor("#FFB4AB"));
                     }
                     remindersData.setReminderCategory(categoryData);
                     databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
@@ -572,10 +571,13 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     }
 
     public void onRemindersCheckBoxDelete(int position) {
-        Snackbar.make(reminderRV, "Reminder: " + remindersDataArrayList.get(position).getReminderTitle() + "completed!", Snackbar.LENGTH_SHORT)
+        Snackbar.make(reminderRV, "Reminder: " + remindersDataArrayList.get(position).getReminderTitle() + " completed!", Snackbar.LENGTH_SHORT)
                 .show();
         if (remindersDataArrayList.get(position).getSecondReminderDateTime() != 0) {
             remindersDataArrayList.get(position).setFirstReminderDateTime(remindersDataArrayList.get(position).getSecondReminderDateTime());
+            remindersDataArrayList.get(position).setSecondReminderDateTime(0);
+            databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).setValue(remindersDataArrayList.get(position));
+
             remindersDataArrayList.clear();
         } else {
             databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).removeValue();
@@ -616,9 +618,13 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         firstReminderChip.setText(dateFormat.format(dateTime));
 
         secondReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_2);
-        long epochTime2 = remindersData.getSecondReminderDateTime() - 28800000;
-        LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochTime2), ZoneId.of("Asia/Singapore"));
-        secondReminderChip.setText(dateFormat.format(dateTime2));
+        if (remindersData.getSecondReminderDateTime() == 0) {
+            secondReminderChip.setText("Not set");
+        } else {
+            long epochTime2 = remindersData.getSecondReminderDateTime() - 28800000;
+            LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochTime2), ZoneId.of("Asia/Singapore"));
+            secondReminderChip.setText(dateFormat.format(dateTime2));
+        }
 
         reminderLocationText = popupView.findViewById(R.id.new_reminder_location_text);
         reminderLocationText.setText(remindersData.getReminderLocationName());
