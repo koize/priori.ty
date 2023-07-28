@@ -616,9 +616,13 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         firstReminderChip.setText(dateFormat.format(dateTime));
 
         secondReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_2);
-        long epochTime2 = remindersData.getSecondReminderDateTime() - 28800000;
-        LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochTime2), ZoneId.of("Asia/Singapore"));
-        secondReminderChip.setText(dateFormat.format(dateTime2));
+        if (remindersData.getSecondReminderDateTime() == 0) {
+            secondReminderChip.setText("Not set");
+        } else {
+            long epochTime2 = remindersData.getSecondReminderDateTime() - 28800000;
+            LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochTime2), ZoneId.of("Asia/Singapore"));
+            secondReminderChip.setText(dateFormat.format(dateTime2));
+        }
 
         reminderLocationText = popupView.findViewById(R.id.new_reminder_location_text);
         reminderLocationText.setText(remindersData.getReminderLocationName());
