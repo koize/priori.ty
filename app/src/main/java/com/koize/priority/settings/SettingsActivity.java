@@ -1,5 +1,7 @@
 package com.koize.priority.settings;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -14,8 +16,10 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.koize.priority.R;
 
 import java.util.Arrays;
@@ -50,68 +54,73 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
-            Preference signInPreference = findPreference("sign_in");
-            Preference signOutPreference = findPreference("sign_out");
-            Preference deleteAccountPreference = findPreference("delete_account");
             Preference accountSettingsPreference = findPreference("account_settings");
-
-            signInPreference.setOnPreferenceClickListener(preference -> {
-                showFirebaseUI();
-
-                return true;
-            });
-
-            signOutPreference.setOnPreferenceClickListener(preference -> {
-                AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-
-                        Intent main_firebaseUI = new Intent(requireContext(), SettingsActivity.class);
-                        main_firebaseUI.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(main_firebaseUI);
-
-                        Toast.makeText(requireContext(), "You have been signed out", Toast.LENGTH_SHORT).show();
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                        Toast.makeText(requireContext(), "Failed to sign out, please try again later", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-                return true;
-            });
-
-            deleteAccountPreference.setOnPreferenceClickListener(preference -> {
-                AuthUI.getInstance().delete(requireContext());
-                AuthUI.getInstance().delete(requireContext()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(requireContext(), "Your account has been deleted", Toast.LENGTH_SHORT).show();
-
-                        Intent main_firebaseUI = new Intent(requireContext(), SettingsActivity.class);
-                        main_firebaseUI.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(main_firebaseUI);
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                        Toast.makeText(requireContext(), "Failed to delete account, please try again later", Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-                return true;
-            });
+            Preference convertGuestToFull = findPreference("convert_guest_to_full");
+            Preference offlineSync = findPreference("offline_sync");
+            Preference deleteAccount = findPreference("delete_account");
 
             accountSettingsPreference.setOnPreferenceClickListener(preference -> {
                 Intent accountSettings = new Intent(requireContext(), AccountSettings.class);
                 startActivity(accountSettings);
                 return true;
             });
+
+            convertGuestToFull.setOnPreferenceClickListener(preference -> {
+                if (user.isAnonymous()) {
+                    showFirebaseUI();
+                } else {
+                    Toast.makeText(requireContext(), "You are already a full user!", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            });
+
+            offlineSync.setOnPreferenceChangeListener((preference, newValue) -> {
+                if (newValue.toString().equals("true")) {
+                    FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+                    Snackbar.make(requireView(), "Offline sync enabled", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    FirebaseDatabase.getInstance().setPersistenceEnabled(false);
+                    Snackbar.make(requireView(), "Offline sync disabled", Snackbar.LENGTH_SHORT).show();
+                }
+                return true;
+            });
+
+            deleteAccount.setOnPreferenceClickListener(preference -> {
+                if (user.isAnonymous()) {
+                    Snackbar.make(requireView(), "You are a Peasant", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                    builder.setTitle("WARNING!!!! YOU ARE DELETING ALL YOUR DATA");
+                    builder.setMessage("ARE YOU SURE YOU WANT TO CONTINUE???");
+                    builder.setPositiveButton("Yes (dont complain ah)", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Snackbar.make(requireView(), "Account deleted", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(requireView(), "You are now a peasant", Snackbar.LENGTH_SHORT).show();
+                                    showFirebaseUI();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Snackbar.make(requireView(), "Account deletion failed", Snackbar.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }).setNegativeButton("No.. im scared", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Snackbar.make(requireView(), "u scared ah", Snackbar.LENGTH_SHORT).show();
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                }
+                return true;
+            });
+
 
 
 
