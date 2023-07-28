@@ -4,54 +4,30 @@
     <PreferenceCategory app:title="Account">
 
         <Preference
-            android:id="@+id/settings_button_sign_in"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            app:key="sign_in"
-            app:title="test - sign in"
-            app:useSimpleSummaryProvider="true" />
-        <Preference
-            android:id="@+id/settings_button_sign_out"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            app:key="sign_out"
-            app:title="test - sign out"
-            app:useSimpleSummaryProvider="true" />
-        <Preference
-            android:id="@+id/settings_button_delete_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            app:key="delete_account"
-            app:title="test - delete account"
-            app:useSimpleSummaryProvider="true" />
-        <Preference
             android:id="@+id/settings_button_account_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:key="account_settings"
             app:title="View details"
             app:useSimpleSummaryProvider="true" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="Cloud sync - requires account">
-
-        <SwitchPreferenceCompat
-            android:id="@+id/settings_switch_sync"
-            app:key="sync"
-            app:summaryOff="All data stored locally"
-            app:summaryOn="All data synced to cloud"
-            app:title="Use cloud data sync" />
-
         <Preference
             android:id="@+id/settings_button_delete_cloud_data"
 
-            app:summary="Required before deleting account"
-            app:title="Delete cloud data and use local storage"
+            app:key="convert_guest_to_full"
+            app:summary="Data will be deleted on app uninstall unless converted"
+            app:title="Convert Guest account to full account"
             app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Offline settings">
+
+        <SwitchPreferenceCompat
+            android:id="@+id/settings_switch_sync"
+            app:key="offline_sync"
+            app:summaryOff="On connection loss, data will be unable to load"
+            app:summaryOn="On connection loss, a recent copy of data will be stored, but new transactions may not work correctly"
+            app:title="Enable offline persistance" />
 
     </PreferenceCategory>
     <PreferenceCategory android:title="DANGER ZONE!!!!">
@@ -61,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
+            app:key="delete_account"
             app:summary="WARNING: NOT REVERSIBLE!! YOU HAVE BEEN WARNED"
             app:title="Delete ALL data"
             app:useSimpleSummaryProvider="true" />
