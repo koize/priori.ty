@@ -54,7 +54,12 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         holder.eventCategory.setText(eventData.getEventCategory().getCategoryTitle());
         holder.eventCategory.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
         holder.eventLocation.setText(eventData.getEventLocationName());
-        holder.eventTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
+        if (holder.eventLocation.getText().toString().equals("")) {
+            holder.eventLocation.setVisibility(View.GONE);
+        } else {
+            holder.eventLocation.setVisibility(View.VISIBLE);
+        }
+        holder.eventTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime(), eventData.getEventAllDay()));
         holder.eventDaysLeft.setText(convertTimestampToDaysLeft(eventData.getEventStartDateTime()));
         holder.eventDateRange.setText(convertTimestampToDateRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
     }
@@ -79,7 +84,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         timestamp2 = timestamp2 - 28800000;
         LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
         LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp2), ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MMM");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM");
         String formattedStartDate = formatter.format(dateTime1);
         String formattedEndDate = formatter.format(dateTime2);
 
@@ -110,7 +115,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         return formattedStartDate + " - " + formattedEndDate;
     }
 
-    public String convertTimestampToTimeRange(long timestamp1, long timestamp2) {
+    public String convertTimestampToTimeRange(long timestamp1, long timestamp2, boolean isAllDay) {
         timestamp1 = timestamp1 - 28800000;
         timestamp2 = timestamp2 - 28800000;
         LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
@@ -144,7 +149,11 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             return hoursSinceNow + "hr, " + timeOfDay;
         }
         */
-        return formattedTime + " - " + formattedTime2;
+        if (isAllDay) {
+            return "All Day";
+        } else {
+            return formattedTime + " - " + formattedTime2;
+        }
     }
 
     public int getItemCount() {
@@ -169,8 +178,8 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             eventLocation = view.findViewById(R.id.row_events_list_location);
             eventTime = view.findViewById(R.id.row_events_list_time);
             eventDateTimeCard = view.findViewById(R.id.row_category_list_card);
-            eventDaysLeft = view.findViewById(R.id.row_events_list_date);
-            eventDateRange = view.findViewById(R.id.row_events_list_time);
+            eventDaysLeft = view.findViewById(R.id.row_events_list_daysleft);
+            eventDateRange = view.findViewById(R.id.row_events_list_date);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

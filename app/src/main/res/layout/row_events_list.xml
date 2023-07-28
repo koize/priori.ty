@@ -45,6 +45,16 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/row_events_list_category" />
 
+        <include
+            android:id="@+id/row_events_list_time"
+            layout="@layout/row_time_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/row_events_list_location" />
+
         <View
             android:id="@+id/divider2"
             android:layout_width="match_parent"
@@ -57,7 +67,7 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/row_category_list_card"
-            android:layout_width="100dp"
+            android:layout_width="105dp"
             android:layout_height="50dp"
             android:layout_marginEnd="8dp"
             app:cardBackgroundColor="@color/md_theme_dark_error"
@@ -72,7 +82,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/row_events_list_date"
+                    android:id="@+id/row_events_list_daysleft"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/md_theme_dark_onSecondary"
@@ -83,14 +93,14 @@
                     tools:text="5 Days" />
 
                 <TextView
-                    android:id="@+id/row_events_list_dayseft"
+                    android:id="@+id/row_events_list_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="4dp"
                     android:textColor="@color/md_theme_dark_onSecondary"
-                    android:textSize="13sp"
+                    android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imageView2"
@@ -101,26 +111,14 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="8dp"
                     android:src="@drawable/baseline_access_time_24"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/row_events_list_date"
-                    app:layout_constraintVertical_bias="0.32" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>
-
-        <include
-            android:id="@+id/row_events_list_time"
-            layout="@layout/row_time_card"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/row_events_list_location" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
