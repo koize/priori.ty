@@ -59,7 +59,11 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         } else {
             holder.eventLocation.setVisibility(View.VISIBLE);
         }
-        holder.eventTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime(), eventData.getEventAllDay()));
+        if (eventData.getEventAllDay()) {
+            holder.eventTime.setText("All Day");
+        } else {
+            holder.eventTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime(), eventData.getEventAllDay()));
+        }
         holder.eventDaysLeft.setText(convertTimestampToDaysLeft(eventData.getEventStartDateTime()));
         holder.eventDateRange.setText(convertTimestampToDateRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
     }

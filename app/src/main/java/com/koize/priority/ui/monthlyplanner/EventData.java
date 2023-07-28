@@ -7,6 +7,8 @@ public class EventData {
     private String eventType;
     private String eventStartDate;
     private String eventEndDate;
+    private long eventStartDateEpoch;
+    private long eventEndDateEpoch;
     private long eventStartDateTime;
     private long eventEndDateTime;
     private int eventStartHr;
@@ -33,6 +35,8 @@ public class EventData {
         this.eventType = eventType;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
+        this.eventStartDateEpoch = eventStartDateEpoch;
+        this.eventEndDateEpoch = eventEndDateEpoch;
         this.eventStartDateTime = eventStartDateTime;
         this.eventEndDateTime = eventEndDateTime;
         this.eventStartHr = eventStartHr;
@@ -69,6 +73,16 @@ public class EventData {
     public String setEventEndDate(String eventEndDate) {
         this.eventEndDate = eventEndDate;
         return eventEndDate;
+    }
+
+    public long setEventStartDateEpoch(long eventStartDateEpoch) {
+        this.eventStartDateEpoch = eventStartDateEpoch;
+        return eventStartDateEpoch;
+    }
+
+    public long setEventEndDateEpoch(long eventEndDateEpoch) {
+        this.eventEndDateEpoch = eventEndDateEpoch;
+        return eventEndDateEpoch;
     }
 
     public long setEventStartDateTime(long eventStartDateTime) {
@@ -162,6 +176,14 @@ public class EventData {
 
     public String getEventEndDate() {
         return eventEndDate;
+    }
+
+    public long getEventStartDateEpoch() {
+        return eventStartDateEpoch;
+    }
+
+    public long getEventEndDateEpoch() {
+        return eventEndDateEpoch;
     }
 
     public long getEventStartDateTime() {
