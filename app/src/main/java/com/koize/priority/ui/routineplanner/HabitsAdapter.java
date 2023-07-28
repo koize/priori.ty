@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.koize.priority.R;
-import com.koize.priority.ui.journal.JournalAdapter;
 
 import java.util.ArrayList;
 
