@@ -14,7 +14,7 @@
     app:chipMinHeight="0dp"
     app:ensureMinTouchTargetSize="false"
     app:textEndPadding="0dp"
-    app:textStartPadding="0dp"
+    app:textStartPadding="2dp"
     tools:text="meow">
 
 </com.google.android.material.chip.Chip>

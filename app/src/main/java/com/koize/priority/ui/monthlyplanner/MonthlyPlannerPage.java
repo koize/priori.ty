@@ -38,6 +38,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.R;
 import com.koize.priority.ui.category.CategoryData;
@@ -179,19 +180,13 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     }
 
     private void getEventsList() {
-        databaseEventListReference.addValueEventListener(new ValueEventListener() {
+        Query query = databaseEventListReference.orderByChild("eventStartDateTime");
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 eventListDataArrayList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     EventData eventData = dataSnapshot.getValue(EventData.class);
-
-                    Collections.sort(eventListDataArrayList, new Comparator<EventData>() {
-                        @Override
-                        public int compare(EventData o1, EventData o2) {
-                            return Long.compare(o1.getEventStartDateTime(), o2.getEventStartDateTime());
-                        }
-                    });
                     eventListDataArrayList.add(eventData);
                 }
                 eventListAdapter.notifyDataSetChanged();
@@ -287,7 +282,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             @Override
             public void onClick(View v) {
 
-                MaterialDatePicker.Builder<Pair<Long, Long>> materialDateBuilder = MaterialDatePicker.Builder.dateRangePicker();
+                MaterialDatePicker.Builder materialDateBuilder = MaterialDatePicker.Builder.dateRangePicker();
 
                 // now define the properties of the
                 // materialDateBuilder that is title text as SELECT A DATE
@@ -305,8 +300,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                             @SuppressLint("SetTextI18n")
                             @Override
                             public void onPositiveButtonClick(Object selection) {
-                                eventStartDateStartTime = (long) selection;
-                                eventEndDateTime = (long) selection;
+
+                                eventStartDateStartTime = (long) Pair.class.cast(selection).first;
+                                eventEndDateTime = (long) Pair.class.cast(selection).second;
                                 eventStartDate = materialDatePicker.getHeaderText();
                                 dateText.setText(eventStartDate);
                             }
@@ -331,7 +327,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     isAllDay = true;
                 } else {
                     isAllDay = false;
-                    mTimePicker1();
+                    timeText.setText("Time:");
                 }
             }
         });
@@ -373,7 +369,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventCategoryChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CategoryPopUp categoryPopUp = new CategoryPopUp(categoryData1 -> MonthlyPlannerPage.this.sendCategory(categoryData));
+                CategoryPopUp categoryPopUp = new CategoryPopUp(categoryData -> MonthlyPlannerPage.this.sendCategory(categoryData));
                 categoryPopUp.showPopupWindow(v);
             }
         });
@@ -460,7 +456,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                         eventEndHr = materialTimePicker.getHour();
                         eventEndMin = materialTimePicker.getMinute();
                         eventEndDateTime = eventEndDateTime + (eventEndHr * 3600000) + (eventEndMin * 60000);
-                        timeText.setText(String.format("%02d:%02d", eventStartHr, eventStartMin) + String.format("%02d:%02d", eventEndHr, eventEndMin));
+                        timeText.setText(String.format("%02d:%02d", eventStartHr, eventStartMin) + " - " + String.format("%02d:%02d", eventEndHr, eventEndMin));
                     }
                 }
         );

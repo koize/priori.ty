@@ -28,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.R;
 import com.skydoves.colorpickerview.ColorEnvelope;
@@ -204,7 +205,8 @@ public class CategoryPopUp {
 
 
     private void getCategories() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        Query query = databaseReference.orderByChild("categoryTitle");
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 categoryDataArrayList.clear();

@@ -47,6 +47,18 @@
                             app:layout_constraintTop_toTopOf="parent"
                             tools:visibility="visible" />
 
+                <ProgressBar
+                    android:id="@+id/reminder_loading"
+                    style="@android:style/Widget.Material.ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTintMode="add"
+                    android:indeterminate="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_reminder_morning"
                     android:layout_width="wrap_content"
