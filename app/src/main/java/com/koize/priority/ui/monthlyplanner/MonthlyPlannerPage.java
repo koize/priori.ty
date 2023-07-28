@@ -38,6 +38,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.R;
 import com.koize.priority.ui.category.CategoryData;
@@ -179,19 +180,13 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     }
 
     private void getEventsList() {
-        databaseEventListReference.addValueEventListener(new ValueEventListener() {
+        Query query = databaseEventListReference.orderByChild("eventStartDateTime");
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 eventListDataArrayList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     EventData eventData = dataSnapshot.getValue(EventData.class);
-
-                    Collections.sort(eventListDataArrayList, new Comparator<EventData>() {
-                        @Override
-                        public int compare(EventData o1, EventData o2) {
-                            return Long.valueOf(o1.getEventStartDateTime()).compareTo(o2.getEventStartDateTime());
-                        }
-                    });
                     eventListDataArrayList.add(eventData);
                 }
                 eventListAdapter.notifyDataSetChanged();
