@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 
 public class RoutineEditorPage extends AppCompatActivity {
     String habitDescription;
+    String habitDescriptionEdit;
     PopupWindow popupWindowDescription;
     Chip habitDescriptionSaveChip;
     EditText habitDescriptionTyper;
@@ -67,6 +69,7 @@ public class RoutineEditorPage extends AppCompatActivity {
     public ArrayList<HabitsData> habitsDataArrayList;
     public int habitDurationHr;
     public int habitDurationMin;
+    TextView habitEditHeaderTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,6 +204,12 @@ public class RoutineEditorPage extends AppCompatActivity {
 
             habitSelectorEditChip = popupView.findViewById(R.id.popup_habit_selection_edit);
             habitSelectorDeleteChip = popupView.findViewById(R.id.popup_habit_selection_delete);
+            habitEditHeaderTV = popupView.findViewById(R.id.popup_habitSelection_header);
+
+            HabitsData habitsData4 = habitsDataArrayList.get(position);
+            habitEditHeaderTV.setText("Edit/Delete " + habitsData4.getHabitsTitle() + "?");
+
+
 
             //Specify the length and width through constants
 
@@ -248,6 +257,8 @@ public class RoutineEditorPage extends AppCompatActivity {
             habitSelectorEditChip.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    popupWindowSelector.dismiss();
+
                     LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
                     View popupView = inflater.inflate(R.layout.popup_habit_add, null);
 
@@ -269,6 +280,8 @@ public class RoutineEditorPage extends AppCompatActivity {
                     popupWindowEditHabit = new PopupWindow(popupView, width, height, focusable);
                     // Closes the popup window when touch outside
                     //Handler for clicking on the inactive zone of the window
+                    TextView EditHabitHeader = popupView.findViewById(R.id.new_habit_add_header);
+                    EditHabitHeader.setText("Edit Habit");
 
 
                     user = FirebaseAuth.getInstance().getCurrentUser();
@@ -331,7 +344,7 @@ public class RoutineEditorPage extends AppCompatActivity {
                                 totalHabitDuration = (habitDurationHr * 60) + habitDurationMin;
                                 habitsData.setHabitsDuration(totalHabitDuration);
 
-                                //habitsData.setHabitsDescription(habitDescription);
+                                habitsData.setHabitsDescription(habitDescription);
 
                                 databaseReference.child(habitsData.getHabitsTitle()).setValue(habitsData);
                                 popupWindowEditHabit.dismiss();
@@ -355,10 +368,18 @@ public class RoutineEditorPage extends AppCompatActivity {
                             durationPickerHr = popupView.findViewById(R.id.durationPickerHR);
                             durationPickerMin = popupView.findViewById(R.id.durationPickerMIN);
 
+                            HabitsData habitsData3 = habitsDataArrayList.get(position);
+                            int habitDurationFill = habitsData3.getHabitsDuration();
+                            int habitDurationFillMin = habitDurationFill % 60;
+                            int habitDurationFillHr = (habitDurationFill-habitDurationFillMin)/60;
+
                             durationPickerHr.setMinValue(0);
                             durationPickerHr.setMaxValue(24);
                             durationPickerMin.setMinValue(0);
                             durationPickerMin.setMaxValue(60);
+
+                            durationPickerHr.setValue(habitDurationFillHr);
+                            durationPickerMin.setValue(habitDurationFillMin);
 
                             //Specify the length and width through constants
 
@@ -411,6 +432,13 @@ public class RoutineEditorPage extends AppCompatActivity {
                                     habitDurationHr = durationPickerHr.getValue();
                                     habitDurationMin = durationPickerMin.getValue();
                                     habitSetDurationChip.setText(habitDurationHr + " Hr " + habitDurationMin + " Min");
+                                    if(habitDurationHr == 0){
+                                        habitSetDurationChip.setText(habitDurationMin);
+                                    }else if(habitDurationMin > 0) {
+                                        habitSetDurationChip.setText(habitDurationHr + " Hr " + habitDurationMin + " Min ");
+                                    }else{
+                                        habitSetDurationChip.setText("Set Duration");
+                                    }
                                     popupWindowDuration.dismiss();
                                 }
                             });
@@ -423,12 +451,12 @@ public class RoutineEditorPage extends AppCompatActivity {
                         public void onClick(View v) {
                             LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
                             View popupView = inflater.inflate(R.layout.popup_habit_add_description, null);
-                            HabitsData habitsData2 = habitsDataArrayList.get(position);
-                            String habitDescriptionFill = habitsData2.getHabitsDescription();
-
 
                             habitDescriptionTyper = popupView.findViewById(R.id.addDescriptionET);
                             habitDescriptionSaveChip = popupView.findViewById(R.id.button_add_description_chipsave);
+
+                            HabitsData habitsData2 = habitsDataArrayList.get(position);
+                            String habitDescriptionFill = habitsData2.getHabitsDescription();
                             habitDescriptionTyper.setText(habitDescriptionFill);
 
                             //Specify the length and width through constants
@@ -478,9 +506,11 @@ public class RoutineEditorPage extends AppCompatActivity {
                                 public void onClick(View v) {
                                     habitDescription = habitDescriptionTyper.getText().toString();
                                     if (habitDescription.length() > 12) {
-                                        habitAddDescriptionChip.setText(habitDescription.substring(0, 12) + "...");
-                                    } else {
+                                        habitAddDescriptionChip.setText("Add Description");
+                                    } else if(habitDescription.length() > 12) {
                                         habitAddDescriptionChip.setText(habitDescription);
+                                    }else{
+                                        habitAddDescriptionChip.setText(habitDescription.substring(0, 12) + "...");
                                     }
                                     popupWindowDescription.dismiss();
                                 }
@@ -491,16 +521,62 @@ public class RoutineEditorPage extends AppCompatActivity {
                     });
                     HabitsData habitsData1 = habitsDataArrayList.get(position);
                     habitTitle.setText(habitsData1.getHabitsTitle());
-                    //habitDescriptionTyper.setText(habitsData1.getHabitsDescription());
 
+                    if(habitsData1.getHabitsDescription() == null){
+                        habitAddDescriptionChip.setText("Add Description");
+                    }else if(habitsData1.getHabitsDescription().length() > 12) {
+                        habitAddDescriptionChip.setText(habitsData1.getHabitsDescription() + "...");
+                    }else{
+                        habitAddDescriptionChip.setText(habitsData1.getHabitsDescription());
+                    }
 
+                    int habitDurationFill = habitsData1.getHabitsDuration();
+                    int habitDurationFillMin = habitDurationFill % 60;
+                    int habitDurationFillHr = (habitDurationFill-habitDurationFillMin)/60;
+                    if(habitDurationFill < 60){
+                        habitSetDurationChip.setText(habitDurationFillMin+" Min ");
+                    }else if(habitDurationFill > 0) {
+                        habitSetDurationChip.setText(habitDurationFillHr + " Hr " + habitDurationFillMin + " Min ");
+                    }else{
+                        habitSetDurationChip.setText("Set Duration");
+                    }
                 }
             });
 
             habitSelectorDeleteChip.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(habitsRV.getContext());
 
+                    // Set the message show for the Alert time
+                    builder.setMessage("Delete the following habit: " + habitsDataArrayList.get(position).getHabitsTitle() + "? ");
+
+                    // Set Alert Title
+                    builder.setTitle("Warning!");
+
+                    // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+                    builder.setCancelable(true);
+
+                    // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+                    builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+                        // When the user click yes button then app will close
+                        databaseReference.child(habitsDataArrayList.get(position).getHabitsTitle()).removeValue();
+                        Snackbar.make(habitsRV, "Habit Deleted", Snackbar.LENGTH_SHORT)
+                                .show();
+                        dialog.dismiss();
+                    });
+
+                    // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+                    builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+                        // If user click no then dialog box is canceled.
+                        dialog.cancel();
+                    });
+
+                    // Create the Alert dialog
+                    AlertDialog alertDialog = builder.create();
+                    // Show the Alert Dialog box
+                    alertDialog.show();
+                    popupWindowSelector.dismiss();
                 }
             });
         }
@@ -508,6 +584,7 @@ public class RoutineEditorPage extends AppCompatActivity {
 
 
         private void onHabitClick(int i) {
+
         }
     };
 
