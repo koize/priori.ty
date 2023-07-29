@@ -279,8 +279,6 @@ public class JournalFragment extends Fragment {
     View.OnClickListener addJournalListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //JournalPopUp journalPopUp = new JournalPopUp();
-            //journalPopUp.showPopupWindow(v);
             showPopupWindow(v);}
 
         public void showPopupWindow(final View view) {

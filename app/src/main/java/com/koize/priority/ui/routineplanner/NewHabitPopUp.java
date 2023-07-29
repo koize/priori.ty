@@ -32,6 +32,9 @@ public class NewHabitPopUp extends RoutineEditorPage {
     EditText habitDescriptionTyper;
     String habitDescription;
     Chip habitSaveChip;
+    Chip habitSelectorEditChip;
+    Chip habitSelectorDeleteChip;
+
     Chip durationSaveChip;
     Chip habitDescriptionSaveChip;
     Chip habitSetDurationChip;
@@ -39,6 +42,7 @@ public class NewHabitPopUp extends RoutineEditorPage {
     NumberPicker durationPickerHr;
     NumberPicker durationPickerMin;
     PopupWindow popupWindow;
+    PopupWindow popupWindowSelector;
     PopupWindow popupWindowDescription;
     PopupWindow popupWindowDuration;
     FirebaseDatabase firebaseDatabase;
@@ -139,7 +143,7 @@ public class NewHabitPopUp extends RoutineEditorPage {
                         totalHabitDuration = (habitDurationHr * 60) + habitDurationMin;
                         habitsData.setHabitsDuration(totalHabitDuration);
 
-                        //habitsData.setHabitsDescription(habitDescription);
+                        habitsData.setHabitsDescription(habitDescription);
 
                         databaseReference.child(habitsData.getHabitsTitle()).setValue(habitsData);
                         popupWindow.dismiss();
@@ -252,7 +256,7 @@ public class NewHabitPopUp extends RoutineEditorPage {
                     popupWindowDescription.setTouchInterceptor(new View.OnTouchListener() {
                         public boolean onTouch(View v, MotionEvent event) {
                             if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                                popupWindow.dismiss();
+                                popupWindowDescription.dismiss();
                                 return true;
                             }
                             return false;
@@ -382,7 +386,8 @@ public class NewHabitPopUp extends RoutineEditorPage {
                     totalHabitDuration = (habitDurationHr * 60) + habitDurationMin;
                     habitsData.setHabitsDuration(totalHabitDuration);
 
-                    //habitsData.setHabitsDescription(habitDescription);
+                    habitsData.setHabitsDescription(habitTitle.getText().toString());
+
 
                     databaseReference.child(habitsData.getHabitsTitle()).setValue(habitsData);
                     popupWindow.dismiss();
@@ -541,7 +546,6 @@ public class NewHabitPopUp extends RoutineEditorPage {
         HabitsData habitsData1 = habitsDataArrayList.get(position);
         habitTitle.setText(habitsData1.getHabitsTitle());
         habitDescriptionTyper.setText(habitsData1.getHabitsDescription());
-
 
     }
 

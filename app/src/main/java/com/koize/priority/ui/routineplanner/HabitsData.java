@@ -35,10 +35,8 @@ public class HabitsData {
         return habitsDuration;
     }
 
-    public String setHabitsDescription(String habitsDescription) {
-        this.habitsDescription = habitsDescription;
-        return habitsDescription;
-    }
+    public void setHabitsDescription(String habitsDescription) {
+        this.habitsDescription = habitsDescription;}
 
     public String getHabitsDescription() {
         return habitsDescription;

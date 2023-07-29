@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -57,7 +58,7 @@ public class HabitsAdapter extends RecyclerView.Adapter<HabitsAdapter.ViewHolder
         holder.rowCard.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                HabitsListener2.onHabitLongClick(holder.getAdapterPosition());
+                HabitsListener2.onHabitLongClick(holder.getAdapterPosition(),v);
                 return true;
             }
 
@@ -74,13 +75,14 @@ public class HabitsAdapter extends RecyclerView.Adapter<HabitsAdapter.ViewHolder
     }
 
     public interface HabitsListener2 {
-        void onHabitLongClick(int position);
+        void onHabitLongClick(int position,View v);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         MaterialCardView rowCard;
         TextView rowCardTitle;
         TextView rowCardDuration;
+        EditText rowCardDescription;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             rowCard = itemView.findViewById(R.id.row_habits_card);
