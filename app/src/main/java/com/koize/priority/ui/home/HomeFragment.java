@@ -20,6 +20,7 @@ import com.koize.priority.ui.monthlyplanner.MonthlyPlannerPage;
 import com.koize.priority.R;
 import com.koize.priority.settings.SettingsActivity;
 import com.koize.priority.databinding.FragmentHomeBinding;
+import com.koize.priority.ui.routineplanner.RoutinePlannerPage;
 
 import java.util.Calendar;
 
@@ -30,6 +31,7 @@ public class HomeFragment extends Fragment {
     private Chip settingsChip;
     private Chip aboutChip;
     private Chip focusModeChip;
+    private Chip routineChip;
     private TextView greetingText;
     FirebaseUser user;
     String name;
@@ -57,6 +59,8 @@ public class HomeFragment extends Fragment {
         aboutChip.setOnClickListener(aboutChipListener);
         focusModeChip = root.findViewById(R.id.button_home_focus);
         focusModeChip.setOnClickListener(focusModeChipListener);
+        routineChip = root.findViewById(R.id.button_home_routine);
+        routineChip.setOnClickListener(routineChipListener);
 
         Calendar c = Calendar.getInstance();
         int timeOfDay = c.get(Calendar.HOUR_OF_DAY) + 8;
@@ -115,6 +119,13 @@ public class HomeFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getContext(), FocusModeActivity.class);
+            startActivity(intent);
+        }
+    };
+    View.OnClickListener routineChipListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getContext(), RoutinePlannerPage.class);
             startActivity(intent);
         }
     };
