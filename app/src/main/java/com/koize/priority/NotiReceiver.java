@@ -9,19 +9,18 @@ import android.content.Intent;
 import androidx.core.app.NotificationCompat;
 
 public class NotiReceiver extends BroadcastReceiver {
+    public static String NOTIFICATION = "notification";
 
     @Override
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
 
-        Notification notification = new NotificationCompat.Builder(context, "reminders")
-                .setContentTitle(intent.getStringExtra("title"))
-                //.setContentText("You've received new messages.")
-                .setSmallIcon(R.drawable.baseline_access_time_24)
-                .build();
 
-        // Display the notification to the user.
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(intent.getIntExtra("id", 1), notification);    }
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Notification notification = intent.getParcelableExtra(NOTIFICATION);
+        int id = intent.getIntExtra("id", 0);
+        notificationManager.notify(id, notification);
+    }
 }

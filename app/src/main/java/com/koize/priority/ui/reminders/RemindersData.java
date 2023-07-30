@@ -6,6 +6,7 @@ import com.koize.priority.ui.category.CategoryData;
 
 public class RemindersData {
     private int reminderId;
+    private String reminderTextId;
     private String reminderTitle;
     private int firstReminderTimeHr;
     private int firstReminderTimeMin;
@@ -44,6 +45,11 @@ public class RemindersData {
     public int setReminderId(int reminderId) {
         this.reminderId = reminderId;
         return reminderId;
+    }
+
+    public String setReminderTextId(String reminderTextId) {
+        this.reminderTextId = reminderTextId;
+        return reminderTextId;
     }
 
     public String setReminderTitle(String reminderTitle) {
@@ -118,6 +124,10 @@ public class RemindersData {
 
     public int getReminderId() {
         return reminderId;
+    }
+
+    public String getReminderTextId() {
+        return reminderTextId;
     }
 
     public String getReminderTitle() {

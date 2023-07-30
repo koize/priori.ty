@@ -1,8 +1,12 @@
 package com.koize.priority.ui.monthlyplanner;
 
+import android.app.PendingIntent;
+
 import com.koize.priority.ui.category.CategoryData;
 
 public class EventData {
+    private int eventId;
+    private String eventTextId;
     private String eventTitle;
     private String eventType;
     private String eventStartDate;
@@ -25,6 +29,7 @@ public class EventData {
     private double eventLongitude;
     private CategoryData eventCategory;
     private String eventDesc;
+    private PendingIntent eventPendingIntent;
 
     public EventData() {
         // Default constructor required for calls to DataSnapshot.getValue(EventData.class)
@@ -55,6 +60,15 @@ public class EventData {
         this.eventDesc = eventDesc;
     }
 
+    public int setEventId(int eventId) {
+        this.eventId = eventId;
+        return eventId;
+    }
+
+    public String setEventTextId(String eventTextId) {
+        this.eventTextId = eventTextId;
+        return eventTextId;
+    }
     public String setEventTitle(String eventTitle) {
         this.eventTitle = eventTitle;
         return eventTitle;
@@ -165,6 +179,18 @@ public class EventData {
         return eventDesc;
     }
 
+    public PendingIntent setEventPendingIntent(PendingIntent eventPendingIntent) {
+        this.eventPendingIntent = eventPendingIntent;
+        return eventPendingIntent;
+    }
+
+    public int getEventId() {
+        return eventId;
+    }
+
+    public String getEventTextId() {
+        return eventTextId;
+    }
     public String getEventTitle() {
         return eventTitle;
     }
@@ -250,6 +276,9 @@ public class EventData {
         return eventDesc;
     }
 
+    public PendingIntent getEventPendingIntent() {
+        return eventPendingIntent;
+    }
 
 
 

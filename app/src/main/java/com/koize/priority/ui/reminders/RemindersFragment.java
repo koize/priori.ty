@@ -133,7 +133,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             String name = user.getDisplayName();
             if ((name != null) && name!="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + name + "/reminders");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/reminders");
             }
             else if (name=="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
@@ -158,6 +158,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        createNotificationChannel();
         remindersDataArrayList = new ArrayList<>();
         remindersAdapter = new RemindersAdapter(remindersDataArrayList, getContext(), this::onRemindersClick, this::onRemindersCheckBoxDelete);
         reminderRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
@@ -217,7 +218,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         //recyclerViewRefresher.startRefreshing();
 
     }
-    private void getRemindersSortByName() {
+    /*private void getRemindersSortByName() {
         remindersDataArrayList.clear();
         Query query = databaseReference.orderByChild("reminderTitle");
 
@@ -242,9 +243,9 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             }
         });
         remindersAdapter.notifyDataSetChanged();
-    }
+    }*/
 
-    private void getRemindersSortByDate() {
+    public void getRemindersSortByDate() {
 
         remindersDataArrayList.clear();
         Query query = databaseReference.orderByChild("firstReminderDateTime");
@@ -257,7 +258,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     RemindersData remindersData = dataSnapshot.getValue(RemindersData.class);
                     remindersDataArrayList.add(remindersData);
 
-                    if (remindersData.getFirstReminderDateTime() != 0 && remindersData.getReminderPendingIntent() == null && remindersData.getFirstReminderDateTime() > System.currentTimeMillis()) {
+                    if (remindersData.getFirstReminderDateTime() != 0 && remindersData.getReminderPendingIntent() == null && remindersData.getFirstReminderDateTime() - 28800000 > System.currentTimeMillis()) {
                         scheduleNoti(remindersData);
                     }
                 }
@@ -280,13 +281,21 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     }
 
     public void scheduleNoti(RemindersData remindersData) {
+        long reminderDateTime = remindersData.getFirstReminderDateTime() - 28800000;
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(reminderDateTime), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
+        String formattedTime = formatter.format(dateTime);
+        Notification.Builder builder = new Notification.Builder(getActivity().getApplicationContext(), "reminders");
+        builder.setContentTitle(remindersData.getReminderTitle());
+        builder.setContentText(remindersData.getReminderTitle() + " at " + formattedTime);
+        builder.setSmallIcon(R.drawable.baseline_access_time_24);
+        Notification notification = builder.build();
         Intent intent = new Intent(getContext(), NotiReceiver.class);
-        intent.putExtra("title", remindersData.getReminderTitle());
+        intent.putExtra(NotiReceiver.NOTIFICATION, notification);
         intent.putExtra("id", remindersData.getReminderId());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersData.getReminderId(), intent, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-        long reminderDateTime = remindersData.getFirstReminderDateTime();
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderDateTime - 28800000, pendingIntent);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderDateTime, pendingIntent);
         remindersData.setReminderPendingIntent(pendingIntent);
     }
 
@@ -495,6 +504,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     else {
                         remindersData.setReminderTitle(reminderTitle.getText().toString());
                     }
+                    remindersData.setReminderTextId(reminderTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + remindersData.getReminderId());
                     remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
                     remindersData.setFirstReminderTimeMin(firstReminderTimeMin);
                     remindersData.setSecondReminderTimeHr(secondReminderTimeHr);
@@ -609,17 +619,17 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         if (remindersDataArrayList.get(position).getSecondReminderDateTime() != 0) {
             remindersDataArrayList.get(position).setFirstReminderDateTime(remindersDataArrayList.get(position).getSecondReminderDateTime());
             remindersDataArrayList.get(position).setSecondReminderDateTime(0);
-            databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).setValue(remindersDataArrayList.get(position));
+            databaseReference.child(remindersDataArrayList.get(position).getReminderTextId()).setValue(remindersDataArrayList.get(position));
 
             remindersDataArrayList.clear();
         } else {
             Intent intent = new Intent(getContext(), NotiReceiver.class);
-            intent.putExtra("title", remindersDataArrayList.get(position).getReminderTitle());
+            intent.putExtra(NotiReceiver.NOTIFICATION, remindersDataArrayList.get(position).getReminderTitle());
             intent.putExtra("id", remindersDataArrayList.get(position).getReminderId());
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersDataArrayList.get(position).getReminderId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersDataArrayList.get(position).getReminderId(), intent, PendingIntent.FLAG_IMMUTABLE);
             AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
             alarmManager.cancel(pendingIntent);
-            databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).removeValue();
+            databaseReference.child(remindersDataArrayList.get(position).getReminderTextId()).removeValue();
             remindersDataArrayList.clear();
         }
 
@@ -651,7 +661,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         reminderTitle.setText(remindersData.getReminderTitle());
 
         firstReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_1);
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMM dd yyyy, HH:mm");
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
         long epochTime1 = remindersData.getFirstReminderDateTime() - 28800000;
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochTime1), ZoneId.of("Asia/Singapore"));
         firstReminderChip.setText(dateFormat.format(dateTime));
@@ -887,9 +897,9 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     Intent intent = new Intent(getContext(), NotiReceiver.class);
                     intent.putExtra("title", remindersData.getReminderTitle());
                     intent.putExtra("id", remindersData.getReminderId());
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersData.getReminderId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersData.getReminderId(), intent, PendingIntent.FLAG_IMMUTABLE);
                     AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.cancel(pendingIntent);                    databaseReference.child(remindersData.getReminderTitle()).removeValue();
+                    alarmManager.cancel(pendingIntent);                    databaseReference.child(remindersData.getReminderTextId()).removeValue();
                     Snackbar.make(reminderRV, "Reminder deleted!", Snackbar.LENGTH_SHORT)
                             .show();
                     dialog.dismiss();
