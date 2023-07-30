@@ -272,7 +272,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     EventData eventData = dataSnapshot.getValue(EventData.class);
                     if (eventData.getEventEndDateTime() < System.currentTimeMillis()) {
 
-                    } else if (eventData.getEventEndDateTime() < System.currentTimeMillis() - sixMonths) {
+                    } else if (eventData.getEventEndDateTime() - 28800000 < System.currentTimeMillis() - sixMonths) {
                         databaseEventListReference.child(eventData.getEventTextId()).removeValue();
                     } else {
                         eventListDataArrayList.add(eventData);
