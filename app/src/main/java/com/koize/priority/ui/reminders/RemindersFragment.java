@@ -134,6 +134,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             if ((name != null) && name!="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
                 databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/reminders");
+
             }
             else if (name=="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
@@ -274,7 +275,8 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
+                        .show();
             }
         });
         remindersAdapter.notifyDataSetChanged();

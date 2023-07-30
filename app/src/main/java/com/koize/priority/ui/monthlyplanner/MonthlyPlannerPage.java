@@ -145,6 +145,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     private Chip eventShowDelete;
     boolean checkExists = false;
 
+    DatabaseReference databaseHolReference;
+
 
 
     @Override
@@ -179,6 +181,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             Snackbar.make(findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
         }
+        databaseHolReference = firebaseDatabase.getReference("hols");
 
         eventListDataArrayList = new ArrayList<>();
         eventListAdapter = new EventListAdapter(eventListDataArrayList, this, new EventListAdapter.EventListClickInterface() {
@@ -234,10 +237,12 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
     private void getEventsCalender(long dateSelected) {
         Query query = databaseEventListReference.orderByChild("eventStartDateTime");
+        Query queryHoliday = databaseHolReference.orderByChild("eventStartDateTime");
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 eventCalenderDataArrayList.clear();
+                getHolsCalendar(dateSelected);
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     EventData eventData = dataSnapshot.getValue(EventData.class);
                     if ((eventData.getEventStartDateEpoch() - 28800000) <= dateSelected && (eventData.getEventEndDateEpoch()) >= dateSelected) {
@@ -268,18 +273,22 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 eventListDataArrayList.clear();
+                getHols();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     EventData eventData = dataSnapshot.getValue(EventData.class);
-                    if (eventData.getEventEndDateTime() < System.currentTimeMillis()) {
+                    if (eventData.getEventEndDateTime()  - 28800000 < System.currentTimeMillis()) {
 
-                    } else if (eventData.getEventEndDateTime() < System.currentTimeMillis() - sixMonths) {
+                    } else if (eventData.getEventEndDateTime()   - 28800000< System.currentTimeMillis() - sixMonths) {
                         databaseEventListReference.child(eventData.getEventTextId()).removeValue();
                     } else {
                         eventListDataArrayList.add(eventData);
                     }
 
-                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime() > System.currentTimeMillis()) {
+                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  - 28800000 > System.currentTimeMillis()) {
                         scheduleNoti(eventData);
+                        if (eventData.getEventReminderDateTime() != 0) {
+                            scheduleReminderNoti(eventData);
+                        }
                     }
                 }
                 eventListAdapter.notifyDataSetChanged();
@@ -294,13 +303,61 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                Snackbar.make(findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+        });
+    }
+
+    public void getHols(){
+        long sixMonths = 15778800000L;
+        databaseHolReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    EventData eventData = dataSnapshot.getValue(EventData.class);
+                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime() - 28800000 > System.currentTimeMillis()) {
+                        scheduleNoti(eventData);
+                        if (eventData.getEventReminderDateTime() != 0) {
+                            scheduleReminderNoti(eventData);
+                        }
+                    }
+                    if (eventData.getEventEndDateTime() - 28800000 < System.currentTimeMillis()) {
+
+                    } else {
+                        eventListDataArrayList.add(eventData);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    public void getHolsCalendar(long dateSelected){
+        long sixMonths = 15778800000L;
+        databaseHolReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    EventData eventData = dataSnapshot.getValue(EventData.class);
+                    if ((eventData.getEventStartDateEpoch() - 28800000) <= dateSelected && (eventData.getEventEndDateEpoch()) >= dateSelected) {
+                        eventCalenderDataArrayList.add(eventData);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
     }
 
     public void scheduleNoti(EventData eventData) {
-        long eventStartDateTime = eventData.getEventStartDateTime();
+        long eventStartDateTime = eventData.getEventStartDateTime() - 28800000;
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventStartDateTime), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
         String formattedTime = formatter.format(dateTime);
@@ -315,6 +372,26 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MonthlyPlannerPage.this, eventData.getEventId(), intent, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManager = (AlarmManager) MonthlyPlannerPage.this.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, eventStartDateTime - 28800000, pendingIntent);
+        eventData.setEventPendingIntent(pendingIntent);
+    }
+
+    public void scheduleReminderNoti(EventData eventData) {
+        long eventReminderDateTime = eventData.getEventReminderDateTime() - 28800000;
+        long eventStartDateTime = eventData.getEventStartDateTime() - 28800000;
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventStartDateTime), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
+        String formattedTime = formatter.format(dateTime);
+        Notification.Builder builder = new Notification.Builder(MonthlyPlannerPage.this, "events");
+        builder.setContentTitle("Reminder: " +  eventData.getEventTitle());
+        builder.setContentText(eventData.getEventTitle() + " at " + formattedTime);
+        builder.setSmallIcon(R.drawable.baseline_access_time_24);
+        Notification notification = builder.build();
+        Intent intent = new Intent(MonthlyPlannerPage.this, NotiReceiver.class);
+        intent.putExtra(NotiReceiver.NOTIFICATION, notification);
+        intent.putExtra("id", eventData.getEventId());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MonthlyPlannerPage.this, eventData.getEventId(), intent, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) MonthlyPlannerPage.this.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, eventReminderDateTime - 28800000, pendingIntent);
         eventData.setEventPendingIntent(pendingIntent);
     }
 
@@ -532,7 +609,6 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }*/else {
                         eventData.setEventTitle(eventTitle.getText().toString());
                     }
-                    eventData.setEventTextId(eventTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + eventData.getEventId());
                     if (eventType.getText().toString().isEmpty()) {
                         eventData.setEventType("Event");
                     } else {
@@ -565,8 +641,63 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }
                     eventData.setEventCategory(categoryData);
                     eventData.setEventDesc(eventDescText.getText().toString());
+                    if (eventData.getEventTitle() == "") {
+                        Snackbar.make(findViewById(android.R.id.content), "Please enter a title!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventStartDateTime() == 0) {
+                        Snackbar.make(findViewById(android.R.id.content), "Please select a date!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventStartDateTime() > eventData.getEventEndDateTime()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Event start time cannot be after end time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventStartDateTime() < System.currentTimeMillis()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Event start time cannot be before current time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventEndDateTime() < System.currentTimeMillis()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Event end time cannot be before current time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() > eventData.getEventStartDateTime()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be after event start time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < System.currentTimeMillis()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before current time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() > eventData.getEventEndDateTime()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be after event end time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < eventData.getEventStartDateTime()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before event start time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < System.currentTimeMillis()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before current time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() > eventData.getEventEndDateTime()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be after event end time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < eventData.getEventStartDateTime()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before event start time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < System.currentTimeMillis()) {
+                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before current time!", Snackbar.LENGTH_SHORT)
+                                .show();
 
-                    databaseEventListReference.child(eventData.getEventTextId()).setValue(eventData);
+                    }else {
+                        eventData.setEventTextId(eventTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + eventData.getEventId());
+                        //databaseEventListReference.child(eventData.getEventTextId()).setValue(eventData);
+                        databaseHolReference.child(eventData.getEventTextId()).setValue(eventData);
+                    }
                     Snackbar.make(findViewById(android.R.id.content), "Event saved", Snackbar.LENGTH_SHORT)
                             .show();
                     checkExists = false; //reset checkExists
@@ -748,8 +879,13 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventShowEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showEditEventPopupWindow(v, eventData);
-                popupWindow.dismiss();
+                if (eventData.getEventType() != "Holiday") {
+                    showEditEventPopupWindow(v, eventData);
+                    popupWindow.dismiss();
+                } else {
+                   Snackbar.make(findViewById(android.R.id.content), "Cannot edit holiday!", Snackbar.LENGTH_SHORT)
+                            .show();
+                }
             }
         });
         eventShowDelete.setOnClickListener(new View.OnClickListener() {
