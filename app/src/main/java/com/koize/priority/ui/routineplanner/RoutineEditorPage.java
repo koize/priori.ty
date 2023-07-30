@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,8 +32,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.R;
-import com.koize.priority.ui.journal.JournalAdapter;
-import com.koize.priority.ui.journal.JournalData;
 
 import java.util.ArrayList;
 
@@ -61,6 +58,8 @@ public class RoutineEditorPage extends AppCompatActivity {
     private FloatingActionButton habitPickerButton;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+    DatabaseReference habitsDatabaseReference;
+    DatabaseReference routineDatabaseReference;
     HabitsData habitsData;
     private FirebaseAuth firebaseAuth;
     FirebaseUser user;
@@ -70,6 +69,11 @@ public class RoutineEditorPage extends AppCompatActivity {
     public int habitDurationHr;
     public int habitDurationMin;
     TextView habitEditHeaderTV;
+    private ArrayList<RoutineData> routineEditorDataArrayList;
+    RecyclerView routineEditorRV;
+    private RoutineEditorAdapter RoutineEditorAdapter;
+    RoutineData routineData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +82,59 @@ public class RoutineEditorPage extends AppCompatActivity {
         habitPickerButton = findViewById(R.id.button_habitPicker_add);
         habitPickerButton.setOnClickListener(addHabitListener);
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+        routineEditorRV = findViewById(R.id.recycler_routineEditor);
+        routineEditorDataArrayList = new ArrayList<>();
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        RoutineEditorAdapter = new RoutineEditorAdapter(routineEditorDataArrayList, getApplicationContext(),this::onRoutineHabitClick,this::onRoutineHabitLongClick);
+        routineEditorRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getApplicationContext()));
+        routineEditorRV.setAdapter(RoutineEditorAdapter);
+        getRoutineEditor();
     }
 
+    private void getRoutineEditor() {
+        if (user != null) {
+            String name = user.getDisplayName();
+            if ((name != null) && name != "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                routineDatabaseReference = firebaseDatabase.getReference("users/" + name + "/routine");
+            } else if (name == "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                routineDatabaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/routine");
+            } else {
+                throw new IllegalStateException("Unexpected value: " + name);
+            }
+        }
+
+        routineDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                routineEditorDataArrayList.clear();
+                for(DataSnapshot dataSnapShot : snapshot.getChildren()){
+                    RoutineData routineData = dataSnapShot.getValue(RoutineData.class);
+                    routineEditorDataArrayList.add(routineData);
+                }
+                RoutineEditorAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+    }
+
+    private void onRoutineHabitLongClick(int i) {
+    }
+
+    private void onRoutineHabitClick(int i) {
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
     private void getHabits() {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -98,14 +153,12 @@ public class RoutineEditorPage extends AppCompatActivity {
             }
         });
     }
-
-    
-
+    //////////////////////////////////////////////////////////////////////////////////////////
     View.OnClickListener addHabitListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             showPopupWindow(v);}
-
+        /////////////////////////////////////////////////////////////////////////////////////
         public void showPopupWindow(final View view) {
             //Create a View object yourself through inflater
             LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
@@ -196,7 +249,7 @@ public class RoutineEditorPage extends AppCompatActivity {
 
 
         }
-
+        /////////////////////////////////////////////////////////////////////////////////////
         private void onHabitLongClick(int position, View view) {
             LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
             View popupView = inflater.inflate(R.layout.popup_habit_selection, null);
@@ -580,12 +633,39 @@ public class RoutineEditorPage extends AppCompatActivity {
                 }
             });
         }
+        /////////////////////////////////////////////////////////////////////////////////////
+        private void onHabitClick(int position) {
+            if (user != null) {
+                String name = user.getDisplayName();
+                if ((name != null) && name != "") {
+                    firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                    habitsDatabaseReference = firebaseDatabase.getReference("users/" + name + "/habits");
+                } else if (name == "") {
+                    firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                    habitsDatabaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/habits");
+                } else {
+                    throw new IllegalStateException("Unexpected value: " + name);
+                }
+            }
+            if (user != null) {
+                String name = user.getDisplayName();
+                if ((name != null) && name != "") {
+                    firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                    routineDatabaseReference = firebaseDatabase.getReference("users/" + name + "/routine");
+                } else if (name == "") {
+                    firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                    routineDatabaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/routine");
+                } else {
+                    throw new IllegalStateException("Unexpected value: " + name);
+                }
+            }
 
-
-
-        private void onHabitClick(int i) {
+            HabitsData habitsData5 = habitsDataArrayList.get(position);
+            //habitsData = new HabitsData();
+            //routineData.setRoutineHabits(habitsData);
+            //routineDatabaseReference.child(habitsData5.getHabitsTitle()).setValue(habitsData5);
+            routineDatabaseReference.child("habitsList").child(habitsData5.getHabitsTitle()).setValue(habitsData5);
 
         }
     };
-
 }
