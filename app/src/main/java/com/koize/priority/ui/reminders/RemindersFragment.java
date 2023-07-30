@@ -2,14 +2,23 @@ package com.koize.priority.ui.reminders;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,6 +39,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.NotificationCompat;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -52,6 +62,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.koize.priority.NotiReceiver;
 import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 import com.koize.priority.R;
@@ -64,6 +75,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 public class RemindersFragment extends Fragment implements CategoryPopUp.CategoryCallBack {
 
@@ -244,6 +256,10 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     RemindersData remindersData = dataSnapshot.getValue(RemindersData.class);
                     remindersDataArrayList.add(remindersData);
+
+                    if (remindersData.getFirstReminderDateTime() != 0 && remindersData.getReminderPendingIntent() == null && remindersData.getFirstReminderDateTime() > System.currentTimeMillis()) {
+                        scheduleNoti(remindersData);
+                    }
                 }
                 remindersAdapter.notifyDataSetChanged();
                 if (remindersDataArrayList.isEmpty()) {
@@ -261,6 +277,17 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             }
         });
         remindersAdapter.notifyDataSetChanged();
+    }
+
+    public void scheduleNoti(RemindersData remindersData) {
+        Intent intent = new Intent(getContext(), NotiReceiver.class);
+        intent.putExtra("title", remindersData.getReminderTitle());
+        intent.putExtra("id", remindersData.getReminderId());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersData.getReminderId(), intent, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        long reminderDateTime = remindersData.getFirstReminderDateTime();
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderDateTime - 28800000, pendingIntent);
+        remindersData.setReminderPendingIntent(pendingIntent);
     }
 
 
@@ -459,6 +486,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
             public void onClick(View v) {
                 if (user != null) {
                     remindersData = new RemindersData();
+                    remindersData.setReminderId(new Random().nextInt(1000000));
                     if (reminderTitle.getText().toString().isEmpty()) {
                         Snackbar.make(view, "Please enter a title!", Snackbar.LENGTH_SHORT)
                                 .show();
@@ -498,8 +526,13 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                         categoryData.setCategoryTitle("Others");
                     }
                     remindersData.setReminderCategory(categoryData);
-                    databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
-                    Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
+                    try {
+                        databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
+
+                    }
+                    catch (Exception e) {
+                        e.getCause().getCause();
+                    }                    Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
                             .show();
                     popupWindow.dismiss();
 
@@ -580,6 +613,12 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
 
             remindersDataArrayList.clear();
         } else {
+            Intent intent = new Intent(getContext(), NotiReceiver.class);
+            intent.putExtra("title", remindersDataArrayList.get(position).getReminderTitle());
+            intent.putExtra("id", remindersDataArrayList.get(position).getReminderId());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersDataArrayList.get(position).getReminderId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+            alarmManager.cancel(pendingIntent);
             databaseReference.child(remindersDataArrayList.get(position).getReminderTitle()).removeValue();
             remindersDataArrayList.clear();
         }
@@ -808,7 +847,13 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                         categoryData = remindersData.getReminderCategory();
                     }
                     remindersData.setReminderCategory(categoryData);
-                    databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
+                    try {
+                        databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
+
+                    }
+                    catch (Exception e) {
+                        e.getCause().getCause();
+                    }
                     Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
                             .show();
                     popupWindow.dismiss();
@@ -839,7 +884,12 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                 // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
                 builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
                     // When the user click yes button then app will close
-                    databaseReference.child(remindersData.getReminderTitle()).removeValue();
+                    Intent intent = new Intent(getContext(), NotiReceiver.class);
+                    intent.putExtra("title", remindersData.getReminderTitle());
+                    intent.putExtra("id", remindersData.getReminderId());
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersData.getReminderId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.cancel(pendingIntent);                    databaseReference.child(remindersData.getReminderTitle()).removeValue();
                     Snackbar.make(reminderRV, "Reminder deleted!", Snackbar.LENGTH_SHORT)
                             .show();
                     dialog.dismiss();
@@ -860,6 +910,21 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         });
 
 
+    }
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is not in the Support Library.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "reminders";
+            String description = "reminders";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("reminders", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system. You can't change the importance
+            // or other notification behaviors after this.
+            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
 
