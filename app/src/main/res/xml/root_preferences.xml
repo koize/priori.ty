@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
 
             app:key="delete_account"
-            app:summary="WARNING: NOT REVERSIBLE!! YOU HAVE BEEN WARNED"
+            app:summary="WARNING: NOT REVERSIBLE!! YOU HAVE BEEN WARNED!!! THIS ALSO DOES NOT DELETE YOUR ACCOUNT; go to view details -> Delete Account (ALSO NOT REVERSIBLE)"
             app:title="Delete ALL data"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>

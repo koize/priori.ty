@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -48,17 +49,18 @@ public class AccountSettings extends AppCompatActivity {
     }
 
     public void refreshAccount() {
+        //user.reload();
         user = FirebaseAuth.getInstance().getCurrentUser();
         userName = findViewById(R.id.account_settings_username);
         userEmail = findViewById(R.id.account_settings_email);
         if(user != null) {
             name = user.getDisplayName();
-            if (name == null) {
+            if (name == null || name.equals("")) {
                 name = "Guest";
             }
             userName.setText("Current user: " + name);
             email = user.getEmail();
-            if (email == null) {
+            if (email == null || email.equals("")) {
                 userEmail.setText("");
             } else {
                 userEmail.setText("Email: " + email);
@@ -89,27 +91,58 @@ public class AccountSettings extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if (user != null) {
-                FirebaseAuth.getInstance().signOut();
-                Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Signed out", Snackbar.LENGTH_SHORT);
-                snackbar.setAction("Login again", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        List<AuthUI.IdpConfig> providers = Arrays.asList(
-                                new AuthUI.IdpConfig.EmailBuilder().build(),
-                                new AuthUI.IdpConfig.AnonymousBuilder().build()
-                        );
+                AlertDialog.Builder builder = new AlertDialog.Builder(AccountSettings.this);
+                builder.setMessage("You are about to sign out. Are you sure?");
 
-                        startActivityForResult(
-                                AuthUI.getInstance()
-                                        .createSignInIntentBuilder()
-                                        .setAvailableProviders(providers)
-                                        .setTheme(R.style.AppTheme)
-                                        .build(),
-                                RC_SIGN_IN);
-                    }
+                // Set Alert Title
+                builder.setTitle("Sign out?");
+
+                // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+                builder.setCancelable(true);
+
+                // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+                builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+                            // When the user click yes button then app will close
+                    FirebaseAuth.getInstance().signOut();
+                    Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Signed out", Snackbar.LENGTH_SHORT);
+                    snackbar.setAction("Login again", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            List<AuthUI.IdpConfig> providers = Arrays.asList(
+                                    new AuthUI.IdpConfig.EmailBuilder().build(),
+                                    new AuthUI.IdpConfig.AnonymousBuilder().build()
+                            );
+
+                            startActivityForResult(
+                                    AuthUI.getInstance()
+                                            .createSignInIntentBuilder()
+                                            .setAvailableProviders(providers)
+                                            .setTheme(R.style.AppTheme)
+                                            .setIsSmartLockEnabled(false)
+                                            .setLogo(R.mipmap.ic_whack)
+                                            .setTosAndPrivacyPolicyUrls("https://www.twitch.tv/chocofwog",
+                                                    "https://www.twitch.tv/koizee_")
+                                            .build(),
+                                    RC_SIGN_IN);
+                        }
+                    });
+                    snackbar.show();
+                    refreshAccount();
+
                 });
-                snackbar.show();
-                refreshAccount();
+
+                // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+                builder.setNegativeButton("Cancel", (DialogInterface.OnClickListener) (dialog, which) -> {
+                    // If user click no then dialog box is canceled.
+                    dialog.cancel();
+                });
+
+                // Create the Alert dialog
+                AlertDialog alertDialog = builder.create();
+                // Show the Alert Dialog box
+                alertDialog.show();
+
+
             }
 
              else {
@@ -123,12 +156,23 @@ public class AccountSettings extends AppCompatActivity {
                                 .createSignInIntentBuilder()
                                 .setAvailableProviders(providers)
                                 .setTheme(R.style.AppTheme)
+                                .setLogo(R.mipmap.ic_whack)
+                                .setIsSmartLockEnabled(false)
+                                .setTosAndPrivacyPolicyUrls("https://www.twitch.tv/chocofwog",
+                                        "https://www.twitch.tv/koizee_")
                                 .build(),
                         RC_SIGN_IN);
-                refreshAccount();
             }
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        refreshAccount();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        user.reload();
+    }
 
     View.OnClickListener onDeleteAccount = new View.OnClickListener() {
         @Override

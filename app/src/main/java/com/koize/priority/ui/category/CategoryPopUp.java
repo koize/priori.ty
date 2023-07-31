@@ -92,7 +92,7 @@ public class CategoryPopUp {
             String name = user.getDisplayName();
             if ((name != null) && name!="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + name + "/categories");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "#" + user.getUid().substring(1,5) + "/categories");
             }
             else if (name=="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");

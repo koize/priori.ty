@@ -1,8 +1,12 @@
 package com.koize.priority.ui.reminders;
 
+import android.app.PendingIntent;
+
 import com.koize.priority.ui.category.CategoryData;
 
 public class RemindersData {
+    private int reminderId;
+    private String reminderTextId;
     private String reminderTitle;
     private int firstReminderTimeHr;
     private int firstReminderTimeMin;
@@ -16,6 +20,7 @@ public class RemindersData {
     private double reminderLongitude;
     private String reminderLocationName;
     private CategoryData reminderCategory;
+    private PendingIntent reminderPendingIntent;
 
     public RemindersData() {
         // Default constructor required for calls to DataSnapshot.getValue(RemindersData.class)
@@ -35,6 +40,16 @@ public class RemindersData {
         this.reminderLongitude = reminderLongitude;
         this.reminderLocationName = reminderLocationName;
         this.reminderCategory = reminderCategory;
+    }
+
+    public int setReminderId(int reminderId) {
+        this.reminderId = reminderId;
+        return reminderId;
+    }
+
+    public String setReminderTextId(String reminderTextId) {
+        this.reminderTextId = reminderTextId;
+        return reminderTextId;
     }
 
     public String setReminderTitle(String reminderTitle) {
@@ -102,6 +117,19 @@ public class RemindersData {
         return reminderCategory;
     }
 
+    public PendingIntent setReminderPendingIntent(PendingIntent reminderPendingIntent) {
+        this.reminderPendingIntent = reminderPendingIntent;
+        return reminderPendingIntent;
+    }
+
+    public int getReminderId() {
+        return reminderId;
+    }
+
+    public String getReminderTextId() {
+        return reminderTextId;
+    }
+
     public String getReminderTitle() {
         return reminderTitle;
     }
@@ -152,6 +180,10 @@ public class RemindersData {
 
     public CategoryData getReminderCategory() {
         return reminderCategory;
+    }
+
+    public PendingIntent getReminderPendingIntent() {
+        return reminderPendingIntent;
     }
 
 }

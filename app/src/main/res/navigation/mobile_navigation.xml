@@ -29,7 +29,7 @@
         tools:layout="@layout/fragment_schedule" />
     <fragment
         android:id="@+id/navigation_journal"
-        android:name="com.koize.priority.ui.journal.JournalFragment"
+        android:name="com.koize.priority.ui.category.journal.JournalFragment"
         android:label="@string/bot_bar_journal"
         tools:layout="@layout/fragment_journal" />
 </navigation>

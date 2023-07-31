@@ -63,15 +63,13 @@ public class HomeFragment extends Fragment {
         routineChip.setOnClickListener(routineChipListener);
 
         Calendar c = Calendar.getInstance();
-        int timeOfDay = c.get(Calendar.HOUR_OF_DAY) + 8;
+        int timeOfDay = c.get(Calendar.HOUR_OF_DAY) ;
         if(timeOfDay >= 0 && timeOfDay < 12){
             partOfDay = "morning";
         }else if(timeOfDay >= 12 && timeOfDay < 16){
             partOfDay = "afternoon";
-        }else if(timeOfDay >= 16 && timeOfDay < 21){
+        }else if(timeOfDay >= 16 && timeOfDay < 24){
             partOfDay = "evening";
-        }else if(timeOfDay >= 21 && timeOfDay < 24){
-            partOfDay = "night";
         }else{
             partOfDay = "day";
         }
