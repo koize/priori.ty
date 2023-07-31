@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">priori.ty (branch: kotlin_add_holiday)</string>
+    <string name="app_name">priori.ty</string>
     <string name="bot_bar_reminders">Reminders</string>
     <string name="bot_bar_goals">Goals</string>
     <string name="bot_bar_home">Home</string>
