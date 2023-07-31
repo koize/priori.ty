@@ -684,8 +684,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }
                     else {
                         eventData.setEventTextId(eventTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + eventData.getEventId());
-                        databaseEventListReference.child(eventData.getEventTextId()).setValue(eventData);
-                        //databaseHolReference.child(eventData.getEventTextId()).setValue(eventData); //FOR ADDING HOLS ONLY
+                        //databaseEventListReference.child(eventData.getEventTextId()).setValue(eventData);
+                        databaseHolReference.child(eventData.getEventTextId()).setValue(eventData); //FOR ADDING HOLS ONLY
                         Snackbar.make(findViewById(android.R.id.content), "Event saved", Snackbar.LENGTH_SHORT)
                                 .show();
                         checkExists = false; //reset checkExists
