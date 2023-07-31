@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -59,6 +60,7 @@ import com.koize.priority.ui.category.CategoryPopUp;
 import com.koize.priority.ui.reminders.RemindersData;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -172,7 +174,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                 databaseEventListReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1, 5) + "/events");
             } else if (name == "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseEventListReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/events");
+                databaseEventListReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/events");
             } else {
                 throw new IllegalStateException("Unexpected value: " + name);
             }
@@ -225,12 +227,13 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             }
 
         });
-        getEventsCalender(eventCalenderView.getDate());
+        LocalDate today = LocalDate.now();
+        getEventsCalender(getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth()));
     }
 
     public static long getEpochMilliseconds(int year, int month, int dayOfMonth) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, dayOfMonth);
+        calendar.set(year, month, dayOfMonth, 0, 0, 0);
         return calendar.getTimeInMillis();
     }
 
@@ -245,17 +248,15 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                 getHolsCalendar(dateSelected);
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     EventData eventData = dataSnapshot.getValue(EventData.class);
-                    if ((eventData.getEventStartDateEpoch() - 28800000) <= dateSelected && (eventData.getEventEndDateEpoch()) >= dateSelected) {
+                    if ((eventData.getEventStartDateEpoch()) <= dateSelected && (eventData.getEventEndDateEpoch()) + 28800000 >= dateSelected) {
                         eventCalenderDataArrayList.add(eventData);
                     }
                 }
                 eventCalenderAdapter.notifyDataSetChanged();
                 if (eventCalenderDataArrayList.isEmpty()) {
                     eventCalenderLoading.setVisibility(View.GONE);
-                    eventCalenderEmpty.setVisibility(View.VISIBLE);
                 } else {
                     eventCalenderLoading.setVisibility(View.GONE);
-                    eventCalenderEmpty.setVisibility(View.GONE);
                 }
             }
 
@@ -276,15 +277,15 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                 getHols();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     EventData eventData = dataSnapshot.getValue(EventData.class);
-                    if (eventData.getEventEndDateTime()  - 28800000 < System.currentTimeMillis()) {
+                    if (eventData.getEventEndDateTime() + 86400000   < System.currentTimeMillis()) {
 
-                    } else if (eventData.getEventEndDateTime()   - 28800000< System.currentTimeMillis() - sixMonths) {
+                    } else if (eventData.getEventEndDateTime()   < System.currentTimeMillis() - sixMonths) {
                         databaseEventListReference.child(eventData.getEventTextId()).removeValue();
                     } else {
                         eventListDataArrayList.add(eventData);
                     }
 
-                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  - 28800000 > System.currentTimeMillis()) {
+                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()   > System.currentTimeMillis()) {
                         scheduleNoti(eventData);
                         if (eventData.getEventReminderDateTime() != 0) {
                             scheduleReminderNoti(eventData);
@@ -292,13 +293,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }
                 }
                 eventListAdapter.notifyDataSetChanged();
-                if (eventListDataArrayList.isEmpty()) {
-                    eventListLoading.setVisibility(View.GONE);
-                    eventListEmpty.setVisibility(View.VISIBLE);
-                } else {
-                    eventListLoading.setVisibility(View.GONE);
-                    eventListEmpty.setVisibility(View.GONE);
-                }
+
             }
 
             @Override
@@ -316,13 +311,13 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     EventData eventData = dataSnapshot.getValue(EventData.class);
-                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime() - 28800000 > System.currentTimeMillis()) {
+                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  > System.currentTimeMillis()) {
                         scheduleNoti(eventData);
                         if (eventData.getEventReminderDateTime() != 0) {
                             scheduleReminderNoti(eventData);
                         }
                     }
-                    if (eventData.getEventEndDateTime() - 28800000 < System.currentTimeMillis()) {
+                    if (eventData.getEventEndDateTime()  < System.currentTimeMillis()) {
 
                     } else {
                         eventListDataArrayList.add(eventData);
@@ -338,14 +333,23 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     }
     public void getHolsCalendar(long dateSelected){
         long sixMonths = 15778800000L;
-        databaseHolReference.addValueEventListener(new ValueEventListener() {
+        Query queryHoliday = databaseHolReference.orderByChild("eventStartDateTime");
+        queryHoliday.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     EventData eventData = dataSnapshot.getValue(EventData.class);
-                    if ((eventData.getEventStartDateEpoch() - 28800000) <= dateSelected && (eventData.getEventEndDateEpoch()) >= dateSelected) {
+                    if ((eventData.getEventStartDateEpoch()) <= dateSelected && (eventData.getEventEndDateEpoch()) + 28800000 >= dateSelected) {
                         eventCalenderDataArrayList.add(eventData);
                     }
+                }
+                eventCalenderAdapter.notifyDataSetChanged();
+                if (eventListDataArrayList.isEmpty()) {
+                    eventListLoading.setVisibility(View.GONE);
+                    eventListEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    eventListLoading.setVisibility(View.GONE);
+                    eventListEmpty.setVisibility(View.GONE);
                 }
             }
 
@@ -357,7 +361,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     }
 
     public void scheduleNoti(EventData eventData) {
-        long eventStartDateTime = eventData.getEventStartDateTime() - 28800000;
+        long eventStartDateTime = eventData.getEventStartDateTime();
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventStartDateTime), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
         String formattedTime = formatter.format(dateTime);
@@ -376,8 +380,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     }
 
     public void scheduleReminderNoti(EventData eventData) {
-        long eventReminderDateTime = eventData.getEventReminderDateTime() - 28800000;
-        long eventStartDateTime = eventData.getEventStartDateTime() - 28800000;
+        long eventReminderDateTime = eventData.getEventReminderDateTime() ;
+        long eventStartDateTime = eventData.getEventStartDateTime();
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventStartDateTime), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
         String formattedTime = formatter.format(dateTime);
@@ -492,8 +496,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                             @Override
                             public void onPositiveButtonClick(Object selection) {
 
-                                eventStartDateStartTime = (long) Pair.class.cast(selection).first;
-                                eventEndDateTime = (long) Pair.class.cast(selection).second;
+                                eventStartDateStartTime = (long) Pair.class.cast(selection).first - 28800000;
+                                eventEndDateTime = (long) Pair.class.cast(selection).second - 28800000;
                                 eventStartDateEpoch = eventStartDateStartTime;
                                 eventEndDateEpoch = eventEndDateTime;
                                 eventStartDate = materialDatePicker.getHeaderText();
@@ -649,22 +653,10 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                         Snackbar.make(findViewById(android.R.id.content), "Please select a date!", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
-                    else if (eventData.getEventStartDateTime() > eventData.getEventEndDateTime()) {
-                        Snackbar.make(findViewById(android.R.id.content), "Event start time cannot be after end time!", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                    else if (eventData.getEventStartDateTime() < System.currentTimeMillis()) {
-                        Snackbar.make(findViewById(android.R.id.content), "Event start time cannot be before current time!", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                    else if (eventData.getEventEndDateTime() < System.currentTimeMillis()) {
+                    else if (eventData.getEventEndDateTime() + 86400000 < System.currentTimeMillis()) {
                         Snackbar.make(findViewById(android.R.id.content), "Event end time cannot be before current time!", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
-                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() > eventData.getEventStartDateTime()) {
-                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be after event start time!", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
                     else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < System.currentTimeMillis()) {
                         Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before current time!", Snackbar.LENGTH_SHORT)
                                 .show();
@@ -673,35 +665,16 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                         Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be after event end time!", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
-                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < eventData.getEventStartDateTime()) {
-                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before event start time!", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < System.currentTimeMillis()) {
-                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before current time!", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() > eventData.getEventEndDateTime()) {
-                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be after event end time!", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < eventData.getEventStartDateTime()) {
-                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before event start time!", Snackbar.LENGTH_SHORT)
-                                .show();
-                    }
-                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() < System.currentTimeMillis()) {
-                        Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before current time!", Snackbar.LENGTH_SHORT)
-                                .show();
-
-                    }else {
+                    else {
                         eventData.setEventTextId(eventTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + eventData.getEventId());
                         //databaseEventListReference.child(eventData.getEventTextId()).setValue(eventData);
                         databaseHolReference.child(eventData.getEventTextId()).setValue(eventData);
+                        Snackbar.make(findViewById(android.R.id.content), "Event saved", Snackbar.LENGTH_SHORT)
+                                .show();
+                        checkExists = false; //reset checkExists
+                        popupWindow.dismiss();
                     }
-                    Snackbar.make(findViewById(android.R.id.content), "Event saved", Snackbar.LENGTH_SHORT)
-                            .show();
-                    checkExists = false; //reset checkExists
-                    popupWindow.dismiss();
+
                 }
             }
         });
@@ -1056,8 +1029,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                             @Override
                             public void onPositiveButtonClick(Object selection) {
 
-                                eventStartDateStartTime = (long) Pair.class.cast(selection).first;
-                                eventEndDateTime = (long) Pair.class.cast(selection).second;
+                                eventStartDateStartTime = (long) Pair.class.cast(selection).first - 28800000;
+                                eventEndDateTime = (long) Pair.class.cast(selection).second - 28800000;
                                 eventStartDateEpoch = eventStartDateStartTime;
                                 eventEndDateEpoch = eventEndDateTime;
                                 eventStartDate = materialDatePicker.getHeaderText();
@@ -1169,11 +1142,15 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     if (categoryData == null) {
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
-                        categoryData.setCategoryColor(Color.parseColor("#FFB4AB"));
                     }
                     eventData.setEventCategory(categoryData);
                     eventData.setEventDesc(eventDescText.getText().toString());
-                    databaseEventListReference.child(eventData.getEventTextId()).setValue(eventData);
+                    try {
+                        databaseEventListReference.child(eventData.getEventTextId()).setValue(eventData);
+                    }
+                    catch (Exception e) {
+                        Log.e("Error", e.toString(), e.getCause().getCause());
+                    }
                     Snackbar.make(findViewById(android.R.id.content), "Event saved", Snackbar.LENGTH_SHORT)
                             .show();
                     popupWindow.dismiss();

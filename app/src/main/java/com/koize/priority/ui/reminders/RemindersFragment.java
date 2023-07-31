@@ -1,5 +1,6 @@
 package com.koize.priority.ui.reminders;
 
+import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
 import static androidx.core.content.ContextCompat.getSystemService;
@@ -22,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -136,9 +138,9 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                 databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/reminders");
 
             }
-            else if (name=="") {
+            else if (name == "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/reminders");
+                databaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/reminders");
             }
             else {
                 throw new IllegalStateException("Unexpected value: " + name);
@@ -539,7 +541,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     }
                     remindersData.setReminderCategory(categoryData);
                     try {
-                        databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
+                        databaseReference.child(remindersData.getReminderTextId()).setValue(remindersData);
 
                     }
                     catch (Exception e) {
@@ -621,7 +623,14 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         if (remindersDataArrayList.get(position).getSecondReminderDateTime() != 0) {
             remindersDataArrayList.get(position).setFirstReminderDateTime(remindersDataArrayList.get(position).getSecondReminderDateTime());
             remindersDataArrayList.get(position).setSecondReminderDateTime(0);
-            databaseReference.child(remindersDataArrayList.get(position).getReminderTextId()).setValue(remindersDataArrayList.get(position));
+            try {
+                databaseReference.child(remindersDataArrayList.get(position).getReminderTextId()).setValue(remindersDataArrayList.get(position));
+            }
+            catch (Exception e) {
+                Log.e(TAG, "onRemindersCheckBoxDelete: ",e.getCause().getCause() );
+                Snackbar.make(reminderRV, "Error: " + e.getMessage(), Snackbar.LENGTH_SHORT)
+                        .show();
+            }
 
             remindersDataArrayList.clear();
         } else {
@@ -663,7 +672,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         reminderTitle.setText(remindersData.getReminderTitle());
 
         firstReminderChip = popupView.findViewById(R.id.button_new_reminder_choose_date_1);
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMM dd yyyy, h:mm a");
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMM dd yyyy, HH:mm");
         long epochTime1 = remindersData.getFirstReminderDateTime() - 28800000;
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochTime1), ZoneId.of("Asia/Singapore"));
         firstReminderChip.setText(dateFormat.format(dateTime));
@@ -860,7 +869,7 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     }
                     remindersData.setReminderCategory(categoryData);
                     try {
-                        databaseReference.child(remindersData.getReminderTitle()).setValue(remindersData);
+                        databaseReference.child(remindersData.getReminderTextId()).setValue(remindersData);
 
                     }
                     catch (Exception e) {

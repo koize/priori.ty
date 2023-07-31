@@ -48,16 +48,34 @@ public class SettingsActivity extends AppCompatActivity {
 
         private static final int RC_SIGN_IN = 123;
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
+        String name;
+        Preference accountSettingsPreference;
+        Preference convertGuestToFull;
+        Preference offlineSync;
+        Preference deleteAccount;
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-
+            if (user != null){
+                name = user.getDisplayName();
+            }
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
-            Preference accountSettingsPreference = findPreference("account_settings");
-            Preference convertGuestToFull = findPreference("convert_guest_to_full");
-            Preference offlineSync = findPreference("offline_sync");
-            Preference deleteAccount = findPreference("delete_account");
+            accountSettingsPreference = findPreference("account_settings");
+            if ((name != null) && name != "") {
+                accountSettingsPreference.setSummary("Current user: " + user.getDisplayName());
+            } else if (name == ""){
+                accountSettingsPreference.setSummary("Current user: Guest");
+            } else {
+                accountSettingsPreference.setSummary("Not signed in");
+            }
+            convertGuestToFull = findPreference("convert_guest_to_full");
+            if (name == "" || name != null) {
+                convertGuestToFull.setVisible(true);
+            } else {
+                convertGuestToFull.setVisible(false);
+            }
+            offlineSync = findPreference("offline_sync");
+            deleteAccount = findPreference("delete_account");
 
             accountSettingsPreference.setOnPreferenceClickListener(preference -> {
                 Intent accountSettings = new Intent(requireContext(), AccountSettings.class);
@@ -66,10 +84,11 @@ public class SettingsActivity extends AppCompatActivity {
             });
 
             convertGuestToFull.setOnPreferenceClickListener(preference -> {
-                if (user.isAnonymous()) {
-                    showFirebaseUI();
+                if (name == "") {
+                    Intent intent = new Intent(requireContext(), UpgradePeasantAccount.class);
+                    startActivity(intent);
                 } else {
-                    Toast.makeText(requireContext(), "You are already a full user!", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(requireView(), "Error: You already have a full account", Snackbar.LENGTH_SHORT).show();
                 }
                 return true;
             });
