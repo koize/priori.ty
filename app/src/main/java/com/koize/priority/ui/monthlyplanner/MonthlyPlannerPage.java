@@ -255,8 +255,10 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                 eventCalenderAdapter.notifyDataSetChanged();
                 if (eventCalenderDataArrayList.isEmpty()) {
                     eventCalenderLoading.setVisibility(View.GONE);
+                    eventCalenderEmpty.setVisibility(View.VISIBLE);
                 } else {
                     eventCalenderLoading.setVisibility(View.GONE);
+                    eventCalenderEmpty.setVisibility(View.GONE);
                 }
             }
 
@@ -293,7 +295,13 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }
                 }
                 eventListAdapter.notifyDataSetChanged();
-
+                if (eventListDataArrayList.isEmpty()) {
+                    eventListLoading.setVisibility(View.GONE);
+                    eventListEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    eventListLoading.setVisibility(View.GONE);
+                    eventListEmpty.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -306,7 +314,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
     public void getHols(){
         long sixMonths = 15778800000L;
-        databaseHolReference.addValueEventListener(new ValueEventListener() {
+        Query queryHoliday = databaseHolReference.orderByChild("eventStartDateTime");
+        queryHoliday.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
@@ -321,6 +330,14 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
                     } else {
                         eventListDataArrayList.add(eventData);
+                    }
+                    eventListAdapter.notifyDataSetChanged();
+                    if (eventListDataArrayList.isEmpty()) {
+                        eventListLoading.setVisibility(View.GONE);
+                        eventListEmpty.setVisibility(View.VISIBLE);
+                    } else {
+                        eventListLoading.setVisibility(View.GONE);
+                        eventListEmpty.setVisibility(View.GONE);
                     }
                 }
             }
@@ -344,12 +361,12 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }
                 }
                 eventCalenderAdapter.notifyDataSetChanged();
-                if (eventListDataArrayList.isEmpty()) {
-                    eventListLoading.setVisibility(View.GONE);
-                    eventListEmpty.setVisibility(View.VISIBLE);
+                if (eventCalenderDataArrayList.isEmpty()) {
+                    eventCalenderLoading.setVisibility(View.GONE);
+                    eventCalenderEmpty.setVisibility(View.VISIBLE);
                 } else {
-                    eventListLoading.setVisibility(View.GONE);
-                    eventListEmpty.setVisibility(View.GONE);
+                    eventCalenderLoading.setVisibility(View.GONE);
+                    eventCalenderEmpty.setVisibility(View.GONE);
                 }
             }
 
