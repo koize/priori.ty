@@ -30,11 +30,9 @@ class MainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
 
         if (isGranted) {
-            // You can use the API that requires the permission.
-            Log.e(TAG, "onCreate: PERMISSION GRANTED")
-            sendNotification(this)
+            //sendNotification(this)
+            Snackbar.make(binding!!.root, "Permission granted", Snackbar.LENGTH_LONG).show()
         } else {
-            // The registered ActivityResultCallback gets the result of this request
             requestPermissionLauncher.launch(
                     Manifest.permission.POST_NOTIFICATIONS
             )
