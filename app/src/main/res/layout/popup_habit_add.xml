@@ -46,7 +46,7 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
-                android:id="@+id/title_new_habit"
+                android:id="@+id/new_habit_add_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -68,7 +68,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/button_new_habit_save"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title_new_habit">
+                app:layout_constraintTop_toBottomOf="@+id/new_habit_add_header">
 
                 <TableRow
                     android:layout_width="match_parent"
