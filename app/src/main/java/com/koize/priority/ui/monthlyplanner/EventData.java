@@ -4,6 +4,8 @@ import android.app.PendingIntent;
 
 import com.koize.priority.ui.category.CategoryData;
 
+import java.io.File;
+
 public class EventData {
     private int eventId;
     private String eventTextId;
@@ -29,7 +31,9 @@ public class EventData {
     private double eventLongitude;
     private CategoryData eventCategory;
     private String eventDesc;
+    private String imageURL;
     private PendingIntent eventPendingIntent;
+    private File imageFile;
 
     public EventData() {
         // Default constructor required for calls to DataSnapshot.getValue(EventData.class)
@@ -179,9 +183,19 @@ public class EventData {
         return eventDesc;
     }
 
+    public String setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+        return imageURL;
+    }
+
     public PendingIntent setEventPendingIntent(PendingIntent eventPendingIntent) {
         this.eventPendingIntent = eventPendingIntent;
         return eventPendingIntent;
+    }
+
+    public File setImageFile(File imageFile) {
+        this.imageFile = imageFile;
+        return imageFile;
     }
 
     public int getEventId() {
@@ -274,6 +288,14 @@ public class EventData {
 
     public String getEventDesc() {
         return eventDesc;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public File getImageFile() {
+        return imageFile;
     }
 
     public PendingIntent getEventPendingIntent() {
