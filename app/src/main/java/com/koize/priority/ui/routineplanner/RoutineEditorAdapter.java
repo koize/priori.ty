@@ -1,6 +1,7 @@
 package com.koize.priority.ui.routineplanner;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,12 @@ public class RoutineEditorAdapter extends RecyclerView.Adapter<RoutineEditorAdap
         //holder.rowCardTitle.setText(routineData1.getRoutineHabits().getHabitsTitle());
         //holder.rowCardDuration.setText(routineData1.getRoutineHabits().getHabitsDuration()+"m");
         holder.rowCardTitle.setText("Test");
-        holder.rowCardDuration.setText("test 1"+"m");
+        holder.rowCardDuration.setText("test 1"+"m");/*
+        ArrayList testsmth = routineData1.getRoutineHabitsList();
+        testsmth.get(0);
+        const { habitsDescription, habitsDuration } = testsmth.get(0);
+        Log.d("test",testsmth.get(0).habitsDescription);*/
+        RoutinePlannerPage.routineHabits.get(0).getHabitsDescription();
     }
 
     @Override

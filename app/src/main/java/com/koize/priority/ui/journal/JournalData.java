@@ -1,6 +1,8 @@
 package com.koize.priority.ui.journal;
 
 public class JournalData {
+    private int journalId;
+    private String journalTextId;
     private String journalTitle;
     private String journalEditor;
     private String journalMood;
@@ -11,12 +13,13 @@ public class JournalData {
         // Default constructor required for calls to DataSnapshot.getValue(RemindersData.class)
     }
 
-    public JournalData(String journalTitle,String journalEditor,String journalMood,String journalDate,String journalDay) {
+    public JournalData(String journalTitle,String journalEditor,String journalMood,String journalDate,String journalDay,int journalId) {
         this.journalTitle = journalTitle;
         this.journalEditor = journalEditor;
         this.journalMood = journalMood;
         this.journalDate = journalDate;
         this.journalDay = journalDay;
+        this.journalId = journalId;
     }
 
     public String setJournalTitle(String journalTitle) {
@@ -41,6 +44,14 @@ public class JournalData {
         this.journalDay = journalDay;
         return journalDay;
     }
+    public int setJournalId(int journalId) {
+        this.journalId = journalId;
+        return journalId;
+    }
+    public String setJournalTextId(String journalTextId) {
+        this.journalTextId = journalTextId;
+        return journalTextId;
+    }
 
     public String getJournalTitle() {
         return journalTitle;
@@ -61,5 +72,7 @@ public class JournalData {
     public String getJournalDay() {
         return journalDay;
     }
+    public int getJournalId(){return journalId;}
+    public String getJournalTextId(){return journalTextId;}
 
 }

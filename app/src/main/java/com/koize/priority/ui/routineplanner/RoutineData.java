@@ -1,19 +1,23 @@
 package com.koize.priority.ui.routineplanner;
 
+import java.util.ArrayList;
+
 public class RoutineData {
+    public int routineId;
+    public String routineTextId;
     private String routineIcon;
     private String routineTitle;
-    private HabitsData routineHabits;
+    private ArrayList<HabitsData> routineHabitsList;
     private int routineTotalDuration;
 
     public RoutineData(){
 
     }
 
-    public RoutineData(String routineIcon,String routineTitle,HabitsData routineHabits,int routineTotalDuration){
+    public RoutineData(String routineIcon,String routineTitle,ArrayList<HabitsData> routineHabits,int routineTotalDuration){
         this.routineIcon = routineIcon;
         this.routineTitle = routineTitle;
-        this.routineHabits = routineHabits;
+        this.routineHabitsList = routineHabits;
         this.routineTotalDuration = routineTotalDuration;
     }
 
@@ -29,15 +33,27 @@ public class RoutineData {
 
     public String getRoutineTitle(){return routineTitle;}
 
-    public void setRoutineHabits(HabitsData routineHabits){
-       this.routineHabits = routineHabits;
+    public void setRoutineHabitsList(ArrayList<HabitsData> routineHabitsList){
+       this.routineHabitsList = routineHabitsList;
     }
 
-    public HabitsData getRoutineHabits(){return routineHabits;}
+    public ArrayList<HabitsData> getRoutineHabitsList(){return routineHabitsList;}
 
     public void setRoutineTotalDuration(int routineTotalDuration){
         this.routineTotalDuration = routineTotalDuration;
     }
 
     public int getRoutineTotalDuration(){return routineTotalDuration;}
+
+    public void setRoutineId(int routineId){
+        this.routineId = routineId;
+    }
+
+    public int getRoutineId(){return routineId;}
+
+    public void setRoutineTextId(String routineTextId){
+        this.routineTextId = routineTextId;
+    }
+
+    public String getRoutineTextId(){return routineTextId;}
 }

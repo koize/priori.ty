@@ -39,6 +39,7 @@ import com.koize.priority.R;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public class JournalFragment extends Fragment {
@@ -79,10 +80,10 @@ public class JournalFragment extends Fragment {
             String name = user.getDisplayName();
             if ((name != null) && name != "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + name + "/journal");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/journal");
             } else if (name == "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/journal");
+                databaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/journal");
             } else {
                 throw new IllegalStateException("Unexpected value: " + name);
             }
@@ -131,6 +132,7 @@ public class JournalFragment extends Fragment {
     }
 
     private void onJournalClick(int position) {
+        JournalData journalData1 = journalDataArrayList.get(position);
         View view = getView().getRootView();
         ConstraintLayout journalView;
 
@@ -182,9 +184,13 @@ public class JournalFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (user != null){
-                    journalData = new JournalData();
-                    journalData.setJournalTitle(journalTitle.getText().toString());
-                    journalData.setJournalEditor(journalEditor.getText().toString());
+                    if(journalTitle.getText().toString().isEmpty()){
+                        Snackbar.make(view, "Please enter a title!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }else{
+                        journalData1.setJournalTitle(journalTitle.getText().toString());
+                    }
+                    journalData1.setJournalEditor(journalEditor.getText().toString());
                     //mood
                     String mood = "";
                     if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood1){
@@ -198,14 +204,19 @@ public class JournalFragment extends Fragment {
                     } else if(journalMood.getCheckedRadioButtonId() == R.id.radio_mood5){
                         mood = "mood5";
                     }
-                    journalData.setJournalMood(mood);
+                    journalData1.setJournalMood(mood);
 
                     //day
-                    journalData.setJournalDay(monthFromDate(selectedDate).substring(0,3).toUpperCase());
+                    journalData1.setJournalDay(monthFromDate(selectedDate).substring(0,3).toUpperCase());
 
                     //date
-                    journalData.setJournalDate(dayFromDate(selectedDate));
-                    databaseReference.child(journalData.getJournalTitle()).setValue(journalData);
+                    journalData1.setJournalDate(dayFromDate(selectedDate));
+                    try{
+                        databaseReference.child(journalData1.getJournalTextId()).setValue(journalData1);
+                    }
+                    catch(Exception e){
+                        e.getCause().getCause();
+                    }
                     popupWindow.dismiss();
                     Snackbar.make(view, "Journal Saved", Snackbar.LENGTH_SHORT)
                             .show();
@@ -216,19 +227,17 @@ public class JournalFragment extends Fragment {
                 }
             }
         });
-
-        JournalData journalData = journalDataArrayList.get(position);
-        journalTitle.setText(journalData.getJournalTitle());
-        journalEditor.setText(journalData.getJournalEditor());
-        if(journalData.getJournalMood().equals("mood1")){
+        journalTitle.setText(journalData1.getJournalTitle());
+        journalEditor.setText(journalData1.getJournalEditor());
+        if(journalData1.getJournalMood().equals("mood1")){
             journalMood.check(R.id.radio_mood1);
-        }else if(journalData.getJournalMood().equals("mood2")){
+        }else if(journalData1.getJournalMood().equals("mood2")){
             journalMood.check(R.id.radio_mood2);
-        }else if(journalData.getJournalMood().equals("mood3")){
+        }else if(journalData1.getJournalMood().equals("mood3")){
             journalMood.check(R.id.radio_mood3);
-        }else if(journalData.getJournalMood().equals("mood4")){
+        }else if(journalData1.getJournalMood().equals("mood4")){
             journalMood.check(R.id.radio_mood4);
-        }else if(journalData.getJournalMood().equals("mood5")){
+        }else if(journalData1.getJournalMood().equals("mood5")){
             journalMood.check(R.id.radio_mood5);
         }
     }
@@ -248,7 +257,7 @@ public class JournalFragment extends Fragment {
         // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
         builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
             // When the user click yes button then app will close
-            databaseReference.child(journalDataArrayList.get(position).getJournalTitle()).removeValue();
+            databaseReference.child(journalDataArrayList.get(position).getJournalTextId()).removeValue();
             Snackbar.make(journalRV, "Journal Deleted", Snackbar.LENGTH_SHORT)
                     .show();
             dialog.dismiss();
@@ -359,7 +368,14 @@ public class JournalFragment extends Fragment {
                 public void onClick(View v) {
                     if (user != null){
                         journalData = new JournalData();
-                        journalData.setJournalTitle(journalTitle.getText().toString());
+                        journalData.setJournalId(new Random().nextInt(1000000));
+                        if(journalTitle.getText().toString().isEmpty()){
+                            Snackbar.make(view, "Please enter a title!", Snackbar.LENGTH_SHORT)
+                                    .show();
+                        }else{
+                            journalData.setJournalTitle(journalTitle.getText().toString());
+                        }
+                        journalData.setJournalTextId(journalTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + journalData.getJournalId());
                         journalData.setJournalEditor(journalEditor.getText().toString());
                         //mood
                         String mood = "";
@@ -381,7 +397,13 @@ public class JournalFragment extends Fragment {
 
                         //date
                         journalData.setJournalDate(dayFromDate(selectedDate));
-                        databaseReference.child(journalData.getJournalTitle()).setValue(journalData);
+                        databaseReference.child(journalData.getJournalTextId()).setValue(journalData);
+                        try{
+                            databaseReference.child(journalData.getJournalTextId()).setValue(journalData);
+                        }
+                        catch(Exception e){
+                            e.getCause().getCause();
+                        }
                         popupWindow.dismiss();
                         Snackbar.make(view, "Journal Saved", Snackbar.LENGTH_SHORT)
                                 .show();
