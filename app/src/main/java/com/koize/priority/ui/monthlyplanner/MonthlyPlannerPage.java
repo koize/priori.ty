@@ -770,8 +770,11 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }
                     eventData.setEventCategory(categoryData);
 
-                    File file = new File(eventImageUri.getPath());
-                    uploadImage(file, eventImageUri, eventData.getEventTextId());
+                    if (eventImageUri != null) {
+                        File file = new File(eventImageUri.getPath());
+                        uploadImage(file, eventImageUri, eventData.getEventTextId());
+                    }
+
 
                     eventData.setEventDesc(eventDescText.getText().toString());
                     if (eventData.getEventTitle() == "") {
@@ -1121,7 +1124,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventCategoryChip = popupView.findViewById(R.id.button_new_event_get_category);
         eventCategoryCard = popupView.findViewById(R.id.new_event_category_card);
         eventDescImageChip = popupView.findViewById(R.id.button_new_event_get_image);
+        eventImageView = popupView.findViewById(R.id.new_event_image);
         eventDescText = popupView.findViewById(R.id.new_event_desc);
+
         eventSaveChip = popupView.findViewById(R.id.button_new_event_save);
 
         eventTopTile.setText("Edit event");
@@ -1154,6 +1159,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventLocationText.setText(eventData.getEventLocationName());
         eventCategoryCard.setText(eventData.getEventCategory().getCategoryTitle());
         eventCategoryCard.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
+        Glide.with(this)
+                .load(storageRef.child(eventData.getEventTextId()))
+                .into(eventImageView);
         eventDescText.setText(eventData.getEventDesc());
 
 
@@ -1294,6 +1302,23 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
                     }
+
+                    if (eventData.getImageUri() == null && eventImageUri != null) {
+                        File file = new File(eventImageUri.getPath());
+                        uploadImage(file, eventImageUri, eventData.getEventTextId());
+                    }
+                    else if (eventData.getImageUri() == null && eventImageUri == null) {
+
+                    }
+                    else if (eventData.getImageUri() != null && eventImageUri != null) {
+                        eventData.setImageUri(eventImageUri);
+                    }
+                    else if (eventData.getImageUri() != null && eventImageUri == null) {
+                        eventData.setImageUri(eventData.getImageUri());
+                    }
+                    else {
+                    }
+
                     eventData.setEventCategory(categoryData);
                     eventData.setEventDesc(eventDescText.getText().toString());
                     try {
