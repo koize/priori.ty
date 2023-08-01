@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,8 +20,10 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.koize.priority.R;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,7 +53,11 @@ public class AccountSettings extends AppCompatActivity {
 
     public void refreshAccount() {
         //user.reload();
+
         user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            user.reload();
+        }
         userName = findViewById(R.id.account_settings_username);
         userEmail = findViewById(R.id.account_settings_email);
         if(user != null) {
@@ -169,9 +176,11 @@ public class AccountSettings extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        deleteCache(getApplicationContext());
         refreshAccount();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        user.reload();
+        ProcessPhoenix.triggerRebirth(this);
+        //user = FirebaseAuth.getInstance().getCurrentUser();
+        //user.reload();
     }
 
     View.OnClickListener onDeleteAccount = new View.OnClickListener() {
@@ -227,5 +236,27 @@ public class AccountSettings extends AppCompatActivity {
             alertDialog.show();
         }
     };
+    public static void deleteCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            deleteDir(dir);
+        } catch (Exception e) {}
+    }
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+            return dir.delete();
+        } else if(dir!= null && dir.isFile()) {
+            return dir.delete();
+        } else {
+            return false;
+        }
+    }
 
 }

@@ -69,7 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
                 accountSettingsPreference.setSummary("Not signed in");
             }
             convertGuestToFull = findPreference("convert_guest_to_full");
-            if (name == "" || name != null) {
+            if (name == "" && name != null) {
                 convertGuestToFull.setVisible(true);
             } else {
                 convertGuestToFull.setVisible(false);

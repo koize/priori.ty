@@ -172,9 +172,11 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             if ((name != null) && name != "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
                 databaseEventListReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1, 5) + "/events");
+                databaseHolReference = firebaseDatabase.getReference("hols");
             } else if (name == "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
                 databaseEventListReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/events");
+                databaseHolReference = firebaseDatabase.getReference("hols");
             } else {
                 throw new IllegalStateException("Unexpected value: " + name);
             }
@@ -183,7 +185,6 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             Snackbar.make(findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
         }
-        databaseHolReference = firebaseDatabase.getReference("hols");
 
         eventListDataArrayList = new ArrayList<>();
         eventListAdapter = new EventListAdapter(eventListDataArrayList, this, new EventListAdapter.EventListClickInterface() {
@@ -200,7 +201,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         });
         eventListRecyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.VERTICAL, false));
         eventListRecyclerView.setAdapter(eventListAdapter);
-        getEventsList();
+        if (user != null) {
+            getEventsList();
+        }
 
         eventCalenderDataArrayList = new ArrayList<>();
         eventCalenderAdapter = new EventCalenderAdapter(eventCalenderDataArrayList, this, new EventCalenderAdapter.EventCalenderClickInterface() {
@@ -228,7 +231,19 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
         });
         LocalDate today = LocalDate.now();
-        getEventsCalender(getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth()));
+        if (user != null) {
+            getEventsCalender(getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth()));
+        }
+        else {
+            Snackbar.make(findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
+                    .show();
+            eventCalenderEmpty.setVisibility(View.VISIBLE);
+            eventCalenderLoading.setVisibility(View.GONE);
+            eventListEmpty.setVisibility(View.VISIBLE);
+            eventListLoading.setVisibility(View.GONE);
+            eventCalenderEmpty.setText("Sign in to create events!");
+            eventListEmpty.setText("Sign in to create events!");
+        }
     }
 
     public static long getEpochMilliseconds(int year, int month, int dayOfMonth) {

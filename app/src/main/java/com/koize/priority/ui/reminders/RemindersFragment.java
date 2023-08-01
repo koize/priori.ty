@@ -215,7 +215,15 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
         reminderAutoSortCheckBox.setChecked(true);
         getRemindersSortByDate();
         reminderAutoSortCheckBox.setChecked(sharedPreferences.getBoolean("value",true));*/
-        getRemindersSortByDate();
+        if (user != null) {
+            getRemindersSortByDate();
+        } else {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
+                    .show();
+            reminderEmpty.setVisibility(View.VISIBLE);
+            reminderEmpty.setText("Sign in to create reminders!");
+            progressBar.setVisibility(View.GONE);
+        }
         reminderAutoSortCheckBox.setVisibility(View.GONE); //DONT MAKE VISIBLE IT WILL BREAK THE APP
         //RecyclerViewRefresher recyclerViewRefresher = new RecyclerViewRefresher(reminderRV);
         //recyclerViewRefresher.startRefreshing();

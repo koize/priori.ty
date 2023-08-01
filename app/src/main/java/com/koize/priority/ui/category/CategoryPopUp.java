@@ -92,11 +92,11 @@ public class CategoryPopUp {
             String name = user.getDisplayName();
             if ((name != null) && name!="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + name + "#" + user.getUid().substring(1,5) + "/categories");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/categories");
             }
             else if (name=="") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + "peasant" + user.getUid() + "/categories");
+                databaseReference = firebaseDatabase.getReference("users/"  + "peasants/" + "peasant_" + user.getUid() + "/categories");
             }
             else {
                 throw new IllegalStateException("Unexpected value: " + name);
