@@ -546,7 +546,8 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
                     }
                     catch (Exception e) {
                         e.getCause().getCause();
-                    }                    Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
+                    }
+                    Snackbar.make(view, "Reminder Saved", Snackbar.LENGTH_SHORT)
                             .show();
                     popupWindow.dismiss();
 

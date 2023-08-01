@@ -1,4 +1,4 @@
-package com.koize.priority.ui.category.journal;
+package com.koize.priority.ui.journal;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
