@@ -345,7 +345,7 @@
 
                             <ImageView
                                 android:id="@+id/show_event_desc_image"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="20dp"
                                 app:layout_constraintBottom_toBottomOf="parent"

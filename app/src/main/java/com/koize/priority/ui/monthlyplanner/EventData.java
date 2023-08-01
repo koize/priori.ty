@@ -1,6 +1,7 @@
 package com.koize.priority.ui.monthlyplanner;
 
 import android.app.PendingIntent;
+import android.net.Uri;
 
 import com.koize.priority.ui.category.CategoryData;
 
@@ -32,6 +33,7 @@ public class EventData {
     private CategoryData eventCategory;
     private String eventDesc;
     private String imageURL;
+    private Uri imageUri;
     private PendingIntent eventPendingIntent;
     private File imageFile;
 
@@ -198,6 +200,11 @@ public class EventData {
         return imageFile;
     }
 
+    public Uri setImageUri(Uri imageUri) {
+        this.imageUri = imageUri;
+        return imageUri;
+    }
+
     public int getEventId() {
         return eventId;
     }
@@ -296,6 +303,10 @@ public class EventData {
 
     public File getImageFile() {
         return imageFile;
+    }
+
+    public Uri getImageUri() {
+        return imageUri;
     }
 
     public PendingIntent getEventPendingIntent() {
