@@ -413,12 +413,21 @@
                                 android:id="@+id/new_event_desc"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
                                 android:ems="10"
                                 android:gravity="start|top"
                                 android:inputType="textMultiLine"
-                                app:layout_constraintStart_toEndOf="@+id/icon_new_event_desc"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/button_new_event_get_image" />
+
+                            <ImageView
+                                android:id="@+id/new_event_image"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/new_event_desc"
+                                tools:srcCompat="@tools:sample/avatars" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
