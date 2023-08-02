@@ -19,7 +19,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.koize.priority.R;
 import com.koize.priority.SendNotiTestKt;
 
@@ -55,7 +58,11 @@ public class SettingsActivity extends AppCompatActivity {
         Preference offlineSync;
         Preference testNoti;
         Preference deleteAccount;
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
+        DatabaseReference databaseReference = database.getReference("users/" + name + "_" + user.getUid().substring(1, 5));
+        FirebaseStorage storage = FirebaseStorage.getInstance("gs://priority-135fc.appspot.com");
+        StorageReference storageReference = storage.getReference("users/" + name + "_" + user.getUid().substring(1, 5));
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             if (user != null){
@@ -122,17 +129,16 @@ public class SettingsActivity extends AppCompatActivity {
                     builder.setPositiveButton("Yes (dont complain ah)", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            databaseReference.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-                                    Snackbar.make(requireView(), "Account deleted", Snackbar.LENGTH_SHORT).show();
-                                    Snackbar.make(requireView(), "You are now a peasant", Snackbar.LENGTH_SHORT).show();
-                                    showFirebaseUI();
+                                    Snackbar.make(requireView(), "You are a peasant now", Snackbar.LENGTH_SHORT).show();
                                 }
-                            }).addOnFailureListener(new OnFailureListener() {
+                            });
+                            storageReference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Snackbar.make(requireView(), "Account deletion failed", Snackbar.LENGTH_SHORT).show();
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Snackbar.make(requireView(), "You are a peasant now", Snackbar.LENGTH_SHORT).show();
                                 }
                             });
                         }

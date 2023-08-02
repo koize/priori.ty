@@ -47,8 +47,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.koize.priority.GetMap;
 import com.koize.priority.NotiReceiver;
 import com.koize.priority.R;
+import com.koize.priority.ShowMap;
 import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 
@@ -298,7 +300,16 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventShowLocationMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (eventData.getEventLatitude() == 0 && eventData.getEventLongitude() == 0) {
+                    Snackbar.make(findViewById(android.R.id.content), "No location set!", Snackbar.LENGTH_SHORT)
+                            .show();
+                } else {
+                    Intent intent = new Intent(EventShowAndEditPopUp.this, ShowMap.class);
+                    intent.putExtra("locationName", eventData.getEventLocationName());
+                    intent.putExtra("lat", eventData.getEventLatitude());
+                    intent.putExtra("lon", eventData.getEventLongitude());
+                    startActivity(intent);
+                }
             }
         });
         eventShowEdit.setOnClickListener(new View.OnClickListener() {
@@ -561,7 +572,12 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventLocationChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(EventShowAndEditPopUp.this, GetMap.class);
+                if (eventData.getEventLatitude() != 0 && eventData.getEventLongitude() != 0) {
+                    intent.putExtra("lat", eventData.getEventLatitude());
+                    intent.putExtra("lon", eventData.getEventLongitude());
+                }
+                startActivityForResult(intent, get_map_request_code);
             }
         });
         eventCategoryChip.setOnClickListener(new View.OnClickListener() {
@@ -574,7 +590,8 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventDescImageChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(EventShowAndEditPopUp.this, ImageChooser.class);
+                startActivityForResult(intent, image_chooser_request_code);
             }
         });
         eventSaveChip.setOnClickListener(new View.OnClickListener() {
@@ -709,6 +726,11 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         if (requestCode == image_chooser_request_code && resultCode == RESULT_OK && data != null) {
             eventImageUri = (Uri) data.getExtras().get("image");
             eventImageView.setImageURI(eventImageUri);
+        }
+        if (requestCode == get_map_request_code && resultCode == RESULT_OK && data != null) {
+            eventLatitude = (double) data.getExtras().get("lat");
+            eventLongitude = (double) data.getExtras().get("lon");
+            eventLocationChip.setText("Location set");
         }
 
 

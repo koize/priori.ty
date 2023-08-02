@@ -1295,7 +1295,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventDescImageChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MonthlyPlannerPage.this, ImageChooser.class);
+                startActivityForResult(intent, image_chooser_request_code);
             }
         });
         eventSaveChip.setOnClickListener(new View.OnClickListener() {
