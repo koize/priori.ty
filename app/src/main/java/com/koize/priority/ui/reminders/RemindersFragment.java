@@ -351,7 +351,9 @@ public class RemindersFragment extends Fragment implements CategoryPopUp.Categor
     View.OnClickListener addReminderListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            showPopupWindow(v);
+            RemindersData remindersData = new RemindersData();
+            RemindersNewPopUp remindersNewPopUp = new RemindersNewPopUp(remindersData, getParentFragmentManager(), user, databaseReference, v);
+            remindersNewPopUp.showPopupWindow(v);
         }
     };
 
