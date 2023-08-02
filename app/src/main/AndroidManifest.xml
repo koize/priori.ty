@@ -6,9 +6,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
     <uses-permission
         android:name="android.permission.USE_EXACT_ALARM"
         android:minSdkVersion="33" />
+
 
     <application
         android:allowBackup="true"
@@ -23,7 +30,9 @@
         android:targetSdkVersion="33"
         android:theme="@style/AppTheme"
         tools:targetApi="31">
-
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
         <receiver
             android:name=".BootReceiver"
             android:enabled="true"
@@ -68,10 +77,10 @@
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".ImageChooser"
+            android:name=".ui.monthlyplanner.ImageChooser"
             android:exported="false" />
         <activity
-            android:name=".ShowMap"
+            android:name=".GetMap"
             android:exported="false" />
         <activity
             android:name=".ui.monthlyplanner.MonthlyPlannerPage"
@@ -89,6 +98,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
     </application>
 
 </manifest>

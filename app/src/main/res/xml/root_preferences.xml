@@ -30,6 +30,15 @@
             app:title="Enable offline persistance" />
 
     </PreferenceCategory>
+    <PreferenceCategory android:title="Preference category">
+        <Preference
+            android:id="@+id/settings_button_test_noti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:key="test_noti"
+            app:title="Test notification"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="DANGER ZONE!!!!">
 
         <Preference

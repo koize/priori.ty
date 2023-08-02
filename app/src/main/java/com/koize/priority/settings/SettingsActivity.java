@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.koize.priority.R;
+import com.koize.priority.SendNotiTestKt;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +53,7 @@ public class SettingsActivity extends AppCompatActivity {
         Preference accountSettingsPreference;
         Preference convertGuestToFull;
         Preference offlineSync;
+        Preference testNoti;
         Preference deleteAccount;
 
         @Override
@@ -75,6 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
                 convertGuestToFull.setVisible(false);
             }
             offlineSync = findPreference("offline_sync");
+            testNoti = findPreference("test_noti");
             deleteAccount = findPreference("delete_account");
 
             accountSettingsPreference.setOnPreferenceClickListener(preference -> {
@@ -101,6 +104,11 @@ public class SettingsActivity extends AppCompatActivity {
                     FirebaseDatabase.getInstance().setPersistenceEnabled(false);
                     Snackbar.make(requireView(), "Offline sync disabled", Snackbar.LENGTH_SHORT).show();
                 }
+                return true;
+            });
+
+            testNoti.setOnPreferenceClickListener(preference -> {
+                SendNotiTestKt.sendNotification(requireContext());
                 return true;
             });
 

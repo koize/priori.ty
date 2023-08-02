@@ -24,7 +24,7 @@ fun sendNotification(context: Context) {
         val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 name,
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
         )
         notificationManager.createNotificationChannel(channel)
     }
@@ -41,8 +41,8 @@ fun sendNotification(context: Context) {
 //    build the notification object with the data to be shown
     val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.baseline_access_time_24)
-            .setContentTitle("Title")
-            .setContentText("Content goes here")
+            .setContentTitle("Congrats notifications works")
+            .setContentText("thank u for ur data")
             .setContentIntent(notificationPendingIntent)
             .setAutoCancel(true)
             .build()

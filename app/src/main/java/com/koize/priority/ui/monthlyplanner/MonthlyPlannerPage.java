@@ -1,5 +1,7 @@
 package com.koize.priority.ui.monthlyplanner;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -13,14 +15,18 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -37,6 +43,9 @@ import android.widget.Switch;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -53,12 +62,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.koize.priority.GetMap;
 import com.koize.priority.NotiReceiver;
 import com.koize.priority.R;
 import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 import com.koize.priority.ui.reminders.RemindersData;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,9 +88,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
+import java.util.UUID;
 
 public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPopUp.CategoryCallBack {
     public static final int INPUT_METHOD_NEEDED = 1;
+    private static final int image_chooser_request_code = 999;
+    private static final int get_map_request_code= 998;
+
+
     private FloatingActionButton addEventButton;
     EditText eventTitle;
     EditText eventType;
@@ -108,6 +134,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
 
     private CategoryData categoryData;
     Chip eventCategoryCard;
+    private ImageView eventImageView;
+    private Uri eventImageUri;
 
     EventData eventData;
 
@@ -119,6 +147,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseEventListReference;
     DatabaseReference databaseEventCalenderReference;
+    FirebaseStorage storage;
+    StorageReference storageRef;
     FirebaseUser user;
 
     private CalendarView eventCalenderView;
@@ -173,10 +203,14 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
                 databaseEventListReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1, 5) + "/events");
                 databaseHolReference = firebaseDatabase.getReference("hols");
+                storage = FirebaseStorage.getInstance("gs://priority-135fc.appspot.com");
+                storageRef = storage.getReference("users/" + name + "_" + user.getUid().substring(1, 5) + "/events" + "/images");
             } else if (name == "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
                 databaseEventListReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/events");
                 databaseHolReference = firebaseDatabase.getReference("hols");
+                storage = FirebaseStorage.getInstance("gs://priority-135fc.appspot.com");
+                storageRef = storage.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/events" + "/images");
             } else {
                 throw new IllegalStateException("Unexpected value: " + name);
             }
@@ -439,6 +473,66 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         }
     };
 
+    private void uploadImage(File filePath, Uri uri, String eventTextId)
+    {
+        if (filePath != null) {
+
+            // Code for showing progressDialog while uploading
+            ProgressDialog progressDialog
+                    = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            // Defining the child of storageReference
+            storageRef
+                    .child(
+                            eventTextId
+                                    ).putFile(uri)
+                    .addOnSuccessListener(
+                            new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                                @Override
+                                public void onSuccess(
+                                        UploadTask.TaskSnapshot taskSnapshot)
+                                {
+
+                                    // Image uploaded successfully
+                                    // Dismiss dialog
+                                    progressDialog.dismiss();
+                                    Snackbar.make(findViewById(android.R.id.content), "Image Uploaded!", Snackbar.LENGTH_SHORT).show();
+                                }
+                            })
+
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e)
+                        {
+
+                            // Error, Image not uploaded
+                            progressDialog.dismiss();
+                            Snackbar.make(findViewById(android.R.id.content), "Failed " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(
+                            new OnProgressListener<UploadTask.TaskSnapshot>() {
+
+                                // Progress Listener for loading
+                                // percentage on the dialog box
+                                @Override
+                                public void onProgress(
+                                        UploadTask.TaskSnapshot taskSnapshot)
+                                {
+                                    double progress
+                                            = (100.0
+                                            * taskSnapshot.getBytesTransferred()
+                                            / taskSnapshot.getTotalByteCount());
+                                    progressDialog.setMessage(
+                                            "Uploaded "
+                                                    + (int)progress + "%");
+                                }
+                            });
+        }
+    }
     public void showNewEventPopupWindow(final View view) {
 
         ConstraintLayout reminderView;
@@ -503,6 +597,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventCategoryChip = popupView.findViewById(R.id.button_new_event_get_category);
         eventCategoryCard = popupView.findViewById(R.id.new_event_category_card);
         eventDescImageChip = popupView.findViewById(R.id.button_new_event_get_image);
+        eventImageView = popupView.findViewById(R.id.new_event_image);
         eventDescText = popupView.findViewById(R.id.new_event_desc);
         eventSaveChip = popupView.findViewById(R.id.button_new_event_save);
         dateChip.setOnClickListener(new View.OnClickListener() {
@@ -592,7 +687,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventLocationChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MonthlyPlannerPage.this, GetMap.class);
+                startActivityForResult(intent, get_map_request_code);
             }
         });
         eventCategoryChip.setOnClickListener(new View.OnClickListener() {
@@ -605,8 +701,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventDescImageChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-            }
+                Intent intent = new Intent(MonthlyPlannerPage.this, ImageChooser.class);
+                startActivityForResult(intent, image_chooser_request_code);            }
         });
         eventSaveChip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -644,6 +740,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                                 .show();
                     }*/else {
                         eventData.setEventTitle(eventTitle.getText().toString());
+                        eventData.setEventTextId(eventTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + eventData.getEventId());
                     }
                     if (eventType.getText().toString().isEmpty()) {
                         eventData.setEventType("Event");
@@ -676,6 +773,13 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                         //categoryData.setCategoryColor(Color.parseColor("#FFB4AB"));
                     }
                     eventData.setEventCategory(categoryData);
+
+                    if (eventImageUri != null) {
+                        File file = new File(eventImageUri.getPath());
+                        uploadImage(file, eventImageUri, eventData.getEventTextId());
+                    }
+
+
                     eventData.setEventDesc(eventDescText.getText().toString());
                     if (eventData.getEventTitle() == "") {
                         Snackbar.make(findViewById(android.R.id.content), "Please enter a title!", Snackbar.LENGTH_SHORT)
@@ -698,7 +802,6 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                                 .show();
                     }
                     else {
-                        eventData.setEventTextId(eventTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + eventData.getEventId());
                         databaseEventListReference.child(eventData.getEventTextId()).setValue(eventData);
                         //databaseHolReference.child(eventData.getEventTextId()).setValue(eventData); //FOR ADDING HOLS ONLY
                         Snackbar.make(findViewById(android.R.id.content), "Event saved", Snackbar.LENGTH_SHORT)
@@ -769,6 +872,18 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                 }
         );
         materialTimePicker.show(getSupportFragmentManager(), "MATERIAL_TIME_PICKER");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == image_chooser_request_code && resultCode == RESULT_OK && data != null) {
+            eventImageUri = (Uri) data.getExtras().get("image");
+            eventImageView.setImageURI(eventImageUri);
+        }
+
+
     }
 
     @Override
@@ -868,12 +983,12 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventShowLocation.setText(eventData.getEventLocationName());
         eventShowCategory.setText(eventData.getEventCategory().getCategoryTitle());
         eventShowCategory.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
-        if (eventData.getEventDesc().isEmpty()) {
-            eventShowDescRow.setVisibility(View.GONE);
-        } else {
-            eventShowDescRow.setVisibility(View.VISIBLE);
-        }
         eventShowDesc.setText(eventData.getEventDesc());
+
+
+        Glide.with(this)
+                .load(storageRef.child(eventData.getEventTextId()))
+                .into(eventShowImage);
 
         eventShowLocationMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -917,6 +1032,17 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     AlarmManager alarmManager = (AlarmManager) MonthlyPlannerPage.this.getSystemService(Context.ALARM_SERVICE);
                     alarmManager.cancel(pendingIntent);
                     databaseEventListReference.child(eventData.getEventTextId()).removeValue();
+                    storageRef.child(eventData.getEventTextId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // File deleted successfully
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Uh-oh, an error occurred!
+                        }
+                    });
                     Snackbar.make(eventListRecyclerView, "Event deleted!", Snackbar.LENGTH_SHORT)
                             .show();
                     dialog.dismiss();
@@ -1002,7 +1128,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventCategoryChip = popupView.findViewById(R.id.button_new_event_get_category);
         eventCategoryCard = popupView.findViewById(R.id.new_event_category_card);
         eventDescImageChip = popupView.findViewById(R.id.button_new_event_get_image);
+        eventImageView = popupView.findViewById(R.id.new_event_image);
         eventDescText = popupView.findViewById(R.id.new_event_desc);
+
         eventSaveChip = popupView.findViewById(R.id.button_new_event_save);
 
         eventTopTile.setText("Edit event");
@@ -1035,6 +1163,9 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventLocationText.setText(eventData.getEventLocationName());
         eventCategoryCard.setText(eventData.getEventCategory().getCategoryTitle());
         eventCategoryCard.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
+        Glide.with(this)
+                .load(storageRef.child(eventData.getEventTextId()))
+                .into(eventImageView);
         eventDescText.setText(eventData.getEventDesc());
 
 
@@ -1175,6 +1306,23 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
                     }
+
+                    if (eventData.getImageUri() == null && eventImageUri != null) {
+                        File file = new File(eventImageUri.getPath());
+                        uploadImage(file, eventImageUri, eventData.getEventTextId());
+                    }
+                    else if (eventData.getImageUri() == null && eventImageUri == null) {
+
+                    }
+                    else if (eventData.getImageUri() != null && eventImageUri != null) {
+                        eventData.setImageUri(eventImageUri);
+                    }
+                    else if (eventData.getImageUri() != null && eventImageUri == null) {
+                        eventData.setImageUri(eventData.getImageUri());
+                    }
+                    else {
+                    }
+                    eventData.setEventPendingIntent(null);
                     eventData.setEventCategory(categoryData);
                     eventData.setEventDesc(eventDescText.getText().toString());
                     try {
