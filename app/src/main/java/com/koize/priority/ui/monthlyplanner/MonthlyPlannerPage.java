@@ -1318,7 +1318,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }
                     else {
                     }
-
+                    eventData.setEventPendingIntent(null);
                     eventData.setEventCategory(categoryData);
                     eventData.setEventDesc(eventDescText.getText().toString());
                     try {
