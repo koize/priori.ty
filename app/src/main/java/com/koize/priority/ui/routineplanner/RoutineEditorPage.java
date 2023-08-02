@@ -72,7 +72,7 @@ public class RoutineEditorPage extends AppCompatActivity {
     public int habitDurationHr;
     public int habitDurationMin;
     TextView habitEditHeaderTV;
-    private ArrayList<RoutineData> routineEditorDataArrayList;
+    private ArrayList<HabitsData> routineEditorDataArrayList;
     RecyclerView routineEditorRV;
     private RoutineEditorAdapter RoutineEditorAdapter;
     RoutineData routineData;
@@ -98,7 +98,7 @@ public class RoutineEditorPage extends AppCompatActivity {
         RoutineEditorAdapter = new RoutineEditorAdapter(routineEditorDataArrayList, getApplicationContext(),this::onRoutineHabitClick,this::onRoutineHabitLongClick);
         routineEditorRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getApplicationContext()));
         routineEditorRV.setAdapter(RoutineEditorAdapter);
-        //getRoutineEditor();
+        getRoutineEditor();
     }
 
     private void getRoutineEditor() {
@@ -106,22 +106,29 @@ public class RoutineEditorPage extends AppCompatActivity {
             String name = user.getDisplayName();
             if ((name != null) && name != "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/routine");
+                routineDatabaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/routine");
             } else if (name == "") {
                 firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                databaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/routine"+"/routineHabitsList");
+                routineDatabaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/routine");
             } else {
                 throw new IllegalStateException("Unexpected value: " + name);
             }
-        }
 
+
+        }
         routineDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //routineEditorDataArrayList.clear();
+                //for(DataSnapshot dataSnapShot : snapshot.getChildren()){
+                //    RoutineData routineData = dataSnapShot.getValue(RoutineData.class);
+                //    routineEditorDataArrayList.add(routineData);
+                //}
+                //RoutineData routineData = RoutinePlannerPage.routineDataMain;
+                //routineEditorDataArrayList.add(RoutinePlannerPage.routineDataMain);
                 routineEditorDataArrayList.clear();
-                for(DataSnapshot dataSnapShot : snapshot.getChildren()){
-                    RoutineData routineData = dataSnapShot.getValue(RoutineData.class);
-                    routineEditorDataArrayList.add(routineData);
+                for(HabitsData habits : RoutinePlannerPage.routineHabits){
+                    routineEditorDataArrayList.add(habits);
                 }
                 RoutineEditorAdapter.notifyDataSetChanged();
             }
@@ -691,7 +698,7 @@ public class RoutineEditorPage extends AppCompatActivity {
             RoutinePlannerPage.routineHabits.add(habitsData5);
             RoutinePlannerPage.routineDataMain.setRoutineHabitsList(RoutinePlannerPage.routineHabits);
             routineDatabaseReference.child(RoutinePlannerPage.routineDataMain.getRoutineTextId()).setValue(RoutinePlannerPage.routineDataMain);
-            //routineDatabaseReference.child(RoutinePlannerPage.routineDataMain.getRoutineTextId()).child("habitlist").setValue(RoutinePlannerPage.routineDataMain.getRoutineHabits());
+
         }
     };
 

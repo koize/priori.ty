@@ -17,14 +17,14 @@ import com.koize.priority.R;
 import java.util.ArrayList;
 
 public class RoutineEditorAdapter extends RecyclerView.Adapter<RoutineEditorAdapter.ViewHolder> {
-    private ArrayList<RoutineData> routineEditorDataArrayList;
+    private ArrayList<HabitsData> routineEditorDataArrayList;
     //do aft lunch, each habit click adds title to a string, then can convert into array to get all habits, prob just delete routine
     //editorData and just make a routineData
     private Context context;
     private RoutineEditorListener routineEditorListener;
     private RoutineEditorListener2 routineEditorListener2;
 
-    public RoutineEditorAdapter(ArrayList<RoutineData> routineEditorDataArrayList, Context context, RoutineEditorListener routineEditorListener, RoutineEditorListener2 routineEditorListener2){
+    public RoutineEditorAdapter(ArrayList<HabitsData> routineEditorDataArrayList, Context context, RoutineEditorListener routineEditorListener, RoutineEditorListener2 routineEditorListener2){
         this.routineEditorDataArrayList = routineEditorDataArrayList;
         this.context = context;
         this.routineEditorListener = routineEditorListener;
@@ -41,21 +41,29 @@ public class RoutineEditorAdapter extends RecyclerView.Adapter<RoutineEditorAdap
 
     @Override
     public void onBindViewHolder(@NonNull RoutineEditorAdapter.ViewHolder holder, int position) {
-        RoutineData routineData1 = routineEditorDataArrayList.get(position);
-        //holder.rowCardTitle.setText(routineData1.getRoutineHabits().getHabitsTitle());
-        //holder.rowCardDuration.setText(routineData1.getRoutineHabits().getHabitsDuration()+"m");
-        holder.rowCardTitle.setText("Test");
-        holder.rowCardDuration.setText("test 1"+"m");/*
+        HabitsData habitsdata1 = new HabitsData();
+        routineEditorDataArrayList.add(habitsdata1);
+        HabitsData habitsData = routineEditorDataArrayList.get(position);
+        /*
         ArrayList testsmth = routineData1.getRoutineHabitsList();
         testsmth.get(0);
         const { habitsDescription, habitsDuration } = testsmth.get(0);
         Log.d("test",testsmth.get(0).habitsDescription);*/
-        RoutinePlannerPage.routineHabits.get(0).getHabitsDescription();
+        //ArrayList<HabitsData> testarray = routineData1.getRoutineHabitsList();
+        //testarray.get(0).getHabitsDescription();
+        //String Title = RoutinePlannerPage.routineHabits.get(0).getHabitsDescription();
+        //String Title = habitsData.getHabitsTitle();
+        //int Duration = habitsData.getHabitsDuration();
+
+        String Title = habitsData.getHabitsTitle();
+        int Duration = habitsData.getHabitsDuration();
+        holder.rowCardTitle.setText(Title);
+        holder.rowCardDuration.setText(Duration + "m");
     }
 
     @Override
     public int getItemCount() {
-        return routineEditorDataArrayList.size();
+        return RoutinePlannerPage.routineHabits.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
