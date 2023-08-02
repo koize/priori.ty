@@ -71,6 +71,7 @@ import com.google.firebase.storage.UploadTask;
 import com.koize.priority.GetMap;
 import com.koize.priority.NotiReceiver;
 import com.koize.priority.R;
+import com.koize.priority.ShowMap;
 import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 import com.koize.priority.ui.reminders.RemindersData;
@@ -883,6 +884,12 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             eventImageView.setImageURI(eventImageUri);
         }
 
+        if (requestCode == get_map_request_code && resultCode == RESULT_OK && data != null) {
+            eventLatitude = (double) data.getExtras().get("lat");
+            eventLongitude = (double) data.getExtras().get("lon");
+            eventLocationChip.setText("Location set");
+        }
+
 
     }
 
@@ -975,7 +982,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             eventShowReminderRow.setVisibility(View.VISIBLE);
         }
         eventShowReminder.setText(eventData.getEventReminderDate() + ", " + String.format("%02d:%02d", reminderHr, reminderMin));
-        if (eventData.getEventLocationName().isEmpty()) {
+        if (eventData.getEventLocationName().isEmpty() && eventData.getEventLatitude() == 0 && eventData.getEventLongitude() == 0) {
             eventShowLocationRow.setVisibility(View.GONE);
         } else {
             eventShowLocationRow.setVisibility(View.VISIBLE);
@@ -983,6 +990,11 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventShowLocation.setText(eventData.getEventLocationName());
         eventShowCategory.setText(eventData.getEventCategory().getCategoryTitle());
         eventShowCategory.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
+        if (eventData.getEventDesc().isEmpty() && eventData.getImageUri() == null) {
+            eventShowDescRow.setVisibility(View.GONE);
+        } else {
+            eventShowDescRow.setVisibility(View.VISIBLE);
+        }
         eventShowDesc.setText(eventData.getEventDesc());
 
 
@@ -993,7 +1005,16 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventShowLocationMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (eventData.getEventLatitude() == 0 && eventData.getEventLongitude() == 0) {
+                    Snackbar.make(findViewById(android.R.id.content), "No location set!", Snackbar.LENGTH_SHORT)
+                            .show();
+                } else {
+                    Intent intent = new Intent(MonthlyPlannerPage.this, ShowMap.class);
+                    intent.putExtra("locationName", eventData.getEventLocationName());
+                    intent.putExtra("lat", eventData.getEventLatitude());
+                    intent.putExtra("lon", eventData.getEventLongitude());
+                    startActivity(intent);
+                }
             }
         });
         eventShowEdit.setOnClickListener(new View.OnClickListener() {

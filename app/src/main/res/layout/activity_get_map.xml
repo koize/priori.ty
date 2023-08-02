@@ -12,21 +12,42 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/gmap_location_lat_long"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/gmap_get_current_location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        map:cameraTilt="30"
+        map:uiZoomControls="true"
         map:uiRotateGestures="true"
-        map:uiZoomControls="true" />
+        map:cameraTilt="30" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/gmap_save"
+        android:layout_width="220dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="30dp"
+        android:text="Save"
+        app:chipIcon="@drawable/baseline_save_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/gmap_get_current_location"
+        android:layout_width="220dp"
+        android:layout_height="60dp"
+        android:text="Reset location"
+        app:chipIcon="@drawable/baseline_location_on_24"
+        app:layout_constraintBottom_toTopOf="@+id/gmap_current_lat_long"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/gmap_current_lat_long"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/gmap_save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Current location: Lat 999, Long 999" />
@@ -36,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/gmap_current_lat_long"
+        app:layout_constraintBottom_toTopOf="@+id/gmap_get_current_location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Selected location: Lat 999, Long 999" />
