@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -69,6 +70,8 @@ dependencies {
     implementation 'com.jakewharton:process-phoenix:2.1.2'
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
 
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
 
 
 

@@ -26,7 +26,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.util.Pair;
 import androidx.fragment.app.FragmentManager;
 
@@ -52,9 +54,10 @@ import com.koize.priority.ui.category.CategoryPopUp;
 
 import java.io.File;
 
-public class EventShowAndEditPopUp implements CategoryPopUp.CategoryCallBack {
+public class EventShowAndEditPopUp extends AppCompatActivity implements CategoryPopUp.CategoryCallBack {
     public static final int INPUT_METHOD_NEEDED = 1;
-
+    private static final int image_chooser_request_code = 999;
+    private static final int get_map_request_code= 998;
     EventData eventData;
     CategoryData categoryData;
     EditText eventTitle;
@@ -697,5 +700,18 @@ public class EventShowAndEditPopUp implements CategoryPopUp.CategoryCallBack {
                 }
         );
         materialTimePicker.show(fragmentManager, "MATERIAL_TIME_PICKER");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == image_chooser_request_code && resultCode == RESULT_OK && data != null) {
+            eventImageUri = (Uri) data.getExtras().get("image");
+            eventImageView.setImageURI(eventImageUri);
+        }
+
+
+
     }
 }
