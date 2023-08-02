@@ -83,6 +83,9 @@
             android:name=".GetMap"
             android:exported="false" />
         <activity
+            android:name=".ShowMap"
+            android:exported="false" />
+        <activity
             android:name=".ui.monthlyplanner.MonthlyPlannerPage"
             android:exported="false" />
         <activity
