@@ -1277,7 +1277,12 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventLocationChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MonthlyPlannerPage.this, GetMap.class);
+                if (eventData.getEventLatitude() != 0 && eventData.getEventLongitude() != 0) {
+                    intent.putExtra("lat", eventData.getEventLatitude());
+                    intent.putExtra("lon", eventData.getEventLongitude());
+                }
+                startActivityForResult(intent, get_map_request_code);
             }
         });
         eventCategoryChip.setOnClickListener(new View.OnClickListener() {

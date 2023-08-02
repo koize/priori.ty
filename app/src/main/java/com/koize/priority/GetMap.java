@@ -67,12 +67,17 @@ public class GetMap extends AppCompatActivity implements OnMapReadyCallback {
                 .tiltGesturesEnabled(true);
 
 
+        locationLat = getIntent().getDoubleExtra("lat", currentLat);
+        locationLon = getIntent().getDoubleExtra("lon", currentLon);
+        locationLatLon.setText("Selected Location: " + locationLat + ", " + locationLon);
+
+
 
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng currentLocation = new LatLng(currentLat, currentLon);
+        LatLng currentLocation = new LatLng(locationLat, locationLon);
         map.addMarker(new MarkerOptions()
                 .position(currentLocation)
                         .draggable(true)
