@@ -40,6 +40,7 @@ public class RoutineEditorPage extends AppCompatActivity {
     String habitDescription;
     String habitDescriptionEdit;
     PopupWindow popupWindowDescription;
+    PopupWindow popupWindow;
     Chip habitDescriptionSaveChip;
     EditText habitDescriptionTyper;
     PopupWindow popupWindowDuration;
@@ -213,7 +214,7 @@ public class RoutineEditorPage extends AppCompatActivity {
             boolean focusable = true;
 
             //Create a window with our parameters
-            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+            popupWindow = new PopupWindow(popupView, width, height, focusable);
             // Closes the popup window when touch outside
             //Handler for clicking on the inactive zone of the window
 
@@ -698,7 +699,7 @@ public class RoutineEditorPage extends AppCompatActivity {
             RoutinePlannerPage.routineHabits.add(habitsData5);
             RoutinePlannerPage.routineDataMain.setRoutineHabitsList(RoutinePlannerPage.routineHabits);
             routineDatabaseReference.child(RoutinePlannerPage.routineDataMain.getRoutineTextId()).setValue(RoutinePlannerPage.routineDataMain);
-
+            popupWindow.dismiss();
         }
     };
 
