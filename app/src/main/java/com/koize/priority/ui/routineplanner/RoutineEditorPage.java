@@ -58,7 +58,7 @@ public class RoutineEditorPage extends AppCompatActivity {
     PopupWindow popupWindowSelector;
     PopupWindow popupWindowEditHabit;
     private FloatingActionButton habitPickerButton;
-    private FloatingActionButton habitEditor_cancelRoutine;
+    Chip habitEditor_saveRoutine;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -87,8 +87,8 @@ public class RoutineEditorPage extends AppCompatActivity {
         habitPickerButton = findViewById(R.id.button_habitPicker_add);
         habitPickerButton.setOnClickListener(addHabitListener);
 
-        habitEditor_cancelRoutine = findViewById(R.id.button_cancel_routine);
-        habitEditor_cancelRoutine.setOnClickListener(cancelRoutineListener);
+        habitEditor_saveRoutine = findViewById(R.id.button_routineEditor_save);
+        habitEditor_saveRoutine.setOnClickListener(saveRoutineListener);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -170,18 +170,32 @@ public class RoutineEditorPage extends AppCompatActivity {
         });
     }
     //////////////////////////////////////////////////////////////////////////////////////////
-    View.OnClickListener cancelRoutineListener = new View.OnClickListener() {
+    View.OnClickListener saveRoutineListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            String name = user.getDisplayName();
-            routineDatabaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/routine");
-            routineDatabaseReference.child(RoutinePlannerPage.routineDataMain.getRoutineTextId()).removeValue();
+            if (user != null) {
+                String name = user.getDisplayName();
+                if ((name != null) && name != "") {
+                    firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                    databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/habits");
+                } else if (name == "") {
+                    firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                    databaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/habits");
+                } else {
+                    throw new IllegalStateException("Unexpected value: " + name);
+                }
 
-            //finish();
+
+            }
+            else{
+                Snackbar.make(v.findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+            // database reference
+
         }
     };
-
+    ///////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void onDestroy() {
         super.onDestroy();
