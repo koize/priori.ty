@@ -68,6 +68,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.koize.priority.GetMap;
 import com.koize.priority.NotiReceiver;
 import com.koize.priority.R;
 import com.koize.priority.ui.category.CategoryData;
@@ -92,6 +93,8 @@ import java.util.UUID;
 public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPopUp.CategoryCallBack {
     public static final int INPUT_METHOD_NEEDED = 1;
     private static final int image_chooser_request_code = 999;
+    private static final int get_map_request_code= 998;
+
 
     private FloatingActionButton addEventButton;
     EditText eventTitle;
@@ -684,7 +687,8 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventLocationChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MonthlyPlannerPage.this, GetMap.class);
+                startActivityForResult(intent, get_map_request_code);
             }
         });
         eventCategoryChip.setOnClickListener(new View.OnClickListener() {

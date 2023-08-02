@@ -1,12 +1,10 @@
 package com.koize.priority
 
 import android.Manifest
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +14,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.AppBarConfiguration.Builder
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.koize.priority.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -26,16 +23,40 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
 
-        val isGranted = ContextCompat.checkSelfPermission(
+        val isNotiGranted = ContextCompat.checkSelfPermission(
                 this, Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (isGranted) {
+        val isFineLocationGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val isCoarseLocationGranted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (isNotiGranted) {
             //sendNotification(this)
             Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
         } else {
             requestPermissionLauncher.launch(
                     Manifest.permission.POST_NOTIFICATIONS
+            )
+        }
+
+        if (isFineLocationGranted) {
+            Toast.makeText(this, "Fine location permission granted", Toast.LENGTH_SHORT).show()
+        } else {
+            requestPermissionLauncher.launch(
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        }
+
+        if (isCoarseLocationGranted) {
+            Toast.makeText(this, "Coarse location permission granted", Toast.LENGTH_SHORT).show()
+        } else {
+            requestPermissionLauncher.launch(
+                    Manifest.permission.ACCESS_COARSE_LOCATION
             )
         }
 
