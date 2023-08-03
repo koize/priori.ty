@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -35,8 +36,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.R;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class RoutineEditorPage extends AppCompatActivity {
+    EditText routineTitleET;
     String habitDescription;
     String habitDescriptionEdit;
     PopupWindow popupWindowDescription;
@@ -89,6 +92,8 @@ public class RoutineEditorPage extends AppCompatActivity {
 
         habitEditor_saveRoutine = findViewById(R.id.button_routineEditor_save);
         habitEditor_saveRoutine.setOnClickListener(saveRoutineListener);
+
+        routineTitleET = findViewById(R.id.routineEditor_title);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -146,10 +151,9 @@ public class RoutineEditorPage extends AppCompatActivity {
     private void onRoutineHabitLongClick(int i) {
     }
 
-    private void onRoutineHabitClick(int i) {
+    public void onRoutineHabitClick(int i) {
 
     }
-
     ////////////////////////////////////////////////////////////////////////////////////////////
     private void getHabits() {
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -173,14 +177,15 @@ public class RoutineEditorPage extends AppCompatActivity {
     View.OnClickListener saveRoutineListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            int totalDuration = 0;
             if (user != null) {
                 String name = user.getDisplayName();
                 if ((name != null) && name != "") {
                     firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                    databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/habits");
+                    databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/routine");
                 } else if (name == "") {
                     firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
-                    databaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/habits");
+                    databaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/routine");
                 } else {
                     throw new IllegalStateException("Unexpected value: " + name);
                 }
@@ -192,7 +197,31 @@ public class RoutineEditorPage extends AppCompatActivity {
                         .show();
             }
             // database reference
-
+            RoutinePlannerPage.routineDataMain.setRoutineTitle(routineTitleET.getText().toString());
+            if(routineTitleET.getText().toString().isEmpty()){
+                Snackbar.make(v, "Please enter a title!", Snackbar.LENGTH_SHORT)
+                        .show();
+            }else{
+                RoutinePlannerPage.routineDataMain.setRoutineTitle(routineTitleET.getText().toString());
+            }
+            RoutinePlannerPage.routineDataMain.setRoutineIcon("");
+            for(HabitsData habits : RoutinePlannerPage.routineHabits){
+                totalDuration += habits.getHabitsDuration();
+            }
+            RoutinePlannerPage.routineDataMain.setRoutineTotalDuration(totalDuration);
+            try{
+                databaseReference.child(RoutinePlannerPage.routineDataMain.getRoutineTextId()).setValue(RoutinePlannerPage.routineDataMain);
+            }
+            catch(Exception e){
+                e.getCause().getCause();
+            }
+            Snackbar.make(v, "Journal Saved", Snackbar.LENGTH_SHORT)
+                    .show();
+            RoutinePlannerPage.routineDataMain = new RoutineData();
+            RoutinePlannerPage.routineHabits = new ArrayList<>();
+            Intent intent = new Intent(getApplicationContext(), RoutinePlannerPage.class);
+            startActivity(intent);
+            //finish();
         }
     };
     ///////////////////////////////////////////////////////////////////////////////////////////

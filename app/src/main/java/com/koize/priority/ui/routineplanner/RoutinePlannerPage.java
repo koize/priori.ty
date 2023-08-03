@@ -61,6 +61,7 @@ public class RoutinePlannerPage extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent = new Intent(RoutinePlannerPage.this, RoutineEditorPage.class);
             startActivity(intent);
+            /*
             HabitsData habitsData1 = new HabitsData();
             habitsData1.setHabitsId(11111);
             habitsData1.setHabitsTitle("Exercise");
@@ -78,7 +79,8 @@ public class RoutinePlannerPage extends AppCompatActivity {
             routineHabits = new ArrayList<>();
             routineHabits.add(habitsData1);
             routineHabits.add(habitsData2);;
-
+            */
+            routineHabits = new ArrayList<>();
             routineDataMain = new RoutineData();
             routineDataMain.setRoutineIcon("");
             routineDataMain.setRoutineTitle("");
