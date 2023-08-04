@@ -1,6 +1,8 @@
 package com.koize.priority.ui.routineplanner;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,9 +12,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.koize.priority.MainActivity;
 import com.koize.priority.R;
+import com.koize.priority.ui.journal.JournalData;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -27,7 +34,10 @@ public class RoutinePlannerPage extends AppCompatActivity {
     HabitsData habitsData;
 
     public static ArrayList<HabitsData> routineHabits;
+    RecyclerView routineRV;
+    ArrayList<RoutineData> routineDataArrayList;
 
+    RoutineAdapter RoutineAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +63,42 @@ public class RoutinePlannerPage extends AppCompatActivity {
         else{
             Snackbar.make(this.findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
-        }    }
+        }
+        routineRV = findViewById(R.id.recycler_routinePlanner);
+        routineDataArrayList = new ArrayList<>();
+
+        RoutineAdapter = new RoutineAdapter(routineDataArrayList,getApplicationContext(),this::onRoutineClick);
+        routineRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getApplicationContext()));
+        routineRV.setAdapter(RoutineAdapter);
+        getRoutine();
+    }
+
+    private void getRoutine() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                routineDataArrayList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    RoutineData routineData = dataSnapshot.getValue(RoutineData.class);
+                    routineDataArrayList.add(routineData);
+                }
+                RoutineAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void onRoutineClick(int position) {
+        routineDataMain = routineDataArrayList.get(position);
+        routineHabits = routineDataMain.getRoutineHabitsList();
+        Intent intent = new Intent(RoutinePlannerPage.this, RoutineEditorPage.class);
+        startActivity(intent);
+    }
 
 
     View.OnClickListener addRoutineListener = new View.OnClickListener() {
@@ -93,5 +138,12 @@ public class RoutinePlannerPage extends AppCompatActivity {
 
         }
     };
+    @Override
+    public void onBackPressed()
+    {
+        finish();
+        Intent intent = new Intent(RoutinePlannerPage.this, MainActivity.class);
+        startActivity(intent);
+    }
 }
 

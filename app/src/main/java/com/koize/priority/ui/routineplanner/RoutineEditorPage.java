@@ -95,6 +95,8 @@ public class RoutineEditorPage extends AppCompatActivity {
 
         routineTitleET = findViewById(R.id.routineEditor_title);
 
+        routineTitleET.setText(RoutinePlannerPage.routineDataMain.getRoutineTitle());
+
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         routineEditorRV = findViewById(R.id.recycler_routineEditor);

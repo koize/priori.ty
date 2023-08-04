@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHolder> {
     private ArrayList<RoutineData> routinePlannerDataArrayList;
+    private ArrayList<HabitsData> routinePlannerHabitsArrayList;
     private Context context;
     private RoutineListener RoutineListener;
     public RoutineAdapter(ArrayList<RoutineData> routinePlannerDataArrayList, Context context, RoutineListener RoutinerListener){
@@ -34,7 +35,20 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
+        RoutineData routineData =  routinePlannerDataArrayList.get(position);
+        holder.rowCardTitle.setText(routineData.getRoutineTitle());
+        routinePlannerHabitsArrayList = routineData.getRoutineHabitsList();
+        int totalDuration = 0;
+        for(HabitsData habits : routinePlannerHabitsArrayList){
+            totalDuration += habits.getHabitsDuration();
+        }
+        holder.rowCardDuration.setText(totalDuration+"m");
+        holder.rowCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RoutineListener.onRoutineClick(holder.getAdapterPosition());
+            }
+        });
     }
 
     @Override
@@ -47,6 +61,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
         TextView rowCardMainText;
         TextView rowCardTitle;
         ImageView rowCardImage;
+        TextView rowCardDuration;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -54,6 +69,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
             rowCardMainText = itemView.findViewById(R.id.journal_main_text);
             rowCardTitle = itemView.findViewById(R.id.row_focusMode_Title);
             rowCardImage = itemView.findViewById(R.id.row_focusMode_icon);
+            rowCardDuration = itemView.findViewById(R.id.row_focusMode_duration);
         }
         @Override
         public boolean onLongClick(View v) {
