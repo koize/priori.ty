@@ -60,13 +60,15 @@ public class SettingsActivity extends AppCompatActivity {
         Preference deleteAccount;
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
-        DatabaseReference databaseReference = database.getReference("users/" + name + "_" + user.getUid().substring(1, 5));
+        DatabaseReference databaseReference;
         FirebaseStorage storage = FirebaseStorage.getInstance("gs://priority-135fc.appspot.com");
-        StorageReference storageReference = storage.getReference("users/" + name + "_" + user.getUid().substring(1, 5));
+        StorageReference storageReference;
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             if (user != null){
                 name = user.getDisplayName();
+                databaseReference = database.getReference("users/" + name + "_" + user.getUid().substring(1, 5));
+                storageReference = storage.getReference("users/" + name + "_" + user.getUid().substring(1, 5));
             }
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
             accountSettingsPreference = findPreference("account_settings");
