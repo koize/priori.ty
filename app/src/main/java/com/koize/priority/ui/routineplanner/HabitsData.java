@@ -1,6 +1,8 @@
 package com.koize.priority.ui.routineplanner;
 
 public class HabitsData {
+    private int habitsId;
+    private String habitsTextId;
     private String habitsTitle;
     private int habitsDuration;
     private String habitsDescription;
@@ -41,4 +43,16 @@ public class HabitsData {
     public String getHabitsDescription() {
         return habitsDescription;
     }
+
+    public void setHabitsId(int habitsId){
+        this.habitsId = habitsId;
+    }
+
+    public int getHabitsId(){return habitsId;}
+
+    public void setHabitsTextId(String habitsTextId){
+        this.habitsTextId = habitsTextId;
+    }
+
+    public String getHabitsTextId(){return habitsTextId;}
 }

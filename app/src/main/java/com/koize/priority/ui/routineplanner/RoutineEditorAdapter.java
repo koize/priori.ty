@@ -1,6 +1,7 @@
 package com.koize.priority.ui.routineplanner;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,19 +12,26 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.koize.priority.R;
 
 import java.util.ArrayList;
 
 public class RoutineEditorAdapter extends RecyclerView.Adapter<RoutineEditorAdapter.ViewHolder> {
-    private ArrayList<RoutineData> routineEditorDataArrayList;
-    //do aft lunch, each habit click adds title to a string, then can convert into array to get all habits, prob just delete routine
-    //editorData and just make a routineData
+    private ArrayList<HabitsData> routineEditorDataArrayList;
     private Context context;
     private RoutineEditorListener routineEditorListener;
     private RoutineEditorListener2 routineEditorListener2;
+    FirebaseUser user;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
-    public RoutineEditorAdapter(ArrayList<RoutineData> routineEditorDataArrayList, Context context, RoutineEditorListener routineEditorListener, RoutineEditorListener2 routineEditorListener2){
+
+
+    public RoutineEditorAdapter(ArrayList<HabitsData> routineEditorDataArrayList, Context context, RoutineEditorListener routineEditorListener, RoutineEditorListener2 routineEditorListener2){
         this.routineEditorDataArrayList = routineEditorDataArrayList;
         this.context = context;
         this.routineEditorListener = routineEditorListener;
@@ -40,16 +48,26 @@ public class RoutineEditorAdapter extends RecyclerView.Adapter<RoutineEditorAdap
 
     @Override
     public void onBindViewHolder(@NonNull RoutineEditorAdapter.ViewHolder holder, int position) {
-        RoutineData routineData1 = routineEditorDataArrayList.get(position);
-        //holder.rowCardTitle.setText(routineData1.getRoutineHabits().getHabitsTitle());
-        //holder.rowCardDuration.setText(routineData1.getRoutineHabits().getHabitsDuration()+"m");
-        holder.rowCardTitle.setText("Test");
-        holder.rowCardDuration.setText("test 1"+"m");
+        HabitsData habitsdata1 = new HabitsData();
+        routineEditorDataArrayList.add(habitsdata1);
+        HabitsData habitsData = routineEditorDataArrayList.get(position);
+
+        String Title = habitsData.getHabitsTitle();
+        int Duration = habitsData.getHabitsDuration();
+        holder.rowCardTitle.setText(Title);
+        holder.rowCardDuration.setText(Duration + "m");
+
+        holder.rowConstraintLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RoutineEditorAdapter.this.onRoutineHabitClick(holder.getAdapterPosition());
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return routineEditorDataArrayList.size();
+        return RoutinePlannerPage.routineHabits.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
@@ -79,4 +97,24 @@ public class RoutineEditorAdapter extends RecyclerView.Adapter<RoutineEditorAdap
     public interface RoutineEditorListener2 {
         void onRoutineHabitLongClick(int position);
     }
+
+    public void onRoutineHabitClick(int position) {
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String name = user.getDisplayName();
+            if ((name != null) && name != "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/routine");
+            } else if (name == "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/routine");
+            } else {
+                throw new IllegalStateException("Unexpected value: " + name);
+            }
+        }
+        databaseReference.child(RoutinePlannerPage.routineDataMain.getRoutineTextId()).child("routineHabitsList").child(Integer.toString(position)).removeValue();
+        RoutinePlannerPage.routineHabits.remove(position);
+        notifyDataSetChanged();
+    }
+
 }
