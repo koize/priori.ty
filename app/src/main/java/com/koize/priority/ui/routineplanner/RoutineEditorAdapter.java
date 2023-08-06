@@ -67,7 +67,11 @@ public class RoutineEditorAdapter extends RecyclerView.Adapter<RoutineEditorAdap
 
     @Override
     public int getItemCount() {
-        return RoutinePlannerPage.routineHabits.size();
+        if(RoutinePlannerPage.routineHabits != null) {
+            return RoutinePlannerPage.routineHabits.size();
+        }else{
+            return 0;
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {

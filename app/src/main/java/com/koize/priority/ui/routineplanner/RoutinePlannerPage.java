@@ -2,11 +2,14 @@ package com.koize.priority.ui.routineplanner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -35,7 +38,10 @@ public class RoutinePlannerPage extends AppCompatActivity {
 
     public static ArrayList<HabitsData> routineHabits;
     RecyclerView routineRV;
+    RecyclerView routineHabitsRV;
+    ArrayList<HabitsData> routineDataHabitsList;
     ArrayList<RoutineData> routineDataArrayList;
+    NestedAdapter NestedAdapter;
 
     RoutineAdapter RoutineAdapter;
     @Override
@@ -71,6 +77,12 @@ public class RoutinePlannerPage extends AppCompatActivity {
         routineRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getApplicationContext()));
         routineRV.setAdapter(RoutineAdapter);
         getRoutine();
+
+        routineHabitsRV = routineRV.findViewById(R.id.row_focusMode_RV);
+        routineDataHabitsList = new ArrayList<>();
+
+        //NestedAdapter = new NestedAdapter(routineDataHabitsList,getApplicationContext());
+        //routineHabitsRV.setAdapter(NestedAdapter);
     }
 
     private void getRoutine() {
@@ -81,9 +93,10 @@ public class RoutinePlannerPage extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     RoutineData routineData = dataSnapshot.getValue(RoutineData.class);
                     routineDataArrayList.add(routineData);
+                    routineDataHabitsList = routineData.getRoutineHabitsList();
                 }
                 RoutineAdapter.notifyDataSetChanged();
-
+                //NestedAdapter.notifyDataSetChanged();
             }
 
             @Override

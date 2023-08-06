@@ -12,7 +12,7 @@
         android:layout_marginStart="3dp"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="3dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="5dp"
         app:cardCornerRadius="30dp"
         app:cardElevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,10 +26,10 @@
 
             <ImageView
                 android:id="@+id/row_focusMode_icon"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="18dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@tools:sample/avatars" />
@@ -39,6 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_marginBottom="5dp"
                 android:text="Morning Routine"
                 android:textSize="25sp"
                 android:textStyle="bold"
@@ -48,20 +49,20 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/row_focusMode_RV"
-                android:layout_width="249dp"
-                android:layout_height="123dp"
+                android:layout_width="264dp"
+                android:layout_height="122dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="-5dp"
+                android:layout_marginTop="-11dp"
                 android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/row_focusMode_icon"
-                app:layout_constraintTop_toBottomOf="@+id/row_focusMode_Title" />
+                app:layout_constraintTop_toBottomOf="@+id/row_focusMode_Title"/>
 
             <TextView
                 android:id="@+id/row_focusMode_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="15dp"
+                android:layout_marginEnd="30dp"
                 android:text="35m"
                 app:layout_constraintBottom_toBottomOf="@+id/row_focusMode_icon"
                 app:layout_constraintEnd_toEndOf="parent"

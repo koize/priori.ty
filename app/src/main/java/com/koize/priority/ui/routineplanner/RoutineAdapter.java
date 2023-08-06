@@ -20,6 +20,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
     private ArrayList<HabitsData> routinePlannerHabitsArrayList;
     private Context context;
     private RoutineListener RoutineListener;
+    private NestedAdapter NestedAdapter;
     public RoutineAdapter(ArrayList<RoutineData> routinePlannerDataArrayList, Context context, RoutineListener RoutinerListener){
         this.routinePlannerDataArrayList = routinePlannerDataArrayList;
         this.context = context;
@@ -39,10 +40,17 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
         holder.rowCardTitle.setText(routineData.getRoutineTitle());
         routinePlannerHabitsArrayList = routineData.getRoutineHabitsList();
         int totalDuration = 0;
-        for(HabitsData habits : routinePlannerHabitsArrayList){
-            totalDuration += habits.getHabitsDuration();
+        if(routinePlannerHabitsArrayList != null){
+            for(HabitsData habits : routinePlannerHabitsArrayList){
+                totalDuration += habits.getHabitsDuration();
+            }
         }
         holder.rowCardDuration.setText(totalDuration+"m");
+
+        NestedAdapter = new NestedAdapter(routinePlannerHabitsArrayList,context);
+        holder.rowCardRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(context));
+        holder.rowCardRV.setAdapter(NestedAdapter);
+        holder.rowCardImage.setImageResource(R.drawable.baseline_access_time_24);
         holder.rowCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,6 +70,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
         TextView rowCardTitle;
         ImageView rowCardImage;
         TextView rowCardDuration;
+        RecyclerView rowCardRV;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -70,6 +79,7 @@ public class RoutineAdapter extends RecyclerView.Adapter<RoutineAdapter.ViewHold
             rowCardTitle = itemView.findViewById(R.id.row_focusMode_Title);
             rowCardImage = itemView.findViewById(R.id.row_focusMode_icon);
             rowCardDuration = itemView.findViewById(R.id.row_focusMode_duration);
+            rowCardRV = itemView.findViewById(R.id.row_focusMode_RV);
         }
         @Override
         public boolean onLongClick(View v) {

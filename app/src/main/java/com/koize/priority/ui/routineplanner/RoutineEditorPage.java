@@ -135,8 +135,10 @@ public class RoutineEditorPage extends AppCompatActivity {
                 //RoutineData routineData = RoutinePlannerPage.routineDataMain;
                 //routineEditorDataArrayList.add(RoutinePlannerPage.routineDataMain);
                 routineEditorDataArrayList.clear();
-                for(HabitsData habits : RoutinePlannerPage.routineHabits){
-                    routineEditorDataArrayList.add(habits);
+                if(RoutinePlannerPage.routineHabits != null){
+                    for(HabitsData habits : RoutinePlannerPage.routineHabits){
+                        routineEditorDataArrayList.add(habits);
+                    }
                 }
                 RoutineEditorAdapter.notifyDataSetChanged();
             }
@@ -343,7 +345,7 @@ public class RoutineEditorPage extends AppCompatActivity {
             habitEditHeaderTV = popupView.findViewById(R.id.popup_habitSelection_header);
 
             HabitsData habitsData4 = habitsDataArrayList.get(position);
-            habitEditHeaderTV.setText("Edit/Delete " + habitsData4.getHabitsTitle() + "?");
+            habitEditHeaderTV.setText("Are you sure you want \n to delete '" + habitsData4.getHabitsTitle() + "' ?");
 
 
 
@@ -390,6 +392,7 @@ public class RoutineEditorPage extends AppCompatActivity {
             }
             //Initialize the elements of our window, install the handler
 
+            /*
             habitSelectorEditChip.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -687,6 +690,7 @@ public class RoutineEditorPage extends AppCompatActivity {
                     }
                 }
             });
+            */
 
             habitSelectorDeleteChip.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -741,7 +745,12 @@ public class RoutineEditorPage extends AppCompatActivity {
             }
 
             HabitsData habitsData5 = habitsDataArrayList.get(position);
-            RoutinePlannerPage.routineHabits.add(habitsData5);
+            if(RoutinePlannerPage.routineHabits != null) {
+                RoutinePlannerPage.routineHabits.add(habitsData5);
+            }else{
+                RoutinePlannerPage.routineHabits = new ArrayList<>();
+                RoutinePlannerPage.routineHabits.add(habitsData5);
+            }
             RoutinePlannerPage.routineDataMain.setRoutineHabitsList(RoutinePlannerPage.routineHabits);
             routineDatabaseReference.child(RoutinePlannerPage.routineDataMain.getRoutineTextId()).setValue(RoutinePlannerPage.routineDataMain);
             popupWindow.dismiss();
