@@ -78,11 +78,7 @@ public class RoutinePlannerPage extends AppCompatActivity {
         routineRV.setAdapter(RoutineAdapter);
         getRoutine();
 
-        routineHabitsRV = routineRV.findViewById(R.id.row_focusMode_RV);
         routineDataHabitsList = new ArrayList<>();
-
-        //NestedAdapter = new NestedAdapter(routineDataHabitsList,getApplicationContext());
-        //routineHabitsRV.setAdapter(NestedAdapter);
     }
 
     private void getRoutine() {
@@ -96,7 +92,6 @@ public class RoutinePlannerPage extends AppCompatActivity {
                     routineDataHabitsList = routineData.getRoutineHabitsList();
                 }
                 RoutineAdapter.notifyDataSetChanged();
-                //NestedAdapter.notifyDataSetChanged();
             }
 
             @Override
