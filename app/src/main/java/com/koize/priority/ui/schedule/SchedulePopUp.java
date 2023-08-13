@@ -12,12 +12,27 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.chip.Chip;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.koize.priority.R;
 
 public class SchedulePopUp {
     public static final int INPUT_METHOD_NEEDED = 1;
+    public int startTimeHr;
+    public int startTimeMin;
+    public int endTimeHr;
+    public int endTimeMin;
+
+    TextView scheduleTitleChip;
+    Chip scheduleStartTimeChip;
+    Chip scheduleEndTimeChip;
+    Chip scheduleCategoryChip;
+    Chip scheduleDescriptionChip;
+    Chip scheduleSaveChip;
+    FragmentManager fragmentManager;
     public void showPopupWindow(final View view) {
 
         ConstraintLayout reminderView;
@@ -88,23 +103,17 @@ public class SchedulePopUp {
             }
         }
         //Initialize the elements of our window, install the handler
-        TextView scheduleTitleChip = popupView.findViewById(R.id.title_new_schedule);
-        Chip scheduleActivityChip = popupView.findViewById(R.id.button_new_schedule_chooseActivity);
-        Chip scheduleStartTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseStartTime);
-        Chip scheduleEndTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseEndTime);
-        Chip scheduleCategoryChip = popupView.findViewById(R.id.button_new_schedule_chooseCategory);
-        Chip scheduleDescriptionChip = popupView.findViewById(R.id.button_new_schedule_addDescription);
-        Chip scheduleSaveChip = popupView.findViewById(R.id.button_new_schedule_save);
+        scheduleTitleChip = popupView.findViewById(R.id.title_new_schedule);
+        scheduleStartTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseStartTime);
+        scheduleEndTimeChip = popupView.findViewById(R.id.button_new_schedule_chooseEndTime);
+        scheduleCategoryChip = popupView.findViewById(R.id.button_new_schedule_chooseCategory);
+        scheduleDescriptionChip = popupView.findViewById(R.id.button_new_schedule_addDescription);
+        scheduleSaveChip = popupView.findViewById(R.id.button_new_schedule_save);
 
-        scheduleActivityChip.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-
-            }
-        });
         scheduleStartTimeChip.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                mTimePicker1();
 
             }
         });
@@ -133,7 +142,24 @@ public class SchedulePopUp {
             }
         });
 
+    }
 
+    //functions?
+    public void mTimePicker1() {
+        MaterialTimePicker.Builder materialTimeBuilder = new MaterialTimePicker.Builder();
+        materialTimeBuilder.setTitleText("1st Reminder Time").setTimeFormat(TimeFormat.CLOCK_24H);
+        MaterialTimePicker materialTimePicker = materialTimeBuilder.build();
+        materialTimePicker.addOnPositiveButtonClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
+                        startTimeHr = materialTimePicker.getHour();
+                        startTimeMin = materialTimePicker.getMinute();
+                        scheduleStartTimeChip.setText(String.format("%02d:%02d", startTimeHr, startTimeMin));
+                    }
+                }
+        );
+        materialTimePicker.show(materialTimePicker.getParentFragmentManager(), "MATERIAL_TIME_PICKER");
     }
 }
