@@ -20,16 +20,6 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="Offline settings">
-
-        <SwitchPreferenceCompat
-            android:id="@+id/settings_switch_sync"
-            app:key="offline_sync"
-            app:summaryOff="On connection loss, data will be unable to load"
-            app:summaryOn="On connection loss, a recent copy of data will be stored, but new transactions may not work correctly"
-            app:title="Enable offline persistance" />
-
-    </PreferenceCategory>
     <PreferenceCategory android:title="Notifications">
         <Preference
             android:id="@+id/settings_button_test_noti"

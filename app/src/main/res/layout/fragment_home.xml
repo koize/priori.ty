@@ -175,8 +175,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:fontFamily="@font/sf_pro_rounded_regular"
-            android:text="Upcoming plans"
+            android:text="Plans for next 7 days"
             android:textSize="30dp"
+            android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/home_agenda_card" />
 
@@ -184,6 +185,7 @@
             android:id="@+id/home_upcoming_plans_card"
             android:layout_width="373dp"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             app:cardCornerRadius="30dp"
             app:cardElevation="2dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -210,12 +212,12 @@
                         android:layout_height="match_parent">
 
                         <TextView
-                            android:id="@+id/textView5"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:text="Open Calendar and Planner"
                             android:textSize="16sp"
+                            android:visibility="visible"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -224,7 +226,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView2"
+                    android:id="@+id/home_events_recycler"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
@@ -236,7 +238,7 @@
                     tools:listitem="@layout/row_home_events" />
 
                 <ProgressBar
-                    android:id="@+id/progressBar3"
+                    android:id="@+id/home_events_loading"
                     style="?android:attr/progressBarStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -247,10 +249,11 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView10"
+                    android:id="@+id/home_events_empty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Very free!"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toTopOf="@+id/button_home_open_montly_planner"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
