@@ -16,6 +16,8 @@ public class RemindersData {
     private long secondReminderDateTime;
     private String firstReminderPartOfDay;
     private String secondReminderPartOfDay;
+    private long firstReminderDateEpoch;
+    private long secondReminderDateEpoch;
     private double reminderLatitude;
     private double reminderLongitude;
     private String reminderLocationName;
@@ -26,7 +28,7 @@ public class RemindersData {
         // Default constructor required for calls to DataSnapshot.getValue(RemindersData.class)
     }
 
-    public RemindersData(String reminderTitle, int firstReminderTimeHr, int firstReminderTimeMin, int secondReminderTimeHr, int secondReminderTimeMin, int firstReminderDateTime, int secondReminderDateTime, String firstReminderPartOfDay, String secondReminderPartOfDay, double reminderLatitude, double reminderLongitude, String reminderLocationName, CategoryData reminderCategory) {
+    public RemindersData(String reminderTitle, int firstReminderTimeHr, int firstReminderTimeMin, int secondReminderTimeHr, int secondReminderTimeMin, int firstReminderDateTime, int secondReminderDateTime, String firstReminderPartOfDay, String secondReminderPartOfDay, long firstReminderDateEpoch, long secondReminderDateEpoch,double reminderLatitude, double reminderLongitude, String reminderLocationName, CategoryData reminderCategory) {
         this.reminderTitle = reminderTitle;
         this.firstReminderTimeHr = firstReminderTimeHr;
         this.firstReminderTimeMin = firstReminderTimeMin;
@@ -36,6 +38,8 @@ public class RemindersData {
         this.secondReminderDateTime = secondReminderDateTime;
         this.firstReminderPartOfDay = firstReminderPartOfDay;
         this.secondReminderPartOfDay = secondReminderPartOfDay;
+        this.firstReminderDateEpoch = firstReminderDateEpoch;
+        this.secondReminderDateEpoch = secondReminderDateEpoch;
         this.reminderLatitude = reminderLatitude;
         this.reminderLongitude = reminderLongitude;
         this.reminderLocationName = reminderLocationName;
@@ -95,6 +99,16 @@ public class RemindersData {
     public String setSecondReminderPartOfDay(String secondReminderPartOfDay) {
         this.secondReminderPartOfDay = secondReminderPartOfDay;
         return secondReminderPartOfDay;
+    }
+
+    public long setFirstReminderDateEpoch(long firstReminderDateEpoch) {
+        this.firstReminderDateEpoch = firstReminderDateEpoch;
+        return firstReminderDateEpoch;
+    }
+
+    public long setSecondReminderDateEpoch(long secondReminderDateEpoch) {
+        this.secondReminderDateEpoch = secondReminderDateEpoch;
+        return secondReminderDateEpoch;
     }
 
     public double setReminderLatitude(double reminderLatitude) {
@@ -164,6 +178,14 @@ public class RemindersData {
 
     public String getSecondReminderPartOfDay() {
         return secondReminderPartOfDay;
+    }
+
+    public long getFirstReminderDateEpoch() {
+        return firstReminderDateEpoch;
+    }
+
+    public long getSecondReminderDateEpoch() {
+        return secondReminderDateEpoch;
     }
 
     public double getReminderLatitude() {

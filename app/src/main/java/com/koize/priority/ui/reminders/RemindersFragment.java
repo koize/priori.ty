@@ -229,6 +229,14 @@ public class RemindersFragment extends Fragment {
         //recyclerViewRefresher.startRefreshing();
 
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Query query = databaseReference.orderByChild("firstReminderDateTime");
+        query.removeEventListener(listener);
+    }
+
     /*private void getRemindersSortByName() {
         remindersDataArrayList.clear();
         Query query = databaseReference.orderByChild("reminderTitle");
@@ -260,8 +268,8 @@ public class RemindersFragment extends Fragment {
 
         remindersDataArrayList.clear();
         Query query = databaseReference.orderByChild("firstReminderDateTime");
-
-        query.addValueEventListener(new ValueEventListener() {
+        query.addValueEventListener(listener);
+        /*query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 remindersDataArrayList.clear();
@@ -283,21 +291,53 @@ public class RemindersFragment extends Fragment {
                 }
             }
 
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
                         .show();
             }
-        });
+        });*/
+
+
+
         remindersAdapter.notifyDataSetChanged();
     }
+    ValueEventListener listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            remindersDataArrayList.clear();
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                RemindersData remindersData = dataSnapshot.getValue(RemindersData.class);
+                remindersDataArrayList.add(remindersData);
+
+                if (remindersData.getFirstReminderDateTime() != 0 && remindersData.getReminderPendingIntent() == null && remindersData.getFirstReminderDateTime() - 28800000 > System.currentTimeMillis()) {
+                    scheduleNoti(remindersData);
+                }
+            }
+            remindersAdapter.notifyDataSetChanged();
+            if (remindersDataArrayList.isEmpty()) {
+                progressBar.setVisibility(View.GONE);
+                reminderEmpty.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+                reminderEmpty.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+    };
 
     public void scheduleNoti(RemindersData remindersData) {
         long reminderDateTime = remindersData.getFirstReminderDateTime() - 28800000;
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(reminderDateTime), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
         String formattedTime = formatter.format(dateTime);
-        Notification.Builder builder = new Notification.Builder(getActivity().getApplicationContext(), "reminders");
+        Notification.Builder builder = new Notification.Builder(requireContext(), "reminders");
         builder.setContentTitle(remindersData.getReminderTitle());
         builder.setContentText(remindersData.getReminderTitle() + " at " + formattedTime);
         builder.setSmallIcon(R.drawable.baseline_access_time_24);
@@ -368,7 +408,9 @@ public class RemindersFragment extends Fragment {
                 .show();
         if (remindersDataArrayList.get(position).getSecondReminderDateTime() != 0) {
             remindersDataArrayList.get(position).setFirstReminderDateTime(remindersDataArrayList.get(position).getSecondReminderDateTime());
+            remindersDataArrayList.get(position).setFirstReminderDateEpoch(remindersDataArrayList.get(position).getSecondReminderDateEpoch());
             remindersDataArrayList.get(position).setSecondReminderDateTime(0);
+            remindersDataArrayList.get(position).setSecondReminderDateEpoch(0);
             try {
                 databaseReference.child(remindersDataArrayList.get(position).getReminderTextId()).setValue(remindersDataArrayList.get(position));
             }

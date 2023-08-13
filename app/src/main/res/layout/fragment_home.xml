@@ -16,10 +16,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:fontFamily="@font/sf_pro_rounded_bold"
-            android:text="im going MAD fr"
             android:textSize="30dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="im going MAD fr" />
 
         <TextView
             android:id="@+id/title_home_agenda"
@@ -35,7 +35,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/home_agenda_card"
             android:layout_width="373dp"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
             app:cardCornerRadius="30dp"
             app:cardElevation="2dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,6 +46,126 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+                <TextView
+                    android:id="@+id/title_home_events_today"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/sf_pro_rounded_bold"
+                    android:text="Events"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/divider5" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/button_home_add_events"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:text="Create event"
+                    android:textAlignment="center"
+                    app:chipIcon="@drawable/baseline_add_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/divider5" />
+
+                <TextView
+                    android:id="@+id/title_home_reminders_today"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/sf_pro_rounded_bold"
+                    android:text="Reminders"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/button_home_add_reminders"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="Create reminder"
+                    android:textAlignment="center"
+                    app:chipIcon="@drawable/baseline_add_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/home_reminders_today_recycler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/button_home_add_reminders"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/row_home_reminders_today" />
+
+                <View
+                    android:id="@+id/divider5"
+                    android:layout_width="320dp"
+                    android:layout_height="1dp"
+                    android:background="?android:attr/listDivider"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/home_reminders_today_recycler" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/home_events_today_recycler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/button_home_add_events"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/row_home_events_today" />
+
+                <ProgressBar
+                    android:id="@+id/home_reminders_today_loading"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    app:layout_constraintBottom_toBottomOf="@+id/home_reminders_today_recycler"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/home_reminders_today_recycler" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar2"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/home_events_today_recycler" />
+
+                <TextView
+                    android:id="@+id/home_events_today_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:text="No events today!"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/home_events_today_recycler"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/home_events_today_recycler" />
+
+                <TextView
+                    android:id="@+id/home_reminders_today_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="All done!"
+                    android:textAlignment="center"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toTopOf="@+id/divider5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/button_home_add_reminders" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -63,7 +183,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/home_upcoming_plans_card"
             android:layout_width="373dp"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
             app:cardCornerRadius="30dp"
             app:cardElevation="2dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -102,30 +222,40 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </com.google.android.material.card.MaterialCardView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    app:layout_constraintBottom_toTopOf="@+id/button_home_open_montly_planner"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="4"
+                    tools:listitem="@layout/row_home_events" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar3"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    app:layout_constraintBottom_toTopOf="@+id/button_home_open_montly_planner"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Very free!"
+                    app:layout_constraintBottom_toTopOf="@+id/button_home_open_montly_planner"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:id="@+id/title_home_goals"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:fontFamily="@font/sf_pro_rounded_regular"
-            android:text="My Goals - at a glance"
-            android:textSize="30dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/home_upcoming_plans_card" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/home_goals_card"
-            android:layout_width="373dp"
-            android:layout_height="300dp"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="1dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title_home_goals">
-
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
@@ -137,7 +267,7 @@
             android:text="More"
             android:textSize="30dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/home_goals_card" />
+            app:layout_constraintTop_toBottomOf="@+id/home_upcoming_plans_card" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/button_home_routine"

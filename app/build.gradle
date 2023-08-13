@@ -14,7 +14,7 @@ android {
         minSdk 27
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "0.1 (13aug)"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -23,6 +23,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
+            buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
+        }
+        debug {
+            buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
+            buildConfigField("String","VERSION_NAME","\"${defaultConfig.versionName}\"")
         }
     }
     compileOptions {
@@ -34,6 +40,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig = true
     }
 }
 
@@ -69,6 +76,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.6.0'
     implementation 'com.jakewharton:process-phoenix:2.1.2'
     implementation 'com.firebaseui:firebase-ui-storage:7.2.0'
+    implementation "androidx.core:core-splashscreen:1.0.0"
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
