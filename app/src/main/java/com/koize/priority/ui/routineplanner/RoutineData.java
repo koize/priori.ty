@@ -1,8 +1,9 @@
 package com.koize.priority.ui.routineplanner;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class RoutineData {
+public class RoutineData implements Serializable {
     public int routineId;
     public String routineTextId;
     private String routineIcon;
