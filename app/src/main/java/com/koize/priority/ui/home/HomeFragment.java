@@ -344,6 +344,7 @@ public class HomeFragment extends Fragment {
         Intent intent = new Intent(getContext(), NotiReceiver.class);
         intent.putExtra(NotiReceiver.NOTIFICATION, notification);
         intent.putExtra("id", remindersData.getReminderId());
+        intent.putExtra("menuFragment", "reminderFragment");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersData.getReminderId(), intent, PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderDateTime, pendingIntent);

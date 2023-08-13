@@ -33,8 +33,9 @@ public class SchedulePopUp {
     Chip scheduleDescriptionChip;
     Chip scheduleSaveChip;
     FragmentManager fragmentManager;
-    public void showPopupWindow(final View view) {
+    public void showPopupWindow(final View view, FragmentManager fragmentManager) {
 
+        this.fragmentManager = fragmentManager;
         ConstraintLayout reminderView;
         //Create a View object yourself through inflater
         LayoutInflater inflater = (LayoutInflater) view.getContext().getSystemService(view.getContext().LAYOUT_INFLATER_SERVICE);
@@ -160,6 +161,6 @@ public class SchedulePopUp {
                     }
                 }
         );
-        materialTimePicker.show(materialTimePicker.getParentFragmentManager(), "MATERIAL_TIME_PICKER");
+        materialTimePicker.show(fragmentManager, "MATERIAL_TIME_PICKER");
     }
 }

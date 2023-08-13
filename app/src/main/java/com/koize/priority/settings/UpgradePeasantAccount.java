@@ -1,5 +1,6 @@
 package com.koize.priority.settings;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,8 +26,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.koize.priority.R;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -76,16 +79,13 @@ public class UpgradePeasantAccount extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 user.reload();
-                Intent homeIntent = new Intent(this, AccountSettings.class);
-                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 FirebaseDatabase database = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
                 name = user.getDisplayName();
                 DatabaseReference fromPath = database.getReference("users/" + "peasants/" + "peasant_" + user.getUid());
                 DatabaseReference toPath = database.getReference("users/" + name + "_" + user.getUid().substring(1,5));
                 moveRecord(fromPath, toPath);
-                startActivity(homeIntent);
-                finish();
-
+                deleteCache(getApplicationContext());
+                ProcessPhoenix.triggerRebirth(this);
             } else {
                 finish();
             }
@@ -117,6 +117,29 @@ public class UpgradePeasantAccount extends AppCompatActivity {
 
         };
         fromPath.addListenerForSingleValueEvent(valueEventListener);
+    }
+    public static void deleteCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            deleteDir(dir);
+        } catch (Exception e) {}
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+            return dir.delete();
+        } else if(dir!= null && dir.isFile()) {
+            return dir.delete();
+        } else {
+            return false;
+        }
     }
 
 
