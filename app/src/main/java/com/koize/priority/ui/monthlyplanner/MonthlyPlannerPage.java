@@ -735,6 +735,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     if (eventTitle.getText().toString().isEmpty()) {
                         Snackbar.make(findViewById(android.R.id.content), "Please enter a title!", Snackbar.LENGTH_SHORT)
                                 .show();
+                        return;
                     } /*else if (checkExists == true)
                     {
                         Snackbar.make(findViewById(android.R.id.content), "Event already exists, please use another name", Snackbar.LENGTH_SHORT)
@@ -751,6 +752,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     if (eventStartDate == null) {
                         Snackbar.make(findViewById(android.R.id.content), "Please select a date!", Snackbar.LENGTH_SHORT)
                                 .show();
+                        return;
                     } else {
                         eventData.setEventStartDate(eventStartDate);
                     }
@@ -759,7 +761,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     eventData.setEventEndDate(eventEndDate);
                     eventData.setEventStartDateTime(eventStartDateStartTime);
                     eventData.setEventEndDateTime(eventEndDateTime);
-                    if (isAllDay == false && eventStartHr == 0 && eventStartMin == 0 && eventEndHr == 23 && eventEndMin == 59) {
+                    if (isAllDay == false && eventStartHr == 0 && eventStartMin == 0 && eventEndHr == 0 && eventEndMin == 0) {
                         isAllDay = true;
                     }
                     eventData.setEventAllDay(isAllDay);
@@ -798,7 +800,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                         Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be before current time!", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
-                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() > eventData.getEventEndDateTime()) {
+                    else if (eventData.getEventReminderDateTime() != 0 && eventData.getEventReminderDateTime() - 28800000 > eventData.getEventEndDateTime()) {
                         Snackbar.make(findViewById(android.R.id.content), "Reminder time cannot be after event end time!", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
