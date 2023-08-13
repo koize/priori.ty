@@ -1,6 +1,7 @@
 package com.koize.priority.ui.monthlyplanner;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -119,12 +120,14 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
     boolean checkExists = false;
     StorageReference storageRef;
     FragmentManager fragmentManager;
+    Activity activity;
 
     public EventShowAndEditPopUp() {
     }
 
-    public EventShowAndEditPopUp(EventData eventData, DatabaseReference databaseEventListReference, FirebaseUser user, StorageReference storageRef, FragmentManager fragmentManager) {
+    public EventShowAndEditPopUp(EventData eventData, Activity activity, DatabaseReference databaseEventListReference, FirebaseUser user, StorageReference storageRef, FragmentManager fragmentManager) {
         this.eventData = eventData;
+        this.activity = activity;
         this.databaseEventListReference = databaseEventListReference;
         this.user = user;
         this.storageRef = storageRef;
@@ -590,8 +593,8 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventDescImageChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EventShowAndEditPopUp.this, ImageChooser.class);
-                startActivityForResult(intent, image_chooser_request_code);
+                Intent intent = new Intent(activity, ImageChooser.class);
+                activity.startActivityForResult(intent, image_chooser_request_code);
             }
         });
         eventSaveChip.setOnClickListener(new View.OnClickListener() {
