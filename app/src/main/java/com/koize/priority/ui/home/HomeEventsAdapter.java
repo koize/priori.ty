@@ -16,7 +16,6 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.koize.priority.R;
 import com.koize.priority.ui.monthlyplanner.EventData;
-import com.koize.priority.ui.reminders.RemindersData;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -24,10 +23,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsTodayAdapter.ViewHolder> {
-    private ArrayList<EventData> eventsTodayDataArrayList;
+public class HomeEventsAdapter extends RecyclerView.Adapter<HomeEventsAdapter.ViewHolder> {
+    private ArrayList<EventData> eventsDataArrayList;
     private Context context;
-    private EventsTodayClickInterface eventsTodayClickInterface;
+    private EventsClickInterface eventsClickInterface;
     long daysSinceNow;
     long hoursSinceNow;
     long minutesSinceNow;
@@ -35,22 +34,22 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
     private int[] colors = {Color.RED, Color.parseColor("#FFB4AB")};
 
 
-    public HomeEventsTodayAdapter(ArrayList<EventData> eventsTodayDataArrayList, Context context, EventsTodayClickInterface eventsTodayClickInterface) {
-        this.eventsTodayDataArrayList = eventsTodayDataArrayList;
+    public HomeEventsAdapter(ArrayList<EventData> eventsDataArrayList, Context context, EventsClickInterface eventsClickInterface) {
+        this.eventsDataArrayList = eventsDataArrayList;
         this.context = context;
-        this.eventsTodayClickInterface = eventsTodayClickInterface;
+        this.eventsClickInterface = eventsClickInterface;
     }
 
     @NonNull
     @Override
-    public HomeEventsTodayAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_home_events_today, parent, false);
+    public HomeEventsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_home_events, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HomeEventsTodayAdapter.ViewHolder holder, int position) {
-        EventData eventData = eventsTodayDataArrayList.get(position);
+    public void onBindViewHolder(@NonNull HomeEventsAdapter.ViewHolder holder, int position) {
+        EventData eventData = eventsDataArrayList.get(position);
         holder.rowCardTitle.setText(eventData.getEventTitle());
         holder.rowCardCategoryChip.setText(eventData.getEventCategory().getCategoryTitle());
         holder.rowCardCategoryChip.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
@@ -62,17 +61,13 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
             holder.rowCardLocationChip.setVisibility(View.VISIBLE);
         }
         holder.rowCardEventTypeChip.setText(eventData.getEventType());
-        holder.rowCardTimeLeft.setText(convertTimestampBot(eventData.getEventStartDateTime()));
         holder.rowCardTime.setText(convertTimestampTop(eventData.getEventStartDateTime()));
-
-        if (secondsSinceNow < 0 && minutesSinceNow <=0 && hoursSinceNow <= 0 && daysSinceNow <= 0){
-            holder.rowCardTimeLeft.setText("Now");
-        }
+        holder.rowCardDay.setText(convertTimestampToDay(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                eventsTodayClickInterface.onEventTodayClick(holder.getAdapterPosition());
+                eventsClickInterface.onEventClick(holder.getAdapterPosition());
             }
 
         });
@@ -87,24 +82,18 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
         return formattedDate;
     }
 
-    public String convertTimestampBot(long timestamp) {
-        timestamp = timestamp - 28800000;
-        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        String formattedTime = formatter.format(dateTime);
+    public String convertTimestampToDay(long timestamp1, long timestamp2) {
 
-        // Calculate the number of hours since the current time
-        hoursSinceNow = (timestamp - System.currentTimeMillis()) / (3600 * 1000);
-        minutesSinceNow = (timestamp - System.currentTimeMillis()) / (60 * 1000);
-        secondsSinceNow = (timestamp - System.currentTimeMillis()) / (1000);
+        LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
+        LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp2), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE");
+        String formattedTime1 = formatter.format(dateTime1);
+        String formattedTime2 = formatter.format(dateTime2);
 
-        // Get the hour of the timestamp
-        int timestampHour = dateTime.getHour();
-
-        if (hoursSinceNow == 0) {
-            return minutesSinceNow + "min";
+        if (formattedTime1.equals(formattedTime2)){
+            return formattedTime1;
         } else {
-            return hoursSinceNow + "hr" ;
+            return formattedTime1 + " - " + formattedTime2;
         }
     }
     public void startChangingColors(MaterialCardView rowDateTimeCard) {
@@ -129,7 +118,7 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
     }
 
     public int getItemCount() {
-        return eventsTodayDataArrayList.size();
+        return eventsDataArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -138,30 +127,26 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
         private Chip rowCardCategoryChip;
         private Chip rowCardLocationChip;
         private Chip rowCardEventTypeChip;
-        private TextView rowCardTimeLeft;
         private TextView rowCardTime;
-        private MaterialCardView rowTimeLeftCard;
+        private TextView rowCardDay;
 
-        private MaterialCardView rowTimeCard;
 
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             view = itemView;
-            rowCardTitle = view.findViewById(R.id.row_home_events_today_title);
-            rowCardCategoryChip = view.findViewById(R.id.row_home_events_today_category_chip);
-            rowCardLocationChip = view.findViewById(R.id.row_home_events_today_location_chip);
-            rowCardEventTypeChip = view.findViewById(R.id.row_home_events_today_event_type_chip);
-            rowCardTimeLeft = view.findViewById(R.id.row_home_events_today_time_left);
-            rowCardTime = view.findViewById(R.id.row_home_events_today_time);
-            rowTimeLeftCard = view.findViewById(R.id.row_home_events_today_time_left_card);
-            rowTimeCard = view.findViewById(R.id.row_home_events_today_time_card);
+            rowCardTitle = view.findViewById(R.id.row_home_events_title);
+            rowCardCategoryChip = view.findViewById(R.id.row_home_events_category_chip);
+            rowCardLocationChip = view.findViewById(R.id.row_home_events_location_chip);
+            rowCardEventTypeChip = view.findViewById(R.id.row_home_events_event_type_chip);
+            rowCardTime = view.findViewById(R.id.row_home_events_time);
+            rowCardDay = view.findViewById(R.id.row_home_events_day);
         }
     }
 
-    public interface EventsTodayClickInterface {
-        void onEventTodayClick(int position);
+    public interface EventsClickInterface {
+        void onEventClick(int position);
     }
 
 

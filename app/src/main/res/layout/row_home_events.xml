@@ -21,7 +21,7 @@
             android:id="@+id/row_home_events_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
+            android:layout_marginStart="17dp"
             android:layout_marginTop="5dp"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,8 +33,9 @@
             layout="@layout/row_category_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/row_home_events_title"
-            tools:layout_editor_absoluteX="16dp" />
+            android:layout_marginStart="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/row_home_events_title" />
 
         <include
             android:id="@+id/row_home_events_location_chip"
@@ -85,13 +86,29 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
                     android:textColor="@color/md_theme_dark_background"
+                    android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imageView4"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.43"
                     tools:text="2pm-5pm" />
+
+                <TextView
+                    android:id="@+id/row_home_events_day"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/md_theme_dark_background"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.37"
+                    app:layout_constraintStart_toEndOf="@+id/imageView4"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Tues" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>

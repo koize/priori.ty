@@ -102,6 +102,12 @@ public class HomeFragment extends Fragment {
     HomeEventsTodayAdapter eventsTodayAdapter;
     ArrayList<EventData> eventsTodayDataArrayList;
 
+    //Events recyclerview stuff
+    RecyclerView eventsRV;
+    HomeEventsAdapter eventsAdapter;
+    ArrayList<EventData> eventsDataArrayList;
+
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         HomeViewModel homeViewModel =
@@ -219,9 +225,21 @@ public class HomeFragment extends Fragment {
         eventsTodayRV = root.findViewById(R.id.home_events_today_recycler);
         eventsTodayRV.setMinimumHeight(200);
         eventsTodayDataArrayList = new ArrayList<>();
-        eventsTodayAdapter = new HomeEventsTodayAdapter(eventsTodayDataArrayList, getContext(), this::onEventsClick);
+        eventsTodayAdapter = new HomeEventsTodayAdapter(eventsTodayDataArrayList, getContext(), this::onEventsTodayClick);
         eventsTodayRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         eventsTodayRV.setAdapter(eventsTodayAdapter);
+
+
+        //EVENTS RECYCLERVIEW
+
+        eventsEmpty = root.findViewById(R.id.home_events_empty);
+        eventsProgressBar = root.findViewById(R.id.home_events_loading);
+        eventsRV = root.findViewById(R.id.home_events_recycler);
+        eventsRV.setMinimumHeight(200);
+        eventsDataArrayList = new ArrayList<>();
+        eventsAdapter = new HomeEventsAdapter(eventsDataArrayList, getContext(), this::onEventsClick);
+        eventsRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+        eventsRV.setAdapter(eventsAdapter);
         return root;
     }
 
@@ -245,15 +263,26 @@ public class HomeFragment extends Fragment {
             remindersTodayProgressBar.setVisibility(View.GONE);
         }
 
-        //EVENTS
+        //EVENTS TODAY
         if (user != null) {
-            getEventsSortByDate(getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth()));
+            getEventsToday(getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth()));
         } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
             eventsTodayEmpty.setVisibility(View.VISIBLE);
             eventsTodayEmpty.setText("Sign in to create events!");
             eventsTodayProgressBar.setVisibility(View.GONE);
+        }
+
+        //EVENTS
+        if (user != null) {
+            getEventsSortByDate(getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth()));
+        } else {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
+                    .show();
+            eventsEmpty.setVisibility(View.VISIBLE);
+            eventsEmpty.setText("Sign in to create events!");
+            eventsProgressBar.setVisibility(View.GONE);
         }
     }
     public static long getEpochMilliseconds(int year, int month, int dayOfMonth) {
@@ -327,7 +356,7 @@ public class HomeFragment extends Fragment {
         remindersEditPopUp.showPopupWindowEdit(remindersTodayRV, remindersData);
     }
 
-    private void getEventsSortByDate(long dateSelected) {
+    private void getEventsToday(long dateSelected) {
         Query query = eventDatabaseReference.orderByChild("eventStartDateTime");
         query.addValueEventListener(eventTodayListener);
         /*query.addValueEventListener(new ValueEventListener() {
@@ -397,7 +426,7 @@ public class HomeFragment extends Fragment {
                     .show();
         }
     };
-    public void onEventsClick(int position) {
+    public void onEventsTodayClick(int position) {
         EventData eventData = eventsTodayDataArrayList.get(position);
         EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager());
         eventShowAndEditPopUp.showSavedEventPopupWindow(eventsTodayRV, eventData);
@@ -506,6 +535,76 @@ public class HomeFragment extends Fragment {
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, eventReminderDateTime - 28800000, pendingIntent);
         eventData.setEventPendingIntent(pendingIntent);
     }
+
+    private void getEventsSortByDate(long dateSelected) {
+        Query query = eventDatabaseReference.orderByChild("eventStartDateTime");
+        query.addValueEventListener(eventListener);
+        /*query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                eventsTodayDataArrayList.clear();
+                getHolsCalendar(dateSelected);
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    EventData eventData = dataSnapshot.getValue(EventData.class);
+                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  > System.currentTimeMillis()) {
+                        scheduleEventNoti(eventData);
+                        if (eventData.getEventReminderDateTime() != 0) {
+                            scheduleEventReminderNoti(eventData);
+                        }
+                    }
+                    if ((eventData.getEventStartDateEpoch()) <= dateSelected && (eventData.getEventEndDateEpoch()) + 28800000 >= dateSelected) {
+                        eventsTodayDataArrayList.add(eventData);
+                    }
+                }
+                eventsTodayAdapter.notifyDataSetChanged();
+                if (eventsTodayDataArrayList.isEmpty()) {
+                    eventsTodayProgressBar.setVisibility(View.GONE);
+                    eventsTodayEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    eventsTodayProgressBar.setVisibility(View.GONE);
+                    eventsTodayEmpty.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });*/
+    }
+
+    ValueEventListener eventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            eventsDataArrayList.clear();
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                EventData eventData = dataSnapshot.getValue(EventData.class);
+                if (date - eventData.getEventEndDateTime() <= 432000000) {
+                    eventsDataArrayList.add(eventData);
+                }
+            }
+            eventsAdapter.notifyDataSetChanged();
+            if (eventsDataArrayList.isEmpty()) {
+                eventsProgressBar.setVisibility(View.GONE);
+                eventsEmpty.setVisibility(View.VISIBLE);
+            } else {
+                eventsProgressBar.setVisibility(View.GONE);
+                eventsEmpty.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+    };
+    public void onEventsClick(int position) {
+        EventData eventData = eventsDataArrayList.get(position);
+        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager());
+        eventShowAndEditPopUp.showSavedEventPopupWindow(eventsRV, eventData);
+    }
+
 
     @Override
     public void onDestroyView() {

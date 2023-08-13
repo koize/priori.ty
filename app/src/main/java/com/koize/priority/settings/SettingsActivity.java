@@ -85,7 +85,6 @@ public class SettingsActivity extends AppCompatActivity {
             } else {
                 convertGuestToFull.setVisible(false);
             }
-            offlineSync = findPreference("offline_sync");
             testNoti = findPreference("test_noti");
             deleteAccount = findPreference("delete_account");
 
@@ -105,16 +104,7 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             });
 
-            offlineSync.setOnPreferenceChangeListener((preference, newValue) -> {
-                if (newValue.toString().equals("true")) {
-                    FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-                    Snackbar.make(requireView(), "Offline sync enabled", Snackbar.LENGTH_SHORT).show();
-                } else {
-                    FirebaseDatabase.getInstance().setPersistenceEnabled(false);
-                    Snackbar.make(requireView(), "Offline sync disabled", Snackbar.LENGTH_SHORT).show();
-                }
-                return true;
-            });
+
 
             testNoti.setOnPreferenceClickListener(preference -> {
                 SendNotiTestKt.sendNotification(requireContext());
