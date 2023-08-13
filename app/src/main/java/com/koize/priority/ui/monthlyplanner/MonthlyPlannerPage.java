@@ -337,7 +337,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                         eventListDataArrayList.add(eventData);
                     }
 
-                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()   > System.currentTimeMillis()) {
+                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  > System.currentTimeMillis()) {
                         scheduleNoti(eventData);
                         if (eventData.getEventReminderDateTime() != 0) {
                             scheduleReminderNoti(eventData);
@@ -1349,7 +1349,6 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     }
                     else {
                     }
-                    eventData.setEventPendingIntent(null);
                     eventData.setEventCategory(categoryData);
                     eventData.setEventDesc(eventDescText.getText().toString());
                     try {

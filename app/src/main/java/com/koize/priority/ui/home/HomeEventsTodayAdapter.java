@@ -61,12 +61,12 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
         } else {
             holder.rowCardLocationChip.setVisibility(View.VISIBLE);
         }
-
+        holder.rowCardEventTypeChip.setText(eventData.getEventType());
         holder.rowCardTimeLeft.setText(convertTimestampBot(eventData.getEventStartDateTime()));
         holder.rowCardTime.setText(convertTimestampTop(eventData.getEventStartDateTime()));
 
         if (secondsSinceNow < 0 && minutesSinceNow <=0 && hoursSinceNow <= 0 && daysSinceNow <= 0){
-            holder.rowCardEventTypeChip.setText("Now");
+            holder.rowCardTimeLeft.setText("Now");
         }
 
         holder.view.setOnClickListener(new View.OnClickListener() {
@@ -154,10 +154,10 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
             rowCardCategoryChip = view.findViewById(R.id.row_home_events_today_category_chip);
             rowCardLocationChip = view.findViewById(R.id.row_home_events_today_location_chip);
             rowCardEventTypeChip = view.findViewById(R.id.row_home_events_today_event_type_chip);
-            rowCardTimeLeft = view.findViewById(R.id.row_home_reminders_today_time_left);
-            rowCardTime = view.findViewById(R.id.row_home_reminders_today_time);
-            rowTimeLeftCard = view.findViewById(R.id.row_home_reminders_today_time_left_card);
-            rowTimeCard = view.findViewById(R.id.row_home_reminders_today_time_card);
+            rowCardTimeLeft = view.findViewById(R.id.row_home_events_today_time_left);
+            rowCardTime = view.findViewById(R.id.row_home_events_today_time);
+            rowTimeLeftCard = view.findViewById(R.id.row_home_events_today_time_left_card);
+            rowTimeCard = view.findViewById(R.id.row_home_events_today_time_card);
         }
     }
 

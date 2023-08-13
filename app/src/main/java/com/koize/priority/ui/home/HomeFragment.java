@@ -33,9 +33,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.koize.priority.NotiReceiver;
-import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.focusmode.FocusModeActivity;
+import com.koize.priority.ui.monthlyplanner.EventData;
+import com.koize.priority.ui.monthlyplanner.EventShowAndEditPopUp;
 import com.koize.priority.ui.monthlyplanner.MonthlyPlannerPage;
 import com.koize.priority.R;
 import com.koize.priority.settings.SettingsActivity;
@@ -52,7 +55,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -82,6 +84,11 @@ public class HomeFragment extends Fragment {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference reminderDatabaseReference;
     DatabaseReference eventDatabaseReference;
+    DatabaseReference eventHolsDatabaseReference;
+    FirebaseStorage storage;
+    StorageReference storageRef;
+
+    long date;
     //Reminders today recyclerview stuff
 
     RemindersData remindersData;
@@ -89,6 +96,11 @@ public class HomeFragment extends Fragment {
     HomeRemindersTodayAdapter remindersAdapter;
     ArrayList<RemindersData> remindersDataArrayList;
 
+    //Events today recyclerview stuff
+    EventData eventData;
+    RecyclerView eventsTodayRV;
+    HomeEventsTodayAdapter eventsTodayAdapter;
+    ArrayList<EventData> eventsTodayDataArrayList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -150,10 +162,17 @@ public class HomeFragment extends Fragment {
             String name = user.getDisplayName();
             if ((name != null) && name!="") {
                 reminderDatabaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/reminders");
-
+                eventDatabaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1, 5) + "/events");
+                eventHolsDatabaseReference = firebaseDatabase.getReference("hols");
+                storage = FirebaseStorage.getInstance("gs://priority-135fc.appspot.com");
+                storageRef = storage.getReference("users/" + name + "_" + user.getUid().substring(1, 5) + "/events" + "/images");
             }
             else if (name == "") {
                 reminderDatabaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/reminders");
+                eventDatabaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/events");
+                eventHolsDatabaseReference = firebaseDatabase.getReference("hols");
+                storage = FirebaseStorage.getInstance("gs://priority-135fc.appspot.com");
+                storageRef = storage.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/events" + "/images");
             }
             else {
                 throw new IllegalStateException("Unexpected value: " + name);
@@ -187,26 +206,54 @@ public class HomeFragment extends Fragment {
 
         //EVENTS TODAY RECYCLERVIEW
         createEventNotificationChannel();
-
-
+        newEventChip = root.findViewById(R.id.button_home_add_events);
+        newEventChip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MonthlyPlannerPage.class);
+                startActivity(intent);
+            }
+        });
+        eventsTodayEmpty = root.findViewById(R.id.home_events_today_empty);
+        eventsTodayProgressBar = root.findViewById(R.id.home_events_today_loading);
+        eventsTodayRV = root.findViewById(R.id.home_events_today_recycler);
+        eventsTodayRV.setMinimumHeight(200);
+        eventsTodayDataArrayList = new ArrayList<>();
+        eventsTodayAdapter = new HomeEventsTodayAdapter(eventsTodayDataArrayList, getContext(), this::onEventsClick);
+        eventsTodayRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+        eventsTodayRV.setAdapter(eventsTodayAdapter);
         return root;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         LocalDate today = LocalDate.now();
+
+        date = getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth());
+
 
         //REMINDERS
         if (user != null) {
             getRemindersSortByDate(getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth()));
+
         } else {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
                     .show();
             remindersTodayEmpty.setVisibility(View.VISIBLE);
             remindersTodayEmpty.setText("Sign in to create reminders!");
             remindersTodayProgressBar.setVisibility(View.GONE);
+        }
+
+        //EVENTS
+        if (user != null) {
+            getEventsSortByDate(getEpochMilliseconds(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth()));
+        } else {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
+                    .show();
+            eventsTodayEmpty.setVisibility(View.VISIBLE);
+            eventsTodayEmpty.setText("Sign in to create events!");
+            eventsTodayProgressBar.setVisibility(View.GONE);
         }
     }
     public static long getEpochMilliseconds(int year, int month, int dayOfMonth) {
@@ -219,38 +266,39 @@ public class HomeFragment extends Fragment {
 
         remindersDataArrayList.clear();
         Query query = reminderDatabaseReference.orderByChild("firstReminderDateTime");
-
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                remindersDataArrayList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    RemindersData remindersData = dataSnapshot.getValue(RemindersData.class);
-                    if (remindersData.getFirstReminderDateTime() != 0 && remindersData.getReminderPendingIntent() == null && remindersData.getFirstReminderDateTime() - 28800000 > System.currentTimeMillis()) {
-                        scheduleReminderNoti(remindersData);
-                    }
-                    if (remindersData.getFirstReminderDateEpoch() == date + 28800000 ) {
-                        remindersDataArrayList.add(remindersData);
-                    }
-                }
-                remindersAdapter.notifyDataSetChanged();
-                if (remindersDataArrayList.isEmpty()) {
-                    remindersTodayProgressBar.setVisibility(View.GONE);
-                    remindersTodayEmpty.setVisibility(View.VISIBLE);
-                } else {
-                    remindersTodayProgressBar.setVisibility(View.GONE);
-                    remindersTodayEmpty.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
-                        .show();
-            }
-        });
+        query.addValueEventListener(reminderTodayListener);
         remindersAdapter.notifyDataSetChanged();
     }
+
+    ValueEventListener reminderTodayListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            remindersDataArrayList.clear();
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                RemindersData remindersData = dataSnapshot.getValue(RemindersData.class);
+                if (remindersData.getFirstReminderDateTime() != 0 && remindersData.getReminderPendingIntent() == null && remindersData.getFirstReminderDateTime() - 28800000 > System.currentTimeMillis()) {
+                    scheduleReminderNoti(remindersData);
+                }
+                if (remindersData.getFirstReminderDateEpoch() == date + 28800000 ) {
+                    remindersDataArrayList.add(remindersData);
+                }
+            }
+            remindersAdapter.notifyDataSetChanged();
+            if (remindersDataArrayList.isEmpty()) {
+                remindersTodayProgressBar.setVisibility(View.GONE);
+                remindersTodayEmpty.setVisibility(View.VISIBLE);
+            } else {
+                remindersTodayProgressBar.setVisibility(View.GONE);
+                remindersTodayEmpty.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+    };
 
 
 
@@ -279,12 +327,197 @@ public class HomeFragment extends Fragment {
         remindersEditPopUp.showPopupWindowEdit(remindersTodayRV, remindersData);
     }
 
+    private void getEventsSortByDate(long dateSelected) {
+        Query query = eventDatabaseReference.orderByChild("eventStartDateTime");
+        query.addValueEventListener(eventTodayListener);
+        /*query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                eventsTodayDataArrayList.clear();
+                getHolsCalendar(dateSelected);
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    EventData eventData = dataSnapshot.getValue(EventData.class);
+                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  > System.currentTimeMillis()) {
+                        scheduleEventNoti(eventData);
+                        if (eventData.getEventReminderDateTime() != 0) {
+                            scheduleEventReminderNoti(eventData);
+                        }
+                    }
+                    if ((eventData.getEventStartDateEpoch()) <= dateSelected && (eventData.getEventEndDateEpoch()) + 28800000 >= dateSelected) {
+                        eventsTodayDataArrayList.add(eventData);
+                    }
+                }
+                eventsTodayAdapter.notifyDataSetChanged();
+                if (eventsTodayDataArrayList.isEmpty()) {
+                    eventsTodayProgressBar.setVisibility(View.GONE);
+                    eventsTodayEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    eventsTodayProgressBar.setVisibility(View.GONE);
+                    eventsTodayEmpty.setVisibility(View.GONE);
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });*/
+    }
+
+    ValueEventListener eventTodayListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            eventsTodayDataArrayList.clear();
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                EventData eventData = dataSnapshot.getValue(EventData.class);
+                getHolsCalendar(date);
+                if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  > System.currentTimeMillis()) {
+                    scheduleEventNoti(eventData);
+                    if (eventData.getEventReminderDateTime() != 0) {
+                        scheduleEventReminderNoti(eventData);
+                    }
+                }
+                if ((eventData.getEventStartDateEpoch()) <= date && (eventData.getEventEndDateEpoch()) + 28800000 >= date) {
+                    eventsTodayDataArrayList.add(eventData);
+                }
+            }
+            eventsTodayAdapter.notifyDataSetChanged();
+            if (eventsTodayDataArrayList.isEmpty()) {
+                eventsTodayProgressBar.setVisibility(View.GONE);
+                eventsTodayEmpty.setVisibility(View.VISIBLE);
+            } else {
+                eventsTodayProgressBar.setVisibility(View.GONE);
+                eventsTodayEmpty.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+    };
+    public void onEventsClick(int position) {
+        EventData eventData = eventsTodayDataArrayList.get(position);
+        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager());
+        eventShowAndEditPopUp.showSavedEventPopupWindow(eventsTodayRV, eventData);
+    }
+    public void getHolsCalendar(long dateSelected){
+        long sixMonths = 15778800000L;
+        Query queryHoliday = eventHolsDatabaseReference.orderByChild("eventStartDateTime");
+        queryHoliday.addValueEventListener(eventsTodayHolsListener);
+        /*queryHoliday.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    EventData eventData = dataSnapshot.getValue(EventData.class);
+                    if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  > System.currentTimeMillis()) {
+                        scheduleEventNoti(eventData);
+                        if (eventData.getEventReminderDateTime() != 0) {
+                            scheduleEventReminderNoti(eventData);
+                        }
+                    }
+                    if ((eventData.getEventStartDateEpoch()) <= dateSelected && (eventData.getEventEndDateEpoch()) + 28800000 >= dateSelected) {
+                        eventsTodayDataArrayList.add(eventData);
+                    }
+                }
+                eventsTodayAdapter.notifyDataSetChanged();
+                if (eventsTodayDataArrayList.isEmpty()) {
+                    eventsTodayProgressBar.setVisibility(View.GONE);
+                    eventsTodayEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    eventsTodayProgressBar.setVisibility(View.GONE);
+                    eventsTodayEmpty.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });*/
+    }
+
+    ValueEventListener eventsTodayHolsListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                EventData eventData = dataSnapshot.getValue(EventData.class);
+                if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  > System.currentTimeMillis()) {
+                    scheduleEventNoti(eventData);
+                    if (eventData.getEventReminderDateTime() != 0) {
+                        scheduleEventReminderNoti(eventData);
+                    }
+                }
+                if ((eventData.getEventStartDateEpoch()) <= date && (eventData.getEventEndDateEpoch()) + 28800000 >= date) {
+                    eventsTodayDataArrayList.add(eventData);
+                }
+            }
+            eventsTodayAdapter.notifyDataSetChanged();
+            if (eventsTodayDataArrayList.isEmpty()) {
+                eventsTodayProgressBar.setVisibility(View.GONE);
+                eventsTodayEmpty.setVisibility(View.VISIBLE);
+            } else {
+                eventsTodayProgressBar.setVisibility(View.GONE);
+                eventsTodayEmpty.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+    };
+    public void scheduleEventNoti(EventData eventData) {
+        long eventStartDateTime = eventData.getEventStartDateTime();
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventStartDateTime), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
+        String formattedTime = formatter.format(dateTime);
+        Notification.Builder builder = new Notification.Builder(requireContext(), "events");
+        builder.setContentTitle("Event: "+eventData.getEventTitle());
+        builder.setContentText(eventData.getEventTitle() + " at " + formattedTime);
+        builder.setSmallIcon(R.drawable.baseline_access_time_24);
+        Notification notification = builder.build();
+        Intent intent = new Intent(requireContext(), NotiReceiver.class);
+        intent.putExtra(NotiReceiver.NOTIFICATION, notification);
+        intent.putExtra("id", eventData.getEventId());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), eventData.getEventId(), intent, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, eventStartDateTime - 28800000, pendingIntent);
+        eventData.setEventPendingIntent(pendingIntent);
+    }
+    public void scheduleEventReminderNoti(EventData eventData) {
+        long eventReminderDateTime = eventData.getEventReminderDateTime() ;
+        long eventStartDateTime = eventData.getEventStartDateTime();
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventStartDateTime), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
+        String formattedTime = formatter.format(dateTime);
+        Notification.Builder builder = new Notification.Builder(requireContext(), "events");
+        builder.setContentTitle("Reminder for Event: " +  eventData.getEventTitle());
+        builder.setContentText(eventData.getEventTitle() + " at " + formattedTime);
+        builder.setSmallIcon(R.drawable.baseline_access_time_24);
+        Notification notification = builder.build();
+        Intent intent = new Intent(requireContext(), NotiReceiver.class);
+        intent.putExtra(NotiReceiver.NOTIFICATION, notification);
+        intent.putExtra("id", eventData.getEventId());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), eventData.getEventId(), intent, PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, eventReminderDateTime - 28800000, pendingIntent);
+        eventData.setEventPendingIntent(pendingIntent);
+    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Query query = reminderDatabaseReference.orderByChild("firstReminderDateTime");
+        query.removeEventListener(reminderTodayListener);
+        Query query1 = eventDatabaseReference.orderByChild("eventStartDateTime");
+        query1.removeEventListener(eventTodayListener);
+        Query query2 = eventHolsDatabaseReference.orderByChild("eventStartDateTime");
+        query2.removeEventListener(eventsTodayHolsListener);
         binding = null;
+
     }
 
     View.OnClickListener monthlyPlannerButtonListener = new View.OnClickListener() {
