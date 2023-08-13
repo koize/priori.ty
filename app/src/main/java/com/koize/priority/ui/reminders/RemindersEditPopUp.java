@@ -62,6 +62,9 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
     public String secondReminderDate;
     public long firstReminderDateTime;
     public long secondReminderDateTime;
+    public long firstReminderDateEpoch;
+    public long secondReminderDateEpoch;
+
     CategoryData categoryData;
     FragmentManager fragmentManager;
     FirebaseUser user;
@@ -200,6 +203,7 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
                             public void onPositiveButtonClick(Object selection) {
                                 firstReminderDate = materialDatePicker.getHeaderText();
                                 firstReminderDateTime = (long) selection;
+                                firstReminderDateEpoch = (long) selection;
                                 mTimePicker1();
 
                             }
@@ -242,6 +246,7 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
                             public void onPositiveButtonClick(Object selection) {
                                 secondReminderDate = materialDatePicker.getHeaderText();
                                 secondReminderDateTime = (long) selection;
+                                secondReminderDateEpoch = (long) selection;
                                 mTimePicker2();
 
                             }
@@ -275,6 +280,8 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
                     remindersData.setSecondReminderTimeMin(secondReminderTimeMin);
                     remindersData.setFirstReminderDateTime(firstReminderDateTime);
                     remindersData.setSecondReminderDateTime(secondReminderDateTime);
+                    remindersData.setFirstReminderDateEpoch(firstReminderDateEpoch);
+                    remindersData.setSecondReminderDateEpoch(secondReminderDateEpoch);
 
                     if (firstReminderTimeHr >= 0 && firstReminderTimeHr < 12) {
                         remindersData.setFirstReminderPartOfDay("morning");
