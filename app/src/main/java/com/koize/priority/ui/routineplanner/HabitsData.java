@@ -1,6 +1,8 @@
 package com.koize.priority.ui.routineplanner;
 
-public class HabitsData {
+import java.io.Serializable;
+
+public class HabitsData implements Serializable {
     private int habitsId;
     private String habitsTextId;
     private String habitsTitle;

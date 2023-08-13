@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -19,8 +20,9 @@ import com.koize.priority.ui.routineplanner.HabitsData;
 import com.koize.priority.ui.routineplanner.RoutineData;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class FocusModeActivity extends AppCompatActivity {
+public class FocusModeActivity extends AppCompatActivity implements Serializable {
     FirebaseUser user;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -81,7 +83,13 @@ public class FocusModeActivity extends AppCompatActivity {
         });
     }
 
-    private void onFocusClick(int i) {
-
+    private void onFocusClick(int position) {
+        RoutineData focusData = new RoutineData();
+        focusData = focusDataArrayList.get(position);
+        ArrayList<HabitsData> focusHabitsList = new ArrayList<>();
+        focusHabitsList = focusData.getRoutineHabitsList();
+        Intent intent = new Intent(this, FocusStart.class);
+        intent.putExtra("focusHabitsList", focusHabitsList);
+        startActivity(intent);
     }
 }

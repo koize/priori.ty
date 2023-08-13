@@ -709,7 +709,7 @@ public class RoutineEditorPage extends AppCompatActivity {
                     // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
                     builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
                         // When the user click yes button then app will close
-                        databaseReference.child(habitsDataArrayList.get(position).getHabitsTitle()).removeValue();
+                        databaseReference.child(habitsDataArrayList.get(position).getHabitsTextId()).removeValue();
                         Snackbar.make(habitsRV, "Habit Deleted", Snackbar.LENGTH_SHORT)
                                 .show();
                         dialog.dismiss();
