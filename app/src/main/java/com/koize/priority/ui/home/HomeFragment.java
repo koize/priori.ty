@@ -15,7 +15,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.koize.priority.FocusModeActivity;
+import com.koize.priority.ui.focusmode.FocusModeActivity;
 import com.koize.priority.ui.monthlyplanner.MonthlyPlannerPage;
 import com.koize.priority.R;
 import com.koize.priority.settings.SettingsActivity;

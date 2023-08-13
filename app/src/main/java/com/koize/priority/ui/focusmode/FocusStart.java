@@ -1,14 +1,16 @@
-package com.koize.priority;
+package com.koize.priority.ui.focusmode;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class FocusModeActivity extends AppCompatActivity {
+import com.koize.priority.R;
+
+public class FocusStart extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_focus_mode);
+        setContentView(R.layout.activity_focus_start);
     }
 }
