@@ -24,6 +24,7 @@ public class FocusStart extends AppCompatActivity implements Serializable {
     TextView nextActivityTV;
     TextView focusTimer;
     Chip focusStartBtn;
+    Chip focusEndBtn;
     public int counter;
     public int progressCounter;
     TextToSpeech t1;
@@ -43,8 +44,12 @@ public class FocusStart extends AppCompatActivity implements Serializable {
 
         nextActivityTV = findViewById(R.id.focusNextActivity);
         focusTimer = findViewById(R.id.focusTimer);
+
         focusStartBtn = findViewById(R.id.focus_startBtn);
         focusStartBtn.setOnClickListener(startRoutine);
+
+        focusEndBtn = findViewById(R.id.focus_endBtn);
+        focusEndBtn.setOnClickListener(endRoutine);
 
         currentActivityTV.setText("");
         nextActivityTV.setText("");
@@ -66,6 +71,8 @@ public class FocusStart extends AppCompatActivity implements Serializable {
         int currenthabitDuration = 0;
         @Override
         public void onClick(View v) {
+            focusStartBtn.setVisibility(View.INVISIBLE);
+            focusEndBtn.setVisibility(View.VISIBLE);
             /*
             for(HabitsData habits : focusHabitsList){
                totalDuration += habits.getHabitsDuration();
@@ -136,6 +143,13 @@ public class FocusStart extends AppCompatActivity implements Serializable {
 
                 }
             }.start();
+        }
+    };
+
+    View.OnClickListener endRoutine = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
         }
     };
 

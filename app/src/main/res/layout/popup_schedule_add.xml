@@ -76,26 +76,18 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:srcCompat="@drawable/baseline_title_24" />
 
-                        <TextView
-                            android:id="@+id/schedule_popup_nameheader"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                        <EditText
+                            android:id="@+id/editTextText"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
                             android:layout_marginStart="16dp"
-                            android:text="Activity Name:"
-                            android:textSize="16sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/icon_new_schedule_title"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/button_new_schedule_chooseActivity"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="4dp"
-                            android:text="Choose Activity"
-                            app:chipIcon="@drawable/outline_schedule_24"
+                            android:background="@null"
+                            android:ems="10"
+                            android:hint="Add Title"
+                            android:inputType="text"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/icon_new_schedule_title"
                             app:layout_constraintTop_toTopOf="parent" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -255,7 +247,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/baseline_location_on_24" />
+                            app:srcCompat="@drawable/baseline_description_24" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/button_new_schedule_addDescription"
@@ -263,7 +255,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="4dp"
                             android:text="Add Description"
-                            app:chipIcon="@drawable/baseline_add_location_24"
+                            app:chipIcon="@drawable/baseline_description_24"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
