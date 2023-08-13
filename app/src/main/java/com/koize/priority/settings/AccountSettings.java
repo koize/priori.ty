@@ -112,29 +112,9 @@ public class AccountSettings extends AppCompatActivity {
                             // When the user click yes button then app will close
                     FirebaseAuth.getInstance().signOut();
                     Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Signed out", Snackbar.LENGTH_SHORT);
-                    snackbar.setAction("Login again", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            List<AuthUI.IdpConfig> providers = Arrays.asList(
-                                    new AuthUI.IdpConfig.EmailBuilder().build(),
-                                    new AuthUI.IdpConfig.AnonymousBuilder().build()
-                            );
-
-                            startActivityForResult(
-                                    AuthUI.getInstance()
-                                            .createSignInIntentBuilder()
-                                            .setAvailableProviders(providers)
-                                            .setTheme(R.style.AppTheme)
-                                            .setIsSmartLockEnabled(false)
-                                            .setLogo(R.mipmap.ic_whack)
-                                            .setTosAndPrivacyPolicyUrls("https://www.twitch.tv/chocofwog",
-                                                    "https://www.twitch.tv/koizee_")
-                                            .build(),
-                                    RC_SIGN_IN);
-                        }
-                    });
                     snackbar.show();
-                    refreshAccount();
+                    deleteCache(getApplicationContext());
+                    ProcessPhoenix.triggerRebirth(getApplicationContext());
 
                 });
 
@@ -205,7 +185,8 @@ public class AccountSettings extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),"Account deleted",Snackbar.LENGTH_SHORT);
-                        refreshAccount();
+                        deleteCache(getApplicationContext());
+                        ProcessPhoenix.triggerRebirth(getApplicationContext());
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

@@ -65,7 +65,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         @Override
         public void onClick(View v) {
             SchedulePopUp schedulePopUp = new SchedulePopUp();
-            schedulePopUp.showPopupWindow(v);        }
+            schedulePopUp.showPopupWindow(v, getParentFragmentManager());        }
     };
 
 
