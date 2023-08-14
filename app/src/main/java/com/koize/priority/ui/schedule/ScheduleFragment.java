@@ -107,7 +107,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         scheduleAdapter = new ScheduleAdapter(scheduleDataArrayList,getContext(),this:: onScheduleClick);
         scheduleRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         scheduleRV.setAdapter(scheduleAdapter);
-        getSchedule();
+        //getSchedule();
 
         return root;
     }

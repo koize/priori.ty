@@ -261,9 +261,7 @@ public class SchedulePopUp implements CategoryPopUp.CategoryCallBack {
 
                     }
                     catch (Exception e) {
-                        e.getCause().getCause();
-                        Snackbar.make(view, e.getCause().getCause().toString(), Snackbar.LENGTH_SHORT)
-                                .show();
+
                     }
                     Snackbar.make(view, "Activity Saved", Snackbar.LENGTH_SHORT)
                             .show();
