@@ -107,12 +107,14 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         scheduleAdapter = new ScheduleAdapter(scheduleDataArrayList,getContext(),this:: onScheduleClick);
         scheduleRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         scheduleRV.setAdapter(scheduleAdapter);
-        //getSchedule();
+        getSchedule();
 
         return root;
     }
 
     private void getSchedule() {
+        String name = user.getDisplayName();
+        databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/schedule" + "/" +CalendarAdapter.selectedDate);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -122,7 +124,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
                     ScheduleData scheduleData = dataSnapshot.getValue(ScheduleData.class);
                     scheduleDataArrayList.add(scheduleData);
                 }
-                //ScheduleAdapter.notifyDataSetChanged();
+                scheduleAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -139,7 +141,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         public void onClick(View v) {
             String notes = editNotes.getText().toString();
             SchedulePopUp schedulePopUp = new SchedulePopUp();
-            schedulePopUp.showPopupWindow(v, getParentFragmentManager(),PressOnDate,notes,user,databaseReference);
+            schedulePopUp.showPopupWindow(v, getParentFragmentManager(),CalendarAdapter.selectedDate,notes,user,databaseReference);
         }
     };
 
@@ -185,6 +187,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         CalendarAdapter.selectedDate = date;
         PressOnDate = date;
         setWeekView();
+        getSchedule();
     }
 
     public static String monthYearFromDate(LocalDate date){

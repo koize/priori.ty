@@ -47,6 +47,12 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         holder.rowCardCategoryChip.setText(scheduleData.getScheduleCategory().getCategoryTitle());
         holder.rowCardCategoryChip.setChipBackgroundColor(ColorStateList.valueOf(scheduleData.getScheduleCategory().getCategoryColor()));
 
+        holder.rowCard.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                ScheduleListener.onScheduleClick(holder.getAdapterPosition());
+            }
+        });
     }
 
     @Override
