@@ -29,7 +29,7 @@
         android:roundIcon="@mipmap/ic_launcher_priority_w_bg_round"
         android:supportsRtl="true"
         android:targetSdkVersion="33"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Theme.App.Starting"
         tools:targetApi="31">
         <activity
             android:name=".FreshInstallScreen"
