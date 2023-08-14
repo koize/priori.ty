@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/schedule_row_timing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/materialCardView2"
+        android:id="@+id/schedule_row_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -28,14 +28,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9">
+        app:layout_constraintTop_toBottomOf="@+id/schedule_row_timing">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/row_schedule_card_icon"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginStart="15dp"
@@ -56,9 +56,19 @@
                 android:textAlignment="textStart"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/row_schedule_card_icon"
+                app:layout_constraintTop_toTopOf="@+id/row_schedule_card_icon" />
+
+            <include
+                android:id="@+id/row_schedule_category_chip"
+                layout="@layout/row_category_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageView3"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="@+id/schedule_row_activity"
+                app:layout_constraintTop_toBottomOf="@+id/schedule_row_activity"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/schedule_row_duration"
