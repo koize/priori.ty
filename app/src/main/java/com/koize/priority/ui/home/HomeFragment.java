@@ -420,7 +420,7 @@ public class HomeFragment extends Fragment {
     };
     public void onEventsTodayClick(int position) {
         EventData eventData = eventsTodayDataArrayList.get(position);
-        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager(), getContext());
+        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager(), getContext(), this);
         eventShowAndEditPopUp.showSavedEventPopupWindow(getView(), eventData);
     }
     public void getHolsCalendar(long dateSelected){
@@ -593,7 +593,7 @@ public class HomeFragment extends Fragment {
     };
     public void onEventsClick(int position) {
         EventData eventData = eventsDataArrayList.get(position);
-        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager(), getContext());
+        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager(), getContext(), this);
         eventShowAndEditPopUp.showSavedEventPopupWindow(eventsRV, eventData);
     }
 

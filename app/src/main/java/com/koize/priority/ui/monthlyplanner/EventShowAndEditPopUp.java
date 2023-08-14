@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.util.Pair;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
@@ -127,11 +128,12 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
     FragmentManager fragmentManager;
     Activity activity;
     Context context;
+    Fragment fragment;
 
     public EventShowAndEditPopUp() {
     }
 
-    public EventShowAndEditPopUp(EventData eventData, Activity activity, DatabaseReference databaseEventListReference, FirebaseUser user, StorageReference storageRef, FragmentManager fragmentManager, Context context) {
+    public EventShowAndEditPopUp(EventData eventData, Activity activity, DatabaseReference databaseEventListReference, FirebaseUser user, StorageReference storageRef, FragmentManager fragmentManager, Context context, Fragment fragment) {
         this.eventData = eventData;
         this.activity = activity;
         this.databaseEventListReference = databaseEventListReference;
@@ -139,6 +141,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         this.storageRef = storageRef;
         this.fragmentManager = fragmentManager;
         this.context = context;
+        this.fragment = fragment;
     }
 
 
@@ -151,66 +154,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
 
     }
 
-    private void uploadImage(File filePath, Uri uri, String eventTextId, View view)
-    {
-        if (filePath != null) {
 
-            // Code for showing progressDialog while uploading
-            ProgressDialog progressDialog
-                    = new ProgressDialog(view.getContext());
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-
-            // Defining the child of storageReference
-            storageRef
-                    .child(
-                            eventTextId
-                    ).putFile(uri)
-                    .addOnSuccessListener(
-                            new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
-                                @Override
-                                public void onSuccess(
-                                        UploadTask.TaskSnapshot taskSnapshot)
-                                {
-
-                                    // Image uploaded successfully
-                                    // Dismiss dialog
-                                    progressDialog.dismiss();
-                                    Snackbar.make(view, "Image Uploaded!", Snackbar.LENGTH_SHORT).show();
-                                }
-                            })
-
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e)
-                        {
-
-                            // Error, Image not uploaded
-                            progressDialog.dismiss();
-                            Snackbar.make(view, "Failed " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(
-                            new OnProgressListener<UploadTask.TaskSnapshot>() {
-
-                                // Progress Listener for loading
-                                // percentage on the dialog box
-                                @Override
-                                public void onProgress(
-                                        UploadTask.TaskSnapshot taskSnapshot)
-                                {
-                                    double progress
-                                            = (100.0
-                                            * taskSnapshot.getBytesTransferred()
-                                            / taskSnapshot.getTotalByteCount());
-                                    progressDialog.setMessage(
-                                            "Uploaded "
-                                                    + (int)progress + "%");
-                                }
-                            });
-        }
-    }
 
     public void showSavedEventPopupWindow(final View view, EventData eventData) {
 
@@ -276,6 +220,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventShowDesc = popupView.findViewById(R.id.show_event_desc);
         eventShowImage = popupView.findViewById(R.id.show_event_desc_image);
         eventShowEdit = popupView.findViewById(R.id.button_show_event_edit);
+        eventShowEdit.setVisibility(View.INVISIBLE); //DO NOT REMOVVE
         eventShowDelete = popupView.findViewById(R.id.button_show_event_delete);
 
         eventShowTitle.setText(eventData.getEventTitle());
@@ -318,7 +263,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
             @Override
             public void onClick(View v) {
                 if (eventData.getEventLatitude() == 0 && eventData.getEventLongitude() == 0) {
-                    Snackbar.make(findViewById(android.R.id.content), "No location set!", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(v, "No location set!", Snackbar.LENGTH_SHORT)
                             .show();
                 } else {
                     Intent intent = new Intent(context, ShowMap.class);
@@ -336,7 +281,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                     showEditEventPopupWindow(v, eventData);
                     popupWindow.dismiss();
                 } else {
-                    Snackbar.make(findViewById(android.R.id.content), "Cannot edit holiday!", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(v, "Cannot edit holiday!", Snackbar.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -482,7 +427,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         } else {
             isAllDay = false;
             allDay.setChecked(false);
-            timeText.setText(String.format("%02d:%02d", eventStartHr, eventStartMin) + " - " + String.format("%02d:%02d", eventEndHr, eventEndMin));
+            timeText.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime(), eventData.getEventAllDay()));
         }
         if (eventData.getEventReminderDateTime() == 0) {
             reminderText.setText("Reminder not set");
@@ -491,7 +436,11 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
             reminderMin = (int) (((eventData.getEventReminderDateTime() % 86400000) % 3600000) / 60000);
             reminderDate = eventData.getEventReminderDate();
             reminderDateTime = eventData.getEventReminderDateTime();
-            reminderText.setText(eventData.getEventReminderDate() + ", " + String.format("%02d:%02d", reminderHr, reminderMin));
+
+            LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventData.getEventReminderDateTime() - 28800000), ZoneId.systemDefault());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+            String formattedTime = formatter.format(dateTime1);
+            reminderText.setText(eventData.getEventReminderDate() + ", " + formattedTime);
         }
         eventLocationText.setText(eventData.getEventLocationName());
         eventCategoryCard.setText(eventData.getEventCategory().getCategoryTitle());
@@ -516,7 +465,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                 // picker
                 MaterialDatePicker<Pair<Long, Long>> materialDatePicker = materialDateBuilder.build();
 
-                materialDatePicker.show(fragmentManager, "MATERIAL_DATE_PICKER");
+                materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
 
 
                 materialDatePicker.addOnPositiveButtonClickListener(
@@ -527,15 +476,11 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
 
                                 eventStartDateStartTime = (long) Pair.class.cast(selection).first;
                                 eventEndDateTime = (long) Pair.class.cast(selection).second;
-                                if (eventStartDateStartTime == 0) {
-
-                                }
-                                else {
-                                    eventStartDateEpoch = eventStartDateStartTime;
-                                    eventEndDateEpoch = eventEndDateTime;
-                                    eventStartDate = materialDatePicker.getHeaderText();
-                                    dateText.setText(eventStartDate);
-                                }
+                                eventStartDateEpoch = (long) Pair.class.cast(selection).first;
+                                eventEndDateEpoch = (long) Pair.class.cast(selection).second;
+                                eventStartDate = materialDatePicker.getHeaderText();
+                                dateText.setText(eventStartDate);
+                                mTimePicker1();
 
                             }
                         });
@@ -557,9 +502,11 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                     eventEndHr = 23;
                     eventEndMin = 59;
                     isAllDay = true;
+                    eventData.setEventAllDay(isAllDay);
                 } else {
                     isAllDay = false;
-                    timeText.setText("Time:");
+                    eventData.setEventAllDay(isAllDay);
+                    timeText.setText(convertTimestampToTimeRange(eventStartDateStartTime, eventEndDateTime, isAllDay));
                 }
             }
         });
@@ -576,7 +523,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                 // picker
                 MaterialDatePicker materialDatePicker = materialDateBuilder.build();
 
-                materialDatePicker.show(fragmentManager, "MATERIAL_DATE_PICKER");
+                materialDatePicker.show(getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
 
 
                 materialDatePicker.addOnPositiveButtonClickListener(
@@ -595,12 +542,12 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventLocationChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(EventShowAndEditPopUp.this, GetMap.class);
+                Intent intent = new Intent(context, GetMap.class);
                 if (eventData.getEventLatitude() != 0 && eventData.getEventLongitude() != 0) {
                     intent.putExtra("lat", eventData.getEventLatitude());
                     intent.putExtra("lon", eventData.getEventLongitude());
                 }
-                startActivityForResult(intent, get_map_request_code);
+                fragment.startActivityForResult(intent, get_map_request_code);
             }
         });
         eventCategoryChip.setOnClickListener(new View.OnClickListener() {
@@ -613,8 +560,8 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventDescImageChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(activity, ImageChooser.class);
-                activity.startActivityForResult(intent, image_chooser_request_code);
+                Intent intent = new Intent(context, ImageChooser.class);
+                fragment.startActivityForResult(intent, image_chooser_request_code);
             }
         });
         eventSaveChip.setOnClickListener(new View.OnClickListener() {
@@ -622,12 +569,13 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
             public void onClick(View v) {
                 closeKeyboard();
                 if (user == null) {
-                    Snackbar.make(view, "Not signed in!", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(v, "Not signed in!", Snackbar.LENGTH_SHORT)
                             .show();
                 } else {
                     if (eventTitle.getText().toString().isEmpty()) {
-                        Snackbar.make(view, "Please enter a title!", Snackbar.LENGTH_SHORT)
+                        Snackbar.make(v, "Please enter a title!", Snackbar.LENGTH_SHORT)
                                 .show();
+                        return;
                     } else {
                         eventData.setEventTitle(eventTitle.getText().toString());
                     }
@@ -636,25 +584,31 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                     } else {
                         eventData.setEventType(eventType.getText().toString());
                     }
-                    if (eventStartDateEpoch == 0 && eventData.getEventStartDate() != null) {
-                        eventStartDateEpoch = eventData.getEventStartDateEpoch();
-                    } else if (eventStartDateEpoch == 0 && eventData.getEventStartDate() == null) {
-                        Snackbar.make(view, "Please select a date!", Snackbar.LENGTH_SHORT)
-                                .show();
-                    } else {
+                    if (eventStartDateStartTime != 0) {
                         eventData.setEventStartDateEpoch(eventStartDateEpoch);
                         eventData.setEventEndDateEpoch(eventEndDateEpoch);
-                        eventData.setEventStartDate(eventStartDate);
-                        eventData.setEventEndDate(eventEndDate);
                         eventData.setEventStartDateTime(eventStartDateStartTime);
                         eventData.setEventEndDateTime(eventEndDateTime);
                     }
+                    if (isAllDay == false && eventData.getEventStartDateTime() == eventData.getEventStartDateEpoch() && eventData.getEventEndDateTime() == eventData.getEventEndDateEpoch()) {
+                        isAllDay = true;
+                    }
                     eventData.setEventAllDay(isAllDay);
-                    eventData.setEventReminderDate(reminderDate);
-                    eventData.setEventReminderDateTime(reminderDateTime);
+                    if (reminderDateTime != 0) {
+                        eventData.setEventReminderDate(reminderDate);
+                        eventData.setEventReminderDateTime(reminderDateTime);
+                    }
+                    if (eventData.getEventLatitude() != 0 && eventData.getEventLocationName() == null) {
+                        Snackbar.make(v, "Please enter a location name!", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
                     eventData.setEventLocationName(eventLocationText.getText().toString());
-                    eventData.setEventLatitude(eventLatitude);
-                    eventData.setEventLongitude(eventLongitude);
+                    if (eventLatitude != 0){
+                        eventData.setEventLatitude(eventLatitude);
+                        eventData.setEventLongitude(eventLongitude);
+                    }
+
                     if (categoryData == null) {
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
@@ -662,7 +616,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
 
                     if (eventData.getImageUri() == null && eventImageUri != null) {
                         File file = new File(eventImageUri.getPath());
-                        uploadImage(file, eventImageUri, eventData.getEventTextId(), view);
+                        uploadImage(file, eventImageUri, eventData.getEventTextId(), v);
                     }
                     else if (eventData.getImageUri() == null && eventImageUri == null) {
 
@@ -675,7 +629,6 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                     }
                     else {
                     }
-                    eventData.setEventPendingIntent(null);
                     eventData.setEventCategory(categoryData);
                     eventData.setEventDesc(eventDescText.getText().toString());
                     try {
@@ -749,7 +702,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         );
         materialTimePicker.show(fragmentManager, "MATERIAL_TIME_PICKER");
     }
-    private void uploadImage(File filePath, Uri uri, String eventTextId)
+    private void uploadImage(File filePath, Uri uri, String eventTextId, View view)
     {
         if (filePath != null) {
 
@@ -775,7 +728,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                                     // Image uploaded successfully
                                     // Dismiss dialog
                                     progressDialog.dismiss();
-                                    Snackbar.make(findViewById(android.R.id.content), "Image Uploaded!", Snackbar.LENGTH_SHORT).show();
+                                    Snackbar.make(view, "Image Uploaded!", Snackbar.LENGTH_SHORT).show();
                                 }
                             })
 
@@ -786,7 +739,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
 
                             // Error, Image not uploaded
                             progressDialog.dismiss();
-                            Snackbar.make(findViewById(android.R.id.content), "Failed " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(view, "Failed " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
                         }
                     })
                     .addOnProgressListener(
@@ -827,6 +780,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
 
 
     }
+
     private void closeKeyboard()
     {
         // this will give us the view

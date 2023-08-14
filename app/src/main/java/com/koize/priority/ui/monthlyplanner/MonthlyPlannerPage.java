@@ -763,7 +763,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     eventData.setEventEndDate(eventEndDate);
                     eventData.setEventStartDateTime(eventStartDateStartTime);
                     eventData.setEventEndDateTime(eventEndDateTime);
-                    if (isAllDay == false && eventStartHr == 0 && eventStartMin == 0 && eventEndHr == 0 && eventEndMin == 0) {
+                    if (isAllDay == false && eventStartDateStartTime == eventStartDateEpoch && eventEndDateTime == eventEndDateEpoch) {
                         isAllDay = true;
                     }
                     eventData.setEventAllDay(isAllDay);
@@ -1190,7 +1190,11 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             reminderMin = (int) (((eventData.getEventReminderDateTime() % 86400000) % 3600000) / 60000);
             reminderDate = eventData.getEventReminderDate();
             reminderDateTime = eventData.getEventReminderDateTime();
-            reminderText.setText(eventData.getEventReminderDate() + ", " + String.format("%02d:%02d", reminderHr, reminderMin));
+
+            LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventData.getEventReminderDateTime() - 28800000), ZoneId.systemDefault());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+            String formattedTime = formatter.format(dateTime1);
+            reminderText.setText(eventData.getEventReminderDate() + ", " + formattedTime);
         }
         eventLocationText.setText(eventData.getEventLocationName());
         eventCategoryCard.setText(eventData.getEventCategory().getCategoryTitle());
@@ -1224,12 +1228,14 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                             @Override
                             public void onPositiveButtonClick(Object selection) {
 
-                                eventStartDateStartTime = (long) Pair.class.cast(selection).first ;
-                                eventEndDateTime = (long) Pair.class.cast(selection).second ;
-                                eventStartDateEpoch = eventStartDateStartTime;
-                                eventEndDateEpoch = eventEndDateTime;
+                                eventStartDateStartTime = (long) Pair.class.cast(selection).first;
+                                eventEndDateTime = (long) Pair.class.cast(selection).second;
+                                eventStartDateEpoch = (long) Pair.class.cast(selection).first;
+                                eventEndDateEpoch = (long) Pair.class.cast(selection).second;
                                 eventStartDate = materialDatePicker.getHeaderText();
                                 dateText.setText(eventStartDate);
+                                mTimePicker1();
+
                             }
                         });
             }
@@ -1250,9 +1256,11 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     eventEndHr = 23;
                     eventEndMin = 59;
                     isAllDay = true;
+                    eventData.setEventAllDay(isAllDay);
                 } else {
                     isAllDay = false;
-                    timeText.setText("Time:");
+                    eventData.setEventAllDay(isAllDay);
+                    timeText.setText(convertTimestampToTimeRange(eventStartDateStartTime, eventEndDateTime, isAllDay));
                 }
             }
         });
@@ -1321,6 +1329,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     if (eventTitle.getText().toString().isEmpty()) {
                         Snackbar.make(findViewById(android.R.id.content), "Please enter a title!", Snackbar.LENGTH_SHORT)
                                 .show();
+                        return;
                     } else {
                         eventData.setEventTitle(eventTitle.getText().toString());
                     }
@@ -1332,23 +1341,28 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     if (eventStartDateStartTime != 0) {
                         eventData.setEventStartDateEpoch(eventStartDateEpoch);
                         eventData.setEventEndDateEpoch(eventEndDateEpoch);
-                        eventData.setEventStartDate(eventStartDate);
-                        eventData.setEventEndDate(eventEndDate);
                         eventData.setEventStartDateTime(eventStartDateStartTime);
                         eventData.setEventEndDateTime(eventEndDateTime);
                     }
-                    eventData.setEventStartDateEpoch(eventStartDateEpoch);
-                    eventData.setEventEndDateEpoch(eventEndDateEpoch);
-                    eventData.setEventStartDate(eventStartDate);
-                    eventData.setEventEndDate(eventEndDate);
-                    eventData.setEventStartDateTime(eventStartDateStartTime);
-                    eventData.setEventEndDateTime(eventEndDateTime);
+                    if (isAllDay == false && eventData.getEventStartDateTime() == eventData.getEventStartDateEpoch() && eventData.getEventEndDateTime() == eventData.getEventEndDateEpoch()) {
+                        isAllDay = true;
+                    }
                     eventData.setEventAllDay(isAllDay);
-                    eventData.setEventReminderDate(reminderDate);
-                    eventData.setEventReminderDateTime(reminderDateTime);
+                    if (reminderDateTime != 0) {
+                        eventData.setEventReminderDate(reminderDate);
+                        eventData.setEventReminderDateTime(reminderDateTime);
+                    }
+                    if (eventData.getEventLatitude() != 0 && eventData.getEventLocationName() == null) {
+                        Snackbar.make(findViewById(android.R.id.content), "Please enter a location name!", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
                     eventData.setEventLocationName(eventLocationText.getText().toString());
-                    eventData.setEventLatitude(eventLatitude);
-                    eventData.setEventLongitude(eventLongitude);
+                    if (eventLatitude != 0){
+                        eventData.setEventLatitude(eventLatitude);
+                        eventData.setEventLongitude(eventLongitude);
+                    }
+
                     if (categoryData == null) {
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
