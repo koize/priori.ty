@@ -37,6 +37,8 @@ public class SchedulePopUp implements CategoryPopUp.CategoryCallBack {
     public int startTimeMin;
     public int endTimeHr;
     public int endTimeMin;
+    public long startTimeTime;
+    public long endTimeTime;
     String habitDescription;
     EditText habitDescriptionTyper;
     PopupWindow popupWindowDescription;
@@ -246,18 +248,34 @@ public class SchedulePopUp implements CategoryPopUp.CategoryCallBack {
                     else {
                         scheduleData.setScheduleTitle(scheduleTitleET.getText().toString());
                     }
+                    if(startTimeTime == 0){
+                        Snackbar.make(view, "Please select a start time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }else if(endTimeTime == 0){
+                        Snackbar.make(view, "Please select end end time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }else if(startTimeTime > endTimeTime){
+                        Snackbar.make(view, "Start time cannot be after end time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }else{
+                        scheduleData.setStartTimeHr(startTimeHr);
+                        scheduleData.setStartTimeMin(startTimeMin);
+                        scheduleData.setEndTimeHr(endTimeHr);
+                        scheduleData.setEndTimeMin(endTimeMin);
+                        scheduleData.setStartTimeTime(startTimeTime);
+                        scheduleData.setEndTimeTime(endTimeTime) ;
+                    }
                     scheduleData.setScheduleTextId(scheduleTitleET.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + scheduleData.getScheduleId());
-                    scheduleData.setStartTimeHr(startTimeHr);
-                    scheduleData.setStartTimeMin(startTimeMin);
-                    scheduleData.setEndTimeHr(endTimeHr);
-                    scheduleData.setEndTimeMin(endTimeMin);
                     if (categoryData == null) {
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
                     }
                     scheduleData.setScheduleCategory(categoryData);
                     try {
-                        databaseReference.child(SelectedDate.toString()).child(scheduleData.getScheduleTextId()).setValue(scheduleData);
+                        databaseReference.child(scheduleData.getScheduleTextId()).setValue(scheduleData);
 
                     }
                     catch (Exception e) {
@@ -289,6 +307,7 @@ public class SchedulePopUp implements CategoryPopUp.CategoryCallBack {
 
                         startTimeHr = materialTimePicker.getHour();
                         startTimeMin = materialTimePicker.getMinute();
+                        startTimeTime = (startTimeHr*3600000) + (startTimeMin*60000);
                         scheduleStartTimeChip.setText(String.format("%02d:%02d", startTimeHr, startTimeMin));
                     }
                 }
@@ -307,6 +326,7 @@ public class SchedulePopUp implements CategoryPopUp.CategoryCallBack {
 
                         endTimeHr = materialTimePicker.getHour();
                         endTimeMin = materialTimePicker.getMinute();
+                        endTimeTime = (endTimeHr * 3600000) + (endTimeMin * 60000);
                         scheduleEndTimeChip.setText(String.format("%02d:%02d", endTimeHr, endTimeMin));
                     }
                 }

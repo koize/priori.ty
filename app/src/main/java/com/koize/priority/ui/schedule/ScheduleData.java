@@ -4,6 +4,8 @@ import com.koize.priority.ui.category.CategoryData;
 
 public class ScheduleData {
     private int scheduleId;
+    private long startTimeTime;
+    private long endTimeTime;
     private String scheduleTextId;
     private String scheduleTitle;
     private int startTimeHr;
@@ -16,7 +18,7 @@ public class ScheduleData {
 
     }
 
-    public ScheduleData(int scheduleId, String scheduleTextId, String scheduleTitle,int startTimeHr,int startTimeMin, int endTimeHr,int endTimeMin, CategoryData scheduleCategory){
+    public ScheduleData(int scheduleId, String scheduleTextId, String scheduleTitle,int startTimeHr,int startTimeMin, int endTimeHr,int endTimeMin, CategoryData scheduleCategory,long startTimeTime,long endTimeTime){
         this.scheduleId = scheduleId;
         this.scheduleTextId = scheduleTextId;
         this.scheduleTitle = scheduleTitle;
@@ -25,6 +27,8 @@ public class ScheduleData {
         this.endTimeHr = endTimeHr;
         this.endTimeMin = endTimeMin;
         this.scheduleCategory = scheduleCategory;
+        this.startTimeTime = startTimeTime;
+        this.endTimeTime = endTimeTime;
     }
 
     public void setScheduleId(int scheduleId){
@@ -88,6 +92,18 @@ public class ScheduleData {
     public CategoryData getScheduleCategory() {
         return scheduleCategory;
     }
+
+    public void setStartTimeTime(long startTimeTime){
+        this.startTimeTime = startTimeTime;
+    }
+
+    public long getStartTimeTime(){return startTimeTime;}
+
+    public void setEndTimeTime(long endTimeTime){
+        this.endTimeTime = endTimeTime;
+    }
+
+    public long getEndTimeTime(){return endTimeTime;}
 }
 
 

@@ -67,10 +67,12 @@ public class FocusStart extends AppCompatActivity implements Serializable {
     }
 
     View.OnClickListener startRoutine = new View.OnClickListener() {
+
         int totalDuration = 0;
         int currenthabitDuration = 0;
         @Override
         public void onClick(View v) {
+
             focusStartBtn.setVisibility(View.INVISIBLE);
             focusEndBtn.setVisibility(View.VISIBLE);
             /*
@@ -81,6 +83,8 @@ public class FocusStart extends AppCompatActivity implements Serializable {
             int i;
             currentActivityTV.setText(focusHabitsList.get(0).getHabitsTitle());
             nextActivityTV.setText(focusHabitsList.get(1).getHabitsTitle());
+            String tts = "Activity Started," + focusHabitsList.get(0).getHabitsTitle();
+            t1.speak(tts, TextToSpeech.QUEUE_FLUSH, null);
             for(i=0;i<focusHabitsList.size();i++ ){
                 totalDuration += focusHabitsList.get(i).getHabitsDuration();
                 currenthabitDuration = currenthabitDuration + focusHabitsList.get(i).getHabitsDuration();
@@ -149,6 +153,8 @@ public class FocusStart extends AppCompatActivity implements Serializable {
     View.OnClickListener endRoutine = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            String tts = "Exit";
+            t1.speak(tts, TextToSpeech.QUEUE_FLUSH, null);
             finish();
         }
     };
