@@ -305,12 +305,14 @@
             android:layout_width="160dp"
             android:layout_height="80dp"
             android:layout_marginStart="35dp"
+            android:layout_marginBottom="50dp"
             android:elevation="5dp"
             android:text="Settings"
             android:textSize="16sp"
             app:chipCornerRadius="30dp"
             app:chipIcon="@drawable/baseline_settings_24"
             app:chipIconSize="25dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_home_focus" />
 
@@ -327,17 +329,6 @@
             app:chipIconSize="25dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_home_routine" />
-
-        <TextView
-            android:id="@+id/home_version_no"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_home_settings"
-            tools:text="priori.ty v.-0.9" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

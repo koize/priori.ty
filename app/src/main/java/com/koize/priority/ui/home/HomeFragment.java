@@ -35,6 +35,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.koize.priority.AboutScreen;
 import com.koize.priority.NotiReceiver;
 import com.koize.priority.ui.focusmode.FocusModeActivity;
 import com.koize.priority.ui.monthlyplanner.EventData;
@@ -121,7 +122,6 @@ public class HomeFragment extends Fragment {
             name = user.getDisplayName();
         }
 
-        versionNo = root.findViewById(R.id.home_version_no);
         greetingText = root.findViewById(R.id.title_home_greeting);
         monthlyPlannerButton = root.findViewById(R.id.button_home_open_montly_planner);
         monthlyPlannerButton.setOnClickListener(monthlyPlannerButtonListener);
@@ -152,16 +152,7 @@ public class HomeFragment extends Fragment {
         else {
             greetingText.setText("Good " + partOfDay + ", " + "Peasant" + "!");
         }
-        PackageManager pm = getActivity().getPackageManager();
-        String pkgName = getActivity().getPackageName();
-        PackageInfo pkgInfo = null;
-        try {
-            pkgInfo = pm.getPackageInfo(pkgName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        String ver = pkgInfo.versionName;
-        versionNo.setText("Version v" + ver);
+
 
         firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
         if (user != null) {
@@ -337,7 +328,7 @@ public class HomeFragment extends Fragment {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
         String formattedTime = formatter.format(dateTime);
         Notification.Builder builder = new Notification.Builder(requireContext(), "reminders");
-        builder.setContentTitle(remindersData.getReminderTitle());
+        builder.setContentTitle("Reminder: " + remindersData.getReminderTitle());
         builder.setContentText(remindersData.getReminderTitle() + " at " + formattedTime);
         builder.setSmallIcon(R.drawable.baseline_access_time_24);
         Notification notification = builder.build();
@@ -638,7 +629,7 @@ public class HomeFragment extends Fragment {
     View.OnClickListener aboutChipListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent(getContext(), MonthlyPlannerPage.class); //TODO change to ABOUT page
+            Intent intent = new Intent(getContext(), AboutScreen.class);
             startActivity(intent);
         }
     };

@@ -338,7 +338,7 @@ public class RemindersFragment extends Fragment {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
         String formattedTime = formatter.format(dateTime);
         Notification.Builder builder = new Notification.Builder(requireContext(), "reminders");
-        builder.setContentTitle(remindersData.getReminderTitle());
+        builder.setContentTitle("Reminder: " + remindersData.getReminderTitle());
         builder.setContentText(remindersData.getReminderTitle() + " at " + formattedTime);
         builder.setSmallIcon(R.drawable.baseline_access_time_24);
         Notification notification = builder.build();

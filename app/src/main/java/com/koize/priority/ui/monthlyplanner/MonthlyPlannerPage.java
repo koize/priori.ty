@@ -434,7 +434,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm a");
         String formattedTime = formatter.format(dateTime);
         Notification.Builder builder = new Notification.Builder(MonthlyPlannerPage.this, "events");
-        builder.setContentTitle("Event:" + eventData.getEventTitle());
+        builder.setContentTitle("Event: " + eventData.getEventTitle());
         builder.setContentText(eventData.getEventTitle() + " at " + formattedTime);
         builder.setSmallIcon(R.drawable.baseline_access_time_24);
         Notification notification = builder.build();
