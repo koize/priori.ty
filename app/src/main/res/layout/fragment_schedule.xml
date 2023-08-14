@@ -217,7 +217,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView3"
+        android:id="@+id/scheduleRV"
         android:layout_width="373dp"
         android:layout_height="0dp"
         android:layout_marginTop="5dp"

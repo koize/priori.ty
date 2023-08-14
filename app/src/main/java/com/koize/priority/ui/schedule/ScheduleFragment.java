@@ -2,11 +2,13 @@ package com.koize.priority.ui.schedule;
 
 import static com.koize.priority.ui.schedule.CalendarAdapter.daysInWeekArray;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.R;
 import com.koize.priority.databinding.FragmentScheduleBinding;
 
@@ -23,6 +33,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.koize.priority.ui.journal.JournalData;
+import com.koize.priority.ui.reminders.RemindersData;
+import com.koize.priority.ui.reminders.RemindersEditPopUp;
 
 
 public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItemListener {
@@ -34,6 +47,14 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
     private Button buttonprev;
 
     private FloatingActionButton addScheduleButton;
+    FirebaseUser user;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    EditText editNotes;
+    ArrayList<ScheduleData> scheduleDataArrayList;
+    ScheduleAdapter scheduleAdapter;
+    RecyclerView scheduleRV;
+    LocalDate PressOnDate;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -49,23 +70,77 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         buttonnext = root.findViewById(R.id.buttonnext);
         buttonprev = root.findViewById(R.id.buttonprev);
 
+        editNotes = root.findViewById(R.id.schedule_Notes);
+
         buttonprev.setOnClickListener(buttonprevListener);
         buttonnext.setOnClickListener(buttonnextListener);
 
         addScheduleButton = root.findViewById(R.id.button_schedule_add);
         addScheduleButton.setOnClickListener(addScheduleListener);
 
+        scheduleRV = root.findViewById(R.id.scheduleRV);
+
         CalendarAdapter.selectedDate = LocalDate.now();
         setWeekView();
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String name = user.getDisplayName();
+            if ((name != null) && name!="") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/schedule");
+
+            }
+            else if (name == "") {
+                firebaseDatabase = FirebaseDatabase.getInstance("https://priority-135fc-default-rtdb.asia-southeast1.firebasedatabase.app/");
+                databaseReference = firebaseDatabase.getReference("users/" + "peasants/" + "peasant_" + user.getUid() + "/schedule");
+            }
+            else {
+                throw new IllegalStateException("Unexpected value: " + name);
+            }
+
+        } else {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Not signed in!", Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+        scheduleDataArrayList = new ArrayList<>();
+        scheduleAdapter = new ScheduleAdapter(scheduleDataArrayList,getContext(),this:: onScheduleClick);
+        scheduleRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+        scheduleRV.setAdapter(scheduleAdapter);
+        getSchedule();
 
         return root;
     }
 
+    private void getSchedule() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                scheduleDataArrayList.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    ScheduleData scheduleData = dataSnapshot.getValue(ScheduleData.class);
+                    scheduleDataArrayList.add(scheduleData);
+                }
+                //ScheduleAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
+
     View.OnClickListener addScheduleListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            String notes = editNotes.getText().toString();
             SchedulePopUp schedulePopUp = new SchedulePopUp();
-            schedulePopUp.showPopupWindow(v, getParentFragmentManager());        }
+            schedulePopUp.showPopupWindow(v, getParentFragmentManager(),PressOnDate,notes,user,databaseReference);
+        }
     };
 
 
@@ -108,6 +183,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
     public void onItemClick(int position, LocalDate date)
     {
         CalendarAdapter.selectedDate = date;
+        PressOnDate = date;
         setWeekView();
     }
 
@@ -120,5 +196,11 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    public void onScheduleClick(int position) {
+        //RemindersData remindersData = remindersDataArrayList.get(position);
+        //RemindersEditPopUp remindersEditPopUp = new RemindersEditPopUp(remindersData, getParentFragmentManager(), user, databaseReference, reminderRV);
+        //remindersEditPopUp.showPopupWindowEdit(reminderRV, remindersData);
     }
 }
