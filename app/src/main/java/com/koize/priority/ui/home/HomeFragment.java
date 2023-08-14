@@ -325,7 +325,7 @@ public class HomeFragment extends Fragment {
     public void scheduleReminderNoti(RemindersData remindersData) {
         long reminderDateTime = remindersData.getFirstReminderDateTime() - 28800000;
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(reminderDateTime), ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm a");
         String formattedTime = formatter.format(dateTime);
         Notification.Builder builder = new Notification.Builder(requireContext(), "reminders");
         builder.setContentTitle("Reminder: " + remindersData.getReminderTitle());
@@ -420,7 +420,7 @@ public class HomeFragment extends Fragment {
     };
     public void onEventsTodayClick(int position) {
         EventData eventData = eventsTodayDataArrayList.get(position);
-        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager());
+        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager(), getContext());
         eventShowAndEditPopUp.showSavedEventPopupWindow(eventsTodayRV, eventData);
     }
     public void getHolsCalendar(long dateSelected){
@@ -493,7 +493,7 @@ public class HomeFragment extends Fragment {
     public void scheduleEventNoti(EventData eventData) {
         long eventStartDateTime = eventData.getEventStartDateTime();
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventStartDateTime), ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm a");
         String formattedTime = formatter.format(dateTime);
         Notification.Builder builder = new Notification.Builder(requireContext(), "events");
         builder.setContentTitle("Event: "+eventData.getEventTitle());
@@ -512,7 +512,7 @@ public class HomeFragment extends Fragment {
         long eventReminderDateTime = eventData.getEventReminderDateTime() ;
         long eventStartDateTime = eventData.getEventStartDateTime();
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventStartDateTime), ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm:a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, h:mm a");
         String formattedTime = formatter.format(dateTime);
         Notification.Builder builder = new Notification.Builder(requireContext(), "events");
         builder.setContentTitle("Reminder for Event: " +  eventData.getEventTitle());
@@ -593,7 +593,7 @@ public class HomeFragment extends Fragment {
     };
     public void onEventsClick(int position) {
         EventData eventData = eventsDataArrayList.get(position);
-        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager());
+        EventShowAndEditPopUp eventShowAndEditPopUp = new EventShowAndEditPopUp(eventData, getActivity(), eventDatabaseReference, user, storageRef, getParentFragmentManager(), getContext());
         eventShowAndEditPopUp.showSavedEventPopupWindow(eventsRV, eventData);
     }
 

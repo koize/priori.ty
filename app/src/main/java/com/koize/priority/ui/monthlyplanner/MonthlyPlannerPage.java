@@ -772,6 +772,11 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     eventData.setEventLocationName(eventLocationText.getText().toString());
                     eventData.setEventLatitude(eventLatitude);
                     eventData.setEventLongitude(eventLongitude);
+                    if (eventData.getEventLatitude() != 0 && eventData.getEventLocationName() == null) {
+                        Snackbar.make(findViewById(android.R.id.content), "Please enter a location name!", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    }
                     if (categoryData == null) {
                         categoryData = new CategoryData();
                         categoryData.setCategoryTitle("Others");
@@ -978,14 +983,17 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         if (eventData.getEventAllDay()) {
             eventShowTime.setText("All day");
         } else {
-            eventShowTime.setText(String.format("%02d:%02d", eventStartHr, eventStartMin) + " - " + String.format("%02d:%02d", eventEndHr, eventEndMin));
+            eventShowTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime(), eventData.getEventAllDay()));
         }
         if (eventData.getEventReminderDateTime() == 0) {
             eventShowReminderRow.setVisibility(View.GONE);
         } else {
             eventShowReminderRow.setVisibility(View.VISIBLE);
         }
-        eventShowReminder.setText(eventData.getEventReminderDate() + ", " + String.format("%02d:%02d", reminderHr, reminderMin));
+        LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventData.getEventReminderDateTime() - 28800000 ), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+        String formattedTime = formatter.format(dateTime1);
+        eventShowReminder.setText(eventData.getEventReminderDate() + ", " + formattedTime);
         if (eventData.getEventLocationName().isEmpty() && eventData.getEventLatitude() == 0 && eventData.getEventLongitude() == 0) {
             eventShowLocationRow.setVisibility(View.GONE);
         } else {
@@ -1174,7 +1182,7 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         } else {
             isAllDay = false;
             allDay.setChecked(false);
-            timeText.setText(String.format("%02d:%02d", eventStartHr, eventStartMin) + " - " + String.format("%02d:%02d", eventEndHr, eventEndMin));
+            timeText.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime(), eventData.getEventAllDay()));
         }
         if (eventData.getEventReminderDateTime() == 0) {
             reminderText.setText("Reminder not set");
@@ -1322,6 +1330,14 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
                     } else {
                         eventData.setEventType(eventType.getText().toString());
                     }
+                    if (eventStartDateStartTime != 0) {
+                        eventData.setEventStartDateEpoch(eventStartDateEpoch);
+                        eventData.setEventEndDateEpoch(eventEndDateEpoch);
+                        eventData.setEventStartDate(eventStartDate);
+                        eventData.setEventEndDate(eventEndDate);
+                        eventData.setEventStartDateTime(eventStartDateStartTime);
+                        eventData.setEventEndDateTime(eventEndDateTime);
+                    }
                     eventData.setEventStartDateEpoch(eventStartDateEpoch);
                     eventData.setEventEndDateEpoch(eventEndDateEpoch);
                     eventData.setEventStartDate(eventStartDate);
@@ -1408,6 +1424,44 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
             manager
                     .hideSoftInputFromWindow(
                             view.getWindowToken(), 0);
+        }
+    }
+    public String convertTimestampToTimeRange(long timestamp1, long timestamp2, boolean isAllDay) {
+        timestamp1 = timestamp1 - 28800000;
+        timestamp2 = timestamp2 - 28800000;
+        LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
+        LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp2), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+        String formattedTime = formatter.format(dateTime1);
+        String formattedTime2 = formatter.format(dateTime2);
+
+        // Calculate the number of hours since the current time
+
+
+        // Get the hour of the timestamp
+        /*
+        int timestampHour = dateTime.getHour();
+
+        // Determine the time of day
+        String timeOfDay = "Morning";
+        if (timestampHour >= 12) {
+            timeOfDay = "Afternoon";
+        } else if (timestampHour >= 18) {
+            timeOfDay = "Evening";
+        } else if (timestampHour >= 21) {
+            timeOfDay = "Night";
+        }
+
+        if (hoursSinceNow == 0) {
+            return minutesSinceNow + "min, " + timeOfDay;
+        } else {
+            return hoursSinceNow + "hr, " + timeOfDay;
+        }
+        */
+        if (isAllDay) {
+            return "All Day";
+        } else {
+            return formattedTime + " - " + formattedTime2;
         }
     }
 }

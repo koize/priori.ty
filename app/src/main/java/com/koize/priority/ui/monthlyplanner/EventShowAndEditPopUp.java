@@ -57,6 +57,10 @@ import com.koize.priority.ui.category.CategoryData;
 import com.koize.priority.ui.category.CategoryPopUp;
 
 import java.io.File;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 public class EventShowAndEditPopUp extends AppCompatActivity implements CategoryPopUp.CategoryCallBack {
     public static final int INPUT_METHOD_NEEDED = 1;
@@ -122,17 +126,19 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
     StorageReference storageRef;
     FragmentManager fragmentManager;
     Activity activity;
+    Context context;
 
     public EventShowAndEditPopUp() {
     }
 
-    public EventShowAndEditPopUp(EventData eventData, Activity activity, DatabaseReference databaseEventListReference, FirebaseUser user, StorageReference storageRef, FragmentManager fragmentManager) {
+    public EventShowAndEditPopUp(EventData eventData, Activity activity, DatabaseReference databaseEventListReference, FirebaseUser user, StorageReference storageRef, FragmentManager fragmentManager, Context context) {
         this.eventData = eventData;
         this.activity = activity;
         this.databaseEventListReference = databaseEventListReference;
         this.user = user;
         this.storageRef = storageRef;
         this.fragmentManager = fragmentManager;
+        this.context = context;
     }
 
 
@@ -278,15 +284,18 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         if (eventData.getEventAllDay()) {
             eventShowTime.setText("All day");
         } else {
-            eventShowTime.setText(String.format("%02d:%02d", eventStartHr, eventStartMin) + " - " + String.format("%02d:%02d", eventEndHr, eventEndMin));
+            eventShowTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime(), eventData.getEventAllDay()));
         }
         if (eventData.getEventReminderDateTime() == 0) {
             eventShowReminderRow.setVisibility(View.GONE);
         } else {
             eventShowReminderRow.setVisibility(View.VISIBLE);
         }
-        eventShowReminder.setText(eventData.getEventReminderDate() + ", " + String.format("%02d:%02d", reminderHr, reminderMin));
-        if (eventData.getEventLocationName().isEmpty()) {
+        LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(eventData.getEventReminderDateTime() - 28800000 ), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+        String formattedTime = formatter.format(dateTime1);
+        eventShowReminder.setText(eventData.getEventReminderDate() + ", " + formattedTime);
+        if (eventData.getEventLocationName().isEmpty() && eventData.getEventLatitude() == 0 && eventData.getEventLongitude() == 0) {
             eventShowLocationRow.setVisibility(View.GONE);
         } else {
             eventShowLocationRow.setVisibility(View.VISIBLE);
@@ -294,6 +303,11 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventShowLocation.setText(eventData.getEventLocationName());
         eventShowCategory.setText(eventData.getEventCategory().getCategoryTitle());
         eventShowCategory.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
+        if (eventData.getEventDesc().isEmpty() && eventData.getImageUri() == null) {
+            eventShowDescRow.setVisibility(View.GONE);
+        } else {
+            eventShowDescRow.setVisibility(View.VISIBLE);
+        }
         eventShowDesc.setText(eventData.getEventDesc());
 
 
@@ -308,7 +322,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                     Snackbar.make(findViewById(android.R.id.content), "No location set!", Snackbar.LENGTH_SHORT)
                             .show();
                 } else {
-                    Intent intent = new Intent(EventShowAndEditPopUp.this, ShowMap.class);
+                    Intent intent = new Intent(context, ShowMap.class);
                     intent.putExtra("locationName", eventData.getEventLocationName());
                     intent.putExtra("lat", eventData.getEventLatitude());
                     intent.putExtra("lon", eventData.getEventLongitude());
@@ -323,7 +337,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                     showEditEventPopupWindow(v, eventData);
                     popupWindow.dismiss();
                 } else {
-                    Snackbar.make(view, "Cannot edit holiday!", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(findViewById(android.R.id.content), "Cannot edit holiday!", Snackbar.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -331,7 +345,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventShowDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
                 // Set the message show for the Alert time
                 builder.setMessage("Delete event: " + eventData.getEventTitle() + "? ");
@@ -345,11 +359,11 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                 // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
                 builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
                     // When the user click yes button then app will close
-                    Intent intent = new Intent(view.getContext(), NotiReceiver.class);
+                    Intent intent = new Intent(context, NotiReceiver.class);
                     intent.putExtra(NotiReceiver.NOTIFICATION, eventData.getEventTitle());
                     intent.putExtra("id", eventData.getEventId());
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(view.getContext(), eventData.getEventId(), intent, PendingIntent.FLAG_IMMUTABLE);
-                    AlarmManager alarmManager = (AlarmManager) view.getContext().getSystemService(Context.ALARM_SERVICE);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, eventData.getEventId(), intent, PendingIntent.FLAG_IMMUTABLE);
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                     alarmManager.cancel(pendingIntent);
                     databaseEventListReference.child(eventData.getEventTextId()).removeValue();
                     storageRef.child(eventData.getEventTextId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -363,7 +377,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                             // Uh-oh, an error occurred!
                         }
                     });
-                    Snackbar.make(view, "Event deleted!", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(v, "Event deleted!", Snackbar.LENGTH_SHORT)
                             .show();
                     dialog.dismiss();
                     popupWindow.dismiss();
@@ -736,6 +750,66 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         );
         materialTimePicker.show(fragmentManager, "MATERIAL_TIME_PICKER");
     }
+    private void uploadImage(File filePath, Uri uri, String eventTextId)
+    {
+        if (filePath != null) {
+
+            // Code for showing progressDialog while uploading
+            ProgressDialog progressDialog
+                    = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            // Defining the child of storageReference
+            storageRef
+                    .child(
+                            eventTextId
+                    ).putFile(uri)
+                    .addOnSuccessListener(
+                            new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                                @Override
+                                public void onSuccess(
+                                        UploadTask.TaskSnapshot taskSnapshot)
+                                {
+
+                                    // Image uploaded successfully
+                                    // Dismiss dialog
+                                    progressDialog.dismiss();
+                                    Snackbar.make(findViewById(android.R.id.content), "Image Uploaded!", Snackbar.LENGTH_SHORT).show();
+                                }
+                            })
+
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e)
+                        {
+
+                            // Error, Image not uploaded
+                            progressDialog.dismiss();
+                            Snackbar.make(findViewById(android.R.id.content), "Failed " + e.getMessage(), Snackbar.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(
+                            new OnProgressListener<UploadTask.TaskSnapshot>() {
+
+                                // Progress Listener for loading
+                                // percentage on the dialog box
+                                @Override
+                                public void onProgress(
+                                        UploadTask.TaskSnapshot taskSnapshot)
+                                {
+                                    double progress
+                                            = (100.0
+                                            * taskSnapshot.getBytesTransferred()
+                                            / taskSnapshot.getTotalByteCount());
+                                    progressDialog.setMessage(
+                                            "Uploaded "
+                                                    + (int)progress + "%");
+                                }
+                            });
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -775,6 +849,44 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
             manager
                     .hideSoftInputFromWindow(
                             view.getWindowToken(), 0);
+        }
+    }
+    public String convertTimestampToTimeRange(long timestamp1, long timestamp2, boolean isAllDay) {
+        timestamp1 = timestamp1 - 28800000;
+        timestamp2 = timestamp2 - 28800000;
+        LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
+        LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp2), ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+        String formattedTime = formatter.format(dateTime1);
+        String formattedTime2 = formatter.format(dateTime2);
+
+        // Calculate the number of hours since the current time
+
+
+        // Get the hour of the timestamp
+        /*
+        int timestampHour = dateTime.getHour();
+
+        // Determine the time of day
+        String timeOfDay = "Morning";
+        if (timestampHour >= 12) {
+            timeOfDay = "Afternoon";
+        } else if (timestampHour >= 18) {
+            timeOfDay = "Evening";
+        } else if (timestampHour >= 21) {
+            timeOfDay = "Night";
+        }
+
+        if (hoursSinceNow == 0) {
+            return minutesSinceNow + "min, " + timeOfDay;
+        } else {
+            return hoursSinceNow + "hr, " + timeOfDay;
+        }
+        */
+        if (isAllDay) {
+            return "All Day";
+        } else {
+            return formattedTime + " - " + formattedTime2;
         }
     }
 

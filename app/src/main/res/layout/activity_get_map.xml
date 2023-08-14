@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         map:uiZoomControls="true"
         map:uiRotateGestures="true"
-        map:cameraTilt="30" />
+         />
 
     <com.google.android.material.chip.Chip
         android:id="@+id/gmap_save"

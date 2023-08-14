@@ -64,7 +64,7 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
         holder.rowCardEventTypeChip.setText(eventData.getEventType());
         holder.rowCardTimeLeft.setText(convertTimestampBot(eventData.getEventStartDateTime()));
         if (eventData.getEventAllDay() == true) {
-            holder.rowTimeCard.setVisibility(View.GONE);
+            holder.rowTimeCard.setVisibility(View.INVISIBLE);
         } else {
             holder.rowCardTimeLeft.setVisibility(View.VISIBLE);
             holder.rowTimeLeftCard.setVisibility(View.VISIBLE);

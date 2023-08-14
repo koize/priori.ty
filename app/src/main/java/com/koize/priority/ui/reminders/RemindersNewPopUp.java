@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 
@@ -225,6 +226,7 @@ public class RemindersNewPopUp extends Fragment implements CategoryPopUp.Categor
             @Override
             public void onClick(View v) {
                 if (user != null) {
+                    closeKeyboard();
                     remindersData = new RemindersData();
                     remindersData.setReminderId(new Random().nextInt(1000000));
                     if (reminderTitle.getText().toString().isEmpty()) {
@@ -236,14 +238,41 @@ public class RemindersNewPopUp extends Fragment implements CategoryPopUp.Categor
                         remindersData.setReminderTitle(reminderTitle.getText().toString());
                     }
                     remindersData.setReminderTextId(reminderTitle.getText().toString().toLowerCase().replaceAll("\\s", "") + "_" + remindersData.getReminderId());
-                    remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
-                    remindersData.setFirstReminderTimeMin(firstReminderTimeMin);
-                    remindersData.setSecondReminderTimeHr(secondReminderTimeHr);
-                    remindersData.setSecondReminderTimeMin(secondReminderTimeMin);
-                    remindersData.setFirstReminderDateTime(firstReminderDateTime);
-                    remindersData.setSecondReminderDateTime(secondReminderDateTime);
-                    remindersData.setFirstReminderDateEpoch(firstReminderDateEpoch);
-                    remindersData.setSecondReminderDateEpoch(secondReminderDateEpoch);
+                    if (firstReminderDateTime > secondReminderDateTime) {
+                        Snackbar.make(view, "2nd Reminder can't be before 1st Reminder!", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    } else if (firstReminderDateTime == secondReminderDateTime) {
+                        Snackbar.make(view, "2nd Reminder can't be at the same time as 1st Reminder!", Snackbar.LENGTH_SHORT)
+                                .show();
+                        return;
+                    } else if (firstReminderDateTime + 28800000 < System.currentTimeMillis()) {
+                        Snackbar.make(view, "Reminder can't be before current time!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    } else if (firstReminderDateTime == 0 && secondReminderDateTime !=0) {
+                        remindersData.setFirstReminderDateTime(secondReminderDateTime);
+                        remindersData.setFirstReminderDateEpoch(secondReminderDateEpoch);
+                        remindersData.setSecondReminderDateEpoch(0);
+                        remindersData.setSecondReminderDateTime(0);
+                        remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
+                        remindersData.setFirstReminderTimeMin(firstReminderTimeMin);
+                        remindersData.setSecondReminderTimeHr(secondReminderTimeHr);
+                        remindersData.setSecondReminderTimeMin(secondReminderTimeMin);
+                        remindersData.setFirstReminderDateTime(firstReminderDateTime);
+                        remindersData.setSecondReminderDateTime(secondReminderDateTime);
+                        remindersData.setFirstReminderDateEpoch(firstReminderDateEpoch);
+                        remindersData.setSecondReminderDateEpoch(secondReminderDateEpoch);
+                    }else {
+                        remindersData.setFirstReminderTimeHr(firstReminderTimeHr);
+                        remindersData.setFirstReminderTimeMin(firstReminderTimeMin);
+                        remindersData.setSecondReminderTimeHr(secondReminderTimeHr);
+                        remindersData.setSecondReminderTimeMin(secondReminderTimeMin);
+                        remindersData.setFirstReminderDateTime(firstReminderDateTime);
+                        remindersData.setSecondReminderDateTime(secondReminderDateTime);
+                        remindersData.setFirstReminderDateEpoch(firstReminderDateEpoch);
+                        remindersData.setSecondReminderDateEpoch(secondReminderDateEpoch);
+                    }
+
 
                     if (firstReminderTimeHr >= 0 && firstReminderTimeHr < 12) {
                         remindersData.setFirstReminderPartOfDay("morning");
@@ -340,5 +369,28 @@ public class RemindersNewPopUp extends Fragment implements CategoryPopUp.Categor
         categoryCard.setVisibility(View.VISIBLE);
         this.categoryData = categoryData;
 
+    }
+    private void closeKeyboard()
+    {
+        // this will give us the view
+        // which is currently focus
+        // in this layout
+        View view = this.getActivity().getCurrentFocus();
+
+        // if nothing is currently
+        // focus then this will protect
+        // the app from crash
+        if (view != null) {
+
+            // now assign the system
+            // service to InputMethodManager
+            InputMethodManager manager
+                    = (InputMethodManager)
+                    getActivity().getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+            manager
+                    .hideSoftInputFromWindow(
+                            view.getWindowToken(), 0);
+        }
     }
 }

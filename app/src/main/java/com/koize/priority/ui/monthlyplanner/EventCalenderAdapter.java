@@ -59,12 +59,12 @@ private ArrayList<EventData> eventDataCalenderArrayList;
         } else {
             holder.eventLocation.setVisibility(View.VISIBLE);
         }
-        holder.eventTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
+        holder.eventTime.setText(convertTimestampToTimeRange(eventData.getEventStartDateTime(), eventData.getEventEndDateTime(), eventData.getEventAllDay()));
         holder.eventType.setText(eventData.getEventType());
 
     }
 
-    public String convertTimestampToTimeRange(long timestamp1, long timestamp2) {
+    public String convertTimestampToTimeRange(long timestamp1, long timestamp2, boolean allDay) {
 
         timestamp1 = timestamp1 - 28800000;
         timestamp2 = timestamp2 - 28800000;
@@ -99,8 +99,12 @@ private ArrayList<EventData> eventDataCalenderArrayList;
             return hoursSinceNow + "hr, " + timeOfDay;
         }
         */
-        return formattedTime + " - " + formattedTime2;
-    }
+
+        if (allDay) {
+            return "All Day";
+        } else {
+            return formattedTime + " - " + formattedTime2;
+        }    }
 
     @Override
     public int getItemCount() {
