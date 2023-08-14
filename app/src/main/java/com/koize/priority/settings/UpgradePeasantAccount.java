@@ -64,7 +64,7 @@ public class UpgradePeasantAccount extends AppCompatActivity {
                         .setIsSmartLockEnabled(false)
                         .setTheme(R.style.AppTheme)
                         .enableAnonymousUsersAutoUpgrade()
-                        .setLogo(R.mipmap.ic_whack)
+                        .setLogo(R.mipmap.ic_launcher_priority_w_bg_round)
                         .setTosAndPrivacyPolicyUrls("https://www.twitch.tv/chocofwog",
                                 "https://www.twitch.tv/koizee_")
                         .build(),

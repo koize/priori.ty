@@ -407,7 +407,7 @@ public class HomeFragment extends Fragment {
                         //scheduleEventReminderNoti(eventData);
                     }
                 }
-                if ((eventData.getEventStartDateEpoch()) <= date && (eventData.getEventEndDateEpoch()) + 28800000 >= date) {
+                if ((eventData.getEventStartDateEpoch()- 28800000) <= date && (eventData.getEventEndDateEpoch()) >= date) {
                     eventsTodayDataArrayList.add(eventData);
                 }
             }

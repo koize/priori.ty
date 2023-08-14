@@ -61,8 +61,13 @@ public class HomeEventsAdapter extends RecyclerView.Adapter<HomeEventsAdapter.Vi
             holder.rowCardLocationChip.setVisibility(View.VISIBLE);
         }
         holder.rowCardEventTypeChip.setText(eventData.getEventType());
-        holder.rowCardTime.setText(convertTimestampTop(eventData.getEventStartDateTime()));
-        holder.rowCardDay.setText(convertTimestampToDay(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
+        if (eventData.getEventAllDay() == true) {
+            holder.rowCardTime.setText("All Day");
+            holder.rowCardDay.setText(convertTimestampToDay(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
+        } else {
+            holder.rowCardTime.setText(convertTimestampTop(eventData.getEventStartDateTime()));
+            holder.rowCardDay.setText(convertTimestampToDay(eventData.getEventStartDateTime(), eventData.getEventEndDateTime()));
+        }
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,6 +79,7 @@ public class HomeEventsAdapter extends RecyclerView.Adapter<HomeEventsAdapter.Vi
     }
 
     public String convertTimestampTop(long timestamp) {
+        timestamp = timestamp - 28800000;
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Asia/Singapore"));
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("h:mm a");
         String formattedDate = dateFormat.format(dateTime);
@@ -84,6 +90,8 @@ public class HomeEventsAdapter extends RecyclerView.Adapter<HomeEventsAdapter.Vi
 
     public String convertTimestampToDay(long timestamp1, long timestamp2) {
 
+        timestamp1 = timestamp1 - 28800000;
+        timestamp2 = timestamp2 - 28800000;
         LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
         LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp2), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE");

@@ -63,7 +63,14 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
         }
         holder.rowCardEventTypeChip.setText(eventData.getEventType());
         holder.rowCardTimeLeft.setText(convertTimestampBot(eventData.getEventStartDateTime()));
-        holder.rowCardTime.setText(convertTimestampTop(eventData.getEventStartDateTime()));
+        if (eventData.getEventAllDay() == true) {
+            holder.rowTimeCard.setVisibility(View.GONE);
+        } else {
+            holder.rowCardTimeLeft.setVisibility(View.VISIBLE);
+            holder.rowTimeLeftCard.setVisibility(View.VISIBLE);
+            holder.rowTimeCard.setVisibility(View.VISIBLE);
+            holder.rowCardTime.setText(convertTimestampTop(eventData.getEventStartDateTime()));
+        }
 
         if (secondsSinceNow < 0 && minutesSinceNow <=0 && hoursSinceNow <= 0 && daysSinceNow <= 0){
             holder.rowCardTimeLeft.setText("Now");
@@ -79,6 +86,7 @@ public class HomeEventsTodayAdapter extends RecyclerView.Adapter<HomeEventsToday
     }
 
     public String convertTimestampTop(long timestamp) {
+        timestamp = timestamp - 28800000;
         LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("Asia/Singapore"));
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("h:mm a");
         String formattedDate = dateFormat.format(dateTime);

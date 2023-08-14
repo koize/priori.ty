@@ -6,6 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".FreshInstallScreen">
 
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="50dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        app:layout_constraintBottom_toTopOf="@+id/textView5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/priori_ty_1" />
+
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"

@@ -45,7 +45,7 @@ public class FreshInstallScreen extends AppCompatActivity {
                                 .createSignInIntentBuilder()
                                 .setAvailableProviders(providers)
                                 .setTheme(R.style.AppTheme)
-                                .setLogo(R.mipmap.ic_whack)
+                                .setLogo(R.mipmap.ic_launcher_priority_w_bg_round)
                                 .setIsSmartLockEnabled(false)
                                 .setTosAndPrivacyPolicyUrls("https://www.twitch.tv/chocofwog",
                                         "https://www.twitch.tv/koizee_")

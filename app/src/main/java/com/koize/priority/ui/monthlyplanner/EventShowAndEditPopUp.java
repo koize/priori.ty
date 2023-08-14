@@ -512,12 +512,18 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                             @Override
                             public void onPositiveButtonClick(Object selection) {
 
-                                eventStartDateStartTime = (long) Pair.class.cast(selection).first - 28800000;
-                                eventEndDateTime = (long) Pair.class.cast(selection).second - 28800000;
-                                eventStartDateEpoch = eventStartDateStartTime;
-                                eventEndDateEpoch = eventEndDateTime;
-                                eventStartDate = materialDatePicker.getHeaderText();
-                                dateText.setText(eventStartDate);
+                                eventStartDateStartTime = (long) Pair.class.cast(selection).first;
+                                eventEndDateTime = (long) Pair.class.cast(selection).second;
+                                if (eventStartDateStartTime == 0) {
+
+                                }
+                                else {
+                                    eventStartDateEpoch = eventStartDateStartTime;
+                                    eventEndDateEpoch = eventEndDateTime;
+                                    eventStartDate = materialDatePicker.getHeaderText();
+                                    dateText.setText(eventStartDate);
+                                }
+
                             }
                         });
             }
@@ -617,12 +623,19 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                     } else {
                         eventData.setEventType(eventType.getText().toString());
                     }
-                    eventData.setEventStartDateEpoch(eventStartDateEpoch);
-                    eventData.setEventEndDateEpoch(eventEndDateEpoch);
-                    eventData.setEventStartDate(eventStartDate);
-                    eventData.setEventEndDate(eventEndDate);
-                    eventData.setEventStartDateTime(eventStartDateStartTime);
-                    eventData.setEventEndDateTime(eventEndDateTime);
+                    if (eventStartDateEpoch == 0 && eventData.getEventStartDate() != null) {
+                        eventStartDateEpoch = eventData.getEventStartDateEpoch();
+                    } else if (eventStartDateEpoch == 0 && eventData.getEventStartDate() == null) {
+                        Snackbar.make(view, "Please select a date!", Snackbar.LENGTH_SHORT)
+                                .show();
+                    } else {
+                        eventData.setEventStartDateEpoch(eventStartDateEpoch);
+                        eventData.setEventEndDateEpoch(eventEndDateEpoch);
+                        eventData.setEventStartDate(eventStartDate);
+                        eventData.setEventEndDate(eventEndDate);
+                        eventData.setEventStartDateTime(eventStartDateStartTime);
+                        eventData.setEventEndDateTime(eventEndDateTime);
+                    }
                     eventData.setEventAllDay(isAllDay);
                     eventData.setEventReminderDate(reminderDate);
                     eventData.setEventReminderDateTime(reminderDateTime);
