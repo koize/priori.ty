@@ -402,9 +402,9 @@ public class HomeFragment extends Fragment {
                 EventData eventData = dataSnapshot.getValue(EventData.class);
                 getHolsCalendar(date);
                 if (eventData.getEventPendingIntent() == null && eventData.getEventStartDateTime()  > System.currentTimeMillis()) {
-                    scheduleEventNoti(eventData);
+                    //scheduleEventNoti(eventData);
                     if (eventData.getEventReminderDateTime() != 0) {
-                        scheduleEventReminderNoti(eventData);
+                        //scheduleEventReminderNoti(eventData);
                     }
                 }
                 if ((eventData.getEventStartDateEpoch()) <= date && (eventData.getEventEndDateEpoch()) + 28800000 >= date) {

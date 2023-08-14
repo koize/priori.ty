@@ -66,6 +66,8 @@ private ArrayList<EventData> eventDataCalenderArrayList;
 
     public String convertTimestampToTimeRange(long timestamp1, long timestamp2) {
 
+        timestamp1 = timestamp1 - 28800000;
+        timestamp2 = timestamp2 - 28800000;
         LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
         LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp2), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");

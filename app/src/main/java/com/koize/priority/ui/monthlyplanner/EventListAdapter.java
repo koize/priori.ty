@@ -69,6 +69,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
     }
 
     public String convertTimestampToDaysLeft(long timestamp) {
+        timestamp = timestamp - 28800000;
         // Calculate the number of days since the current date
         daysSinceNow = (timestamp - System.currentTimeMillis()) / (24 * 60 * 60 * 1000);
 
@@ -83,7 +84,8 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
     }
 
     public String convertTimestampToDateRange(long timestamp1, long timestamp2) {
-
+        timestamp1 = timestamp1 - 28800000;
+        timestamp2 = timestamp2 - 28800000;
         LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
         LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp2), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM");
@@ -118,7 +120,8 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
     }
 
     public String convertTimestampToTimeRange(long timestamp1, long timestamp2, boolean isAllDay) {
-
+        timestamp1 = timestamp1 - 28800000;
+        timestamp2 = timestamp2 - 28800000;
         LocalDateTime dateTime1 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp1), ZoneId.systemDefault());
         LocalDateTime dateTime2 = LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp2), ZoneId.systemDefault());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");

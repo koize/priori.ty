@@ -187,7 +187,9 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
                 // now define the properties of the
                 // materialDateBuilder that is title text as SELECT A DATE
                 materialDateBuilder.setTitleText("1st Reminder Date");
-                materialDateBuilder.setSelection(remindersData.getFirstReminderDateTime());
+                if(remindersData.getFirstReminderDateTime() != 0) {
+                    materialDateBuilder.setSelection(remindersData.getFirstReminderDateTime());
+                }
 
                 // now create the instance of the material date
                 // picker
@@ -230,7 +232,9 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
                 // now define the properties of the
                 // materialDateBuilder that is title text as SELECT A DATE
                 materialDateBuilder.setTitleText("2nd Reminder Date");
-                materialDateBuilder.setSelection(remindersData.getSecondReminderDateTime());
+                if (remindersData.getSecondReminderDateTime() != 0){
+                    materialDateBuilder.setSelection(remindersData.getSecondReminderDateTime());
+                }
 
                 // now create the instance of the material date
                 // picker
@@ -374,6 +378,8 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
     public void mTimePicker1() {
         MaterialTimePicker.Builder materialTimeBuilder = new MaterialTimePicker.Builder();
         materialTimeBuilder.setTitleText("1st Reminder Time").setTimeFormat(TimeFormat.CLOCK_24H);
+        materialTimeBuilder.setHour(remindersData.getFirstReminderTimeHr());
+        materialTimeBuilder.setMinute(remindersData.getFirstReminderTimeMin());
         MaterialTimePicker materialTimePicker = materialTimeBuilder.build();
         materialTimePicker.addOnPositiveButtonClickListener(
                 new View.OnClickListener() {
@@ -393,6 +399,8 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
     public void mTimePicker2() {
         MaterialTimePicker.Builder materialTimeBuilder = new MaterialTimePicker.Builder();
         materialTimeBuilder.setTitleText("2nd Reminder Time").setTimeFormat(TimeFormat.CLOCK_24H);
+        materialTimeBuilder.setHour(remindersData.getSecondReminderTimeHr());
+        materialTimeBuilder.setMinute(remindersData.getSecondReminderTimeMin());
         MaterialTimePicker materialTimePicker = materialTimeBuilder.build();
         materialTimePicker.addOnPositiveButtonClickListener(
                 new View.OnClickListener() {
