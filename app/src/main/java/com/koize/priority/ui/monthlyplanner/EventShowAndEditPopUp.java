@@ -303,12 +303,11 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
         eventShowLocation.setText(eventData.getEventLocationName());
         eventShowCategory.setText(eventData.getEventCategory().getCategoryTitle());
         eventShowCategory.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
-        if (eventData.getEventDesc().isEmpty() && eventData.getImageUri() == null) {
-            eventShowDescRow.setVisibility(View.GONE);
+        if (eventData.getEventDesc().isEmpty()) {
+            eventShowDesc.setText("No description");
         } else {
-            eventShowDescRow.setVisibility(View.VISIBLE);
+            eventShowDesc.setText(eventData.getEventDesc());
         }
-        eventShowDesc.setText(eventData.getEventDesc());
 
 
         Glide.with(view.getContext())
@@ -326,7 +325,7 @@ public class EventShowAndEditPopUp extends AppCompatActivity implements Category
                     intent.putExtra("locationName", eventData.getEventLocationName());
                     intent.putExtra("lat", eventData.getEventLatitude());
                     intent.putExtra("lon", eventData.getEventLongitude());
-                    startActivity(intent);
+                    context.startActivity(intent);
                 }
             }
         });

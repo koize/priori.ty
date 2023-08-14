@@ -1002,12 +1002,11 @@ public class MonthlyPlannerPage extends AppCompatActivity implements CategoryPop
         eventShowLocation.setText(eventData.getEventLocationName());
         eventShowCategory.setText(eventData.getEventCategory().getCategoryTitle());
         eventShowCategory.setChipBackgroundColor(ColorStateList.valueOf(eventData.getEventCategory().getCategoryColor()));
-        if (eventData.getEventDesc().isEmpty() && eventData.getImageUri() == null) {
-            eventShowDescRow.setVisibility(View.GONE);
+        if (eventData.getEventDesc().isEmpty()) {
+            eventShowDesc.setText("No description");
         } else {
-            eventShowDescRow.setVisibility(View.VISIBLE);
+            eventShowDesc.setText(eventData.getEventDesc());
         }
-        eventShowDesc.setText(eventData.getEventDesc());
 
 
         Glide.with(this)
