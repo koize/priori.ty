@@ -3,6 +3,8 @@ package com.koize.priority.ui.schedule;
 import static com.koize.priority.ui.schedule.CalendarAdapter.daysInWeekArray;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.koize.priority.R;
 import com.koize.priority.databinding.FragmentScheduleBinding;
@@ -107,12 +110,14 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         scheduleAdapter = new ScheduleAdapter(scheduleDataArrayList,getContext(),this:: onScheduleClick);
         scheduleRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         scheduleRV.setAdapter(scheduleAdapter);
-        //getSchedule();
+        getScheduled();
 
         return root;
     }
 
     private void getSchedule() {
+        String name = user.getDisplayName();
+        databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/schedule" + "/" +CalendarAdapter.selectedDate);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -122,7 +127,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
                     ScheduleData scheduleData = dataSnapshot.getValue(ScheduleData.class);
                     scheduleDataArrayList.add(scheduleData);
                 }
-                //ScheduleAdapter.notifyDataSetChanged();
+                scheduleAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -131,6 +136,32 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
             }
         });
     }
+    public void getScheduled() {
+        String name = user.getDisplayName();
+        databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/schedule" + "/" +CalendarAdapter.selectedDate);
+        scheduleDataArrayList.clear();
+        Query query = databaseReference.orderByChild("startTimeTime");
+        query.addValueEventListener(listener);
+
+        scheduleAdapter.notifyDataSetChanged();
+    }
+    ValueEventListener listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            scheduleDataArrayList.clear();
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                ScheduleData scheduleData = dataSnapshot.getValue(ScheduleData.class);
+                scheduleDataArrayList.add(scheduleData);
+            }
+            scheduleAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError error) {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Error: " + error.getMessage(), Snackbar.LENGTH_SHORT)
+                    .show();
+        }
+    };
 
 
 
@@ -139,7 +170,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         public void onClick(View v) {
             String notes = editNotes.getText().toString();
             SchedulePopUp schedulePopUp = new SchedulePopUp();
-            schedulePopUp.showPopupWindow(v, getParentFragmentManager(),PressOnDate,notes,user,databaseReference);
+            schedulePopUp.showPopupWindow(v, getParentFragmentManager(),CalendarAdapter.selectedDate,notes,user,databaseReference);
         }
     };
 
@@ -185,6 +216,7 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
         CalendarAdapter.selectedDate = date;
         PressOnDate = date;
         setWeekView();
+        getScheduled();
     }
 
     public static String monthYearFromDate(LocalDate date){
@@ -199,8 +231,38 @@ public class ScheduleFragment extends Fragment implements CalendarAdapter.OnItem
     }
 
     public void onScheduleClick(int position) {
-        //RemindersData remindersData = remindersDataArrayList.get(position);
-        //RemindersEditPopUp remindersEditPopUp = new RemindersEditPopUp(remindersData, getParentFragmentManager(), user, databaseReference, reminderRV);
-        //remindersEditPopUp.showPopupWindowEdit(reminderRV, remindersData);
+        AlertDialog.Builder builder = new AlertDialog.Builder(scheduleRV.getContext());
+
+        // Set the message show for the Alert time
+        builder.setMessage("Delete the following activity?: " + scheduleDataArrayList.get(position).getScheduleTitle() + "? ");
+
+        // Set Alert Title
+        builder.setTitle("Warning!");
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(true);
+        String name = user.getDisplayName();
+        databaseReference = firebaseDatabase.getReference("users/" + name + "_" + user.getUid().substring(1,5) + "/schedule" + "/" +CalendarAdapter.selectedDate);
+
+
+        // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // When the user click yes button then app will close
+            databaseReference.child(scheduleDataArrayList.get(position).getScheduleTextId()).removeValue();
+            Snackbar.make(scheduleRV, "Activity Deleted", Snackbar.LENGTH_SHORT)
+                    .show();
+            dialog.dismiss();
+        });
+
+        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // If user click no then dialog box is canceled.
+            dialog.cancel();
+        });
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+        // Show the Alert Dialog box
+        alertDialog.show();
     }
 }

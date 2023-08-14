@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -59,6 +60,7 @@ public class JournalFragment extends Fragment {
     private JournalAdapter JournalAdapter;
     private FirebaseAuth firebaseAuth;
     private ArrayList<JournalData> journalDataArrayList;
+    TextView journalEmpty;
 
     public static LocalDate selectedDate;
 
@@ -74,6 +76,8 @@ public class JournalFragment extends Fragment {
 
         addJournalButton = root.findViewById(R.id.button_journal_add);
         addJournalButton.setOnClickListener(addJournalListener);
+
+        journalEmpty=root.findViewById(R.id.JournalEmpty);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -105,9 +109,6 @@ public class JournalFragment extends Fragment {
         journalRV.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
         journalRV.setAdapter(JournalAdapter);
         getJournal();
-
-
-
         return root;
     }
 
@@ -122,6 +123,11 @@ public class JournalFragment extends Fragment {
                     journalDataArrayList.add(journalData);
                 }
                 JournalAdapter.notifyDataSetChanged();
+                if (journalDataArrayList.isEmpty()) {
+                    journalEmpty.setVisibility(View.VISIBLE);
+                } else {
+                    journalEmpty.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -246,7 +252,7 @@ public class JournalFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(journalRV.getContext());
 
         // Set the message show for the Alert time
-        builder.setMessage("Delete the following category: " + journalDataArrayList.get(position).getJournalTitle() + "? ");
+        builder.setMessage("Delete the following journal: " + journalDataArrayList.get(position).getJournalTitle() + "? ");
 
         // Set Alert Title
         builder.setTitle("Warning!");
