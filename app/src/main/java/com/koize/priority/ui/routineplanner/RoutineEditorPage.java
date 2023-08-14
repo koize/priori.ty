@@ -80,6 +80,8 @@ public class RoutineEditorPage extends AppCompatActivity {
     RecyclerView routineEditorRV;
     private RoutineEditorAdapter RoutineEditorAdapter;
     RoutineData routineData;
+    Chip DeleteBtn;
+    Chip BackBtn;
 
 
     @Override
@@ -92,6 +94,12 @@ public class RoutineEditorPage extends AppCompatActivity {
 
         habitEditor_saveRoutine = findViewById(R.id.button_routineEditor_save);
         habitEditor_saveRoutine.setOnClickListener(saveRoutineListener);
+
+        DeleteBtn = findViewById(R.id.button_routineEditor_delete);
+        DeleteBtn.setOnClickListener(DeleteRoutineListener);
+
+        BackBtn = findViewById(R.id.button_routineEditor_back);
+        BackBtn.setOnClickListener(BackRoutineListener);
 
         routineTitleET = findViewById(R.id.routineEditor_title);
 
@@ -201,12 +209,18 @@ public class RoutineEditorPage extends AppCompatActivity {
                         .show();
             }
             // database reference
-            RoutinePlannerPage.routineDataMain.setRoutineTitle(routineTitleET.getText().toString());
+
             if(routineTitleET.getText().toString().isEmpty()){
                 Snackbar.make(v, "Please enter a title!", Snackbar.LENGTH_SHORT)
                         .show();
+                return;
             }else{
                 RoutinePlannerPage.routineDataMain.setRoutineTitle(routineTitleET.getText().toString());
+            }
+            if(routineEditorDataArrayList.isEmpty()){
+                Snackbar.make(v, "Please add a habit!", Snackbar.LENGTH_SHORT)
+                        .show();
+                return;
             }
             RoutinePlannerPage.routineDataMain.setRoutineIcon("");
             for(HabitsData habits : RoutinePlannerPage.routineHabits){
@@ -756,5 +770,48 @@ public class RoutineEditorPage extends AppCompatActivity {
             popupWindow.dismiss();
         }
     };
+
+    View.OnClickListener BackRoutineListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(RoutineEditorPage.this, RoutinePlannerPage.class);
+            startActivity(intent);
+        }
+
+    };
+    View.OnClickListener DeleteRoutineListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(RoutineEditorPage.this);
+
+            // Set the message show for the Alert time
+            builder.setMessage("Delete Routine?");
+
+            // Set Alert Title
+            builder.setTitle("Warning!");
+
+            // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+            builder.setCancelable(true);
+
+            // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+            builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+                // When the user click yes button then app will close
+                onBackPressed();
+            });
+
+            // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+            builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+                // If user click no then dialog box is canceled.
+                dialog.cancel();
+            });
+
+            // Create the Alert dialog
+            AlertDialog alertDialog = builder.create();
+            // Show the Alert Dialog box
+            alertDialog.show();
+        }
+
+    };
+
 
 }
