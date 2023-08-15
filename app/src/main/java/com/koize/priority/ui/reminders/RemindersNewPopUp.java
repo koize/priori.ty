@@ -59,16 +59,20 @@ public class RemindersNewPopUp extends Fragment implements CategoryPopUp.Categor
     DatabaseReference databaseReference;
 
     public static final int INPUT_METHOD_NEEDED = 1;
+    View view;
+    Context context;
 
     public RemindersNewPopUp() {
         remindersData = new RemindersData();
     }
 
-    public RemindersNewPopUp(RemindersData remindersData, FragmentManager fragmentManager, FirebaseUser user, DatabaseReference databaseReference, View view) {
+    public RemindersNewPopUp(RemindersData remindersData, FragmentManager fragmentManager, FirebaseUser user, DatabaseReference databaseReference, View view, Context context) {
         this.remindersData = remindersData;
         this.fragmentManager = fragmentManager;
         this.user = user;
         this.databaseReference = databaseReference;
+        this.view = view;
+        this.context = context;
     }
 
 
@@ -242,11 +246,7 @@ public class RemindersNewPopUp extends Fragment implements CategoryPopUp.Categor
                         Snackbar.make(view, "2nd Reminder can't be before 1st Reminder!", Snackbar.LENGTH_SHORT)
                                 .show();
                         return;
-                    } else if (firstReminderDateTime == secondReminderDateTime) {
-                        Snackbar.make(view, "2nd Reminder can't be at the same time as 1st Reminder!", Snackbar.LENGTH_SHORT)
-                                .show();
-                        return;
-                    } else if (firstReminderDateTime + 28800000 < System.currentTimeMillis()) {
+                    }  else if (firstReminderDateTime + 28800000 < System.currentTimeMillis()) {
                         Snackbar.make(view, "Reminder can't be before current time!", Snackbar.LENGTH_SHORT)
                                 .show();
                     } else if (firstReminderDateTime == 0 && secondReminderDateTime !=0) {
@@ -375,7 +375,6 @@ public class RemindersNewPopUp extends Fragment implements CategoryPopUp.Categor
         // this will give us the view
         // which is currently focus
         // in this layout
-        View view = this.getActivity().getCurrentFocus();
 
         // if nothing is currently
         // focus then this will protect
@@ -386,7 +385,7 @@ public class RemindersNewPopUp extends Fragment implements CategoryPopUp.Categor
             // service to InputMethodManager
             InputMethodManager manager
                     = (InputMethodManager)
-                    getActivity().getSystemService(
+                    context.getSystemService(
                             Context.INPUT_METHOD_SERVICE);
             manager
                     .hideSoftInputFromWindow(

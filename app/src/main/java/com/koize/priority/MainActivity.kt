@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         if (isNotiGranted) {
             //sendNotification(this)
-            Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
         } else {
             requestPermissionLauncher.launch(
                     Manifest.permission.POST_NOTIFICATIONS
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (isFineLocationGranted) {
-            Toast.makeText(this, "Fine location permission granted", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Fine location permission granted", Toast.LENGTH_SHORT).show()
         } else {
             requestPermissionLauncher.launch(
                     Manifest.permission.ACCESS_FINE_LOCATION
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (isCoarseLocationGranted) {
-            Toast.makeText(this, "Coarse location permission granted", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Coarse location permission granted", Toast.LENGTH_SHORT).show()
         } else {
             requestPermissionLauncher.launch(
                     Manifest.permission.ACCESS_COARSE_LOCATION

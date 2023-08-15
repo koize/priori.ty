@@ -187,7 +187,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 RemindersData remindersData = new RemindersData();
-                RemindersNewPopUp remindersNewPopUp = new RemindersNewPopUp(remindersData, getParentFragmentManager(), user, reminderDatabaseReference, v);
+                RemindersNewPopUp remindersNewPopUp = new RemindersNewPopUp(remindersData, getParentFragmentManager(), user, reminderDatabaseReference, v, getContext());
                 remindersNewPopUp.showPopupWindow(v);            }
         });
         remindersTodayEmpty = root.findViewById(R.id.home_reminders_today_empty);
@@ -344,7 +344,7 @@ public class HomeFragment extends Fragment {
 
     public void onRemindersClick(int position) {
         RemindersData remindersData = remindersDataArrayList.get(position);
-        RemindersEditPopUp remindersEditPopUp = new RemindersEditPopUp(remindersData, getParentFragmentManager(), user, reminderDatabaseReference, remindersTodayRV);
+        RemindersEditPopUp remindersEditPopUp = new RemindersEditPopUp(remindersData, getParentFragmentManager(), user, reminderDatabaseReference, remindersTodayRV, getContext());
         remindersEditPopUp.showPopupWindowEdit(remindersTodayRV, remindersData);
     }
 

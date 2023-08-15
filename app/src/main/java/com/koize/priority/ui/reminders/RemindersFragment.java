@@ -392,14 +392,14 @@ public class RemindersFragment extends Fragment {
         @Override
         public void onClick(View v) {
             RemindersData remindersData = new RemindersData();
-            RemindersNewPopUp remindersNewPopUp = new RemindersNewPopUp(remindersData, getParentFragmentManager(), user, databaseReference, v);
+            RemindersNewPopUp remindersNewPopUp = new RemindersNewPopUp(remindersData, getParentFragmentManager(), user, databaseReference, v, getContext());
             remindersNewPopUp.showPopupWindow(v);
         }
     };
 
     public void onRemindersClick(int position) {
         RemindersData remindersData = remindersDataArrayList.get(position);
-        RemindersEditPopUp remindersEditPopUp = new RemindersEditPopUp(remindersData, getParentFragmentManager(), user, databaseReference, reminderRV);
+        RemindersEditPopUp remindersEditPopUp = new RemindersEditPopUp(remindersData, getParentFragmentManager(), user, databaseReference, reminderRV, getContext());
         remindersEditPopUp.showPopupWindowEdit(reminderRV, remindersData);
     }
 

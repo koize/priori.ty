@@ -193,6 +193,7 @@ public class JournalFragment extends Fragment {
                     if(journalTitle.getText().toString().isEmpty()){
                         Snackbar.make(view, "Please enter a title!", Snackbar.LENGTH_SHORT)
                                 .show();
+                        return;
                     }else{
                         journalData1.setJournalTitle(journalTitle.getText().toString());
                     }
@@ -378,6 +379,7 @@ public class JournalFragment extends Fragment {
                         if(journalTitle.getText().toString().isEmpty()){
                             Snackbar.make(view, "Please enter a title!", Snackbar.LENGTH_SHORT)
                                     .show();
+                            return;
                         }else{
                             journalData.setJournalTitle(journalTitle.getText().toString());
                         }

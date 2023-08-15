@@ -71,6 +71,7 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
     FirebaseUser user;
     DatabaseReference databaseReference;
     View view;
+    Context context;
 
     public static final int INPUT_METHOD_NEEDED = 1;
 
@@ -78,12 +79,13 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
         remindersData = new RemindersData();
     }
 
-    public RemindersEditPopUp(RemindersData remindersData, FragmentManager fragmentManager, FirebaseUser user, DatabaseReference databaseReference, View view) {
+    public RemindersEditPopUp(RemindersData remindersData, FragmentManager fragmentManager, FirebaseUser user, DatabaseReference databaseReference, View view, Context context) {
         this.remindersData = remindersData;
         this.fragmentManager = fragmentManager;
         this.user = user;
         this.databaseReference = databaseReference;
         this.view = view;
+        this.context = context;
     }
 
 
@@ -285,11 +287,7 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
                         Snackbar.make(view, "2nd Reminder can't be before 1st Reminder!", Snackbar.LENGTH_SHORT)
                                 .show();
                         return;
-                    } else if (firstReminderDateTime == secondReminderDateTime) {
-                        Snackbar.make(view, "2nd Reminder can't be at the same time as 1st Reminder!", Snackbar.LENGTH_SHORT)
-                                .show();
-                        return;
-                    } else if (firstReminderDateTime + 28800000 < System.currentTimeMillis()) {
+                    }  else if (firstReminderDateTime + 28800000 < System.currentTimeMillis()) {
                         Snackbar.make(view, "Reminder can't be before current time!", Snackbar.LENGTH_SHORT)
                                 .show();
                         return;
@@ -364,7 +362,7 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
         reminderDeleteChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(RemindersEditPopUp.this.getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
                 // Set the message show for the Alert time
                 builder.setMessage("Delete reminder: " + remindersData.getReminderTitle() + "? ");
@@ -378,11 +376,11 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
                 // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
                 builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
                     // When the user click yes button then app will close
-                    Intent intent = new Intent(getContext(), NotiReceiver.class);
+                    Intent intent = new Intent(context, NotiReceiver.class);
                     intent.putExtra("title", remindersData.getReminderTitle());
                     intent.putExtra("id", remindersData.getReminderId());
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), remindersData.getReminderId(), intent, PendingIntent.FLAG_IMMUTABLE);
-                    AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, remindersData.getReminderId(), intent, PendingIntent.FLAG_IMMUTABLE);
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                     alarmManager.cancel(pendingIntent);                    databaseReference.child(remindersData.getReminderTextId()).removeValue();
                     Snackbar.make(view, "Reminder deleted!", Snackbar.LENGTH_SHORT)
                             .show();
@@ -465,17 +463,16 @@ public class RemindersEditPopUp extends Fragment implements CategoryPopUp.Catego
         // if nothing is currently
         // focus then this will protect
         // the app from crash
-        if (view != null) {
 
             // now assign the system
             // service to InputMethodManager
             InputMethodManager manager
                     = (InputMethodManager)
-                    view.getContext().getSystemService(
+                    context.getSystemService(
                             Context.INPUT_METHOD_SERVICE);
             manager
                     .hideSoftInputFromWindow(
                             view.getWindowToken(), 0);
-        }
+
     }
 }
