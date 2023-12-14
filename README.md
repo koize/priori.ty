@@ -1,2 +1,4 @@
-# priori.ty - a scuffed mad project
-why did i go sp dcpe
+# priori.ty - Track your daily activities and plan your events
+A self-managment Android app.
+Built with Java and Kotlin, using Material3 UI Design.
+Download link: https://github.com/koize/priori.ty/releases/download/FINAL_17aug1547/priori.ty_17aug1546_FINAL.apk
